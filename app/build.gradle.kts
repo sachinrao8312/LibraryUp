@@ -73,6 +73,11 @@ android {
         )
     }
     
+    testOptions {
+        // Robolectric tests (repository, backup) need merged resources and the manifest.
+        unitTests.isIncludeAndroidResources = true
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -179,6 +184,8 @@ dependencies {
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation(libs.androidx.ui.tooling)

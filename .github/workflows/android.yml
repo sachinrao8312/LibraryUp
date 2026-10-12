@@ -44,7 +44,8 @@ jobs:
         run: |
           for attempt in 1 2 3; do
             ./gradlew :domain:dependencies --configuration testRuntimeClasspath -q > /dev/null &&
-              ./gradlew :app:dependencies --configuration debugRuntimeClasspath -q > /dev/null && exit 0
+              ./gradlew :app:dependencies --configuration debugRuntimeClasspath -q > /dev/null &&
+              ./gradlew :app:dependencies --configuration debugUnitTestRuntimeClasspath -q > /dev/null && exit 0
             echo "Dependency resolution failed (attempt $attempt), retrying in 30s"
             sleep 30
           done
@@ -56,6 +57,12 @@ jobs:
       - name: Build debug APK and run app unit tests
         run: ./gradlew :app:assembleDebug :app:testDebugUnitTest --stacktrace
 
+      # Release is minified and resource-shrunk with R8. Building it on every PR catches
+      # missing keep rules (Room, Gson backup models, Firebase) before a Play upload.
+      # Unsigned: signing happens outside CI.
+      - name: Build release APK (R8)
+        run: ./gradlew :app:assembleRelease --stacktrace
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -63,4 +70,6 @@ jobs:
           path: |
             **/build/reports/tests/
             app/build/outputs/apk/debug/*.apk
+            app/build/outputs/mapping/release/mapping.txt
+            app/schemas/
           retention-days: 7
