@@ -141,13 +141,13 @@ interface LibraryDao {
     fun observeAttendanceOn(date: LocalDate): Flow<List<Attendance>>
 
     @Query("SELECT * FROM attendance WHERE studentId = :studentId ORDER BY date DESC LIMIT :limit")
-    fun observeAttendanceFor(studentId: Long, limit: Int = 60): Flow<List<Attendance>>
+    fun observeAttendanceFor(studentId: Long, limit: Int): Flow<List<Attendance>>
 
     @Query("SELECT * FROM attendance")
     suspend fun getAttendance(): List<Attendance>
 
     @Query("SELECT * FROM attendance WHERE studentId = :studentId AND date = :date LIMIT 1")
-    suspend fun getAttendance(studentId: Long, date: LocalDate): Attendance?
+    suspend fun findAttendance(studentId: Long, date: LocalDate): Attendance?
 
     @Upsert
     suspend fun upsertAttendance(attendance: Attendance)
@@ -177,7 +177,7 @@ interface LibraryDao {
     suspend fun insertLog(entry: ActivityLog)
 
     @Query("SELECT * FROM activity_log ORDER BY at DESC LIMIT :limit")
-    fun observeLog(limit: Int = 200): Flow<List<ActivityLog>>
+    fun observeLog(limit: Int): Flow<List<ActivityLog>>
 
     @Query("SELECT * FROM activity_log")
     suspend fun getLog(): List<ActivityLog>

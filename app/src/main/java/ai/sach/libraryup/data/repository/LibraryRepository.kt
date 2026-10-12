@@ -92,11 +92,11 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     private val dao: LibraryDao = database.libraryDao()
 
     val profile: Flow<LibraryProfile?> = dao.observeProfile()
-    val activityLog: Flow<List<ActivityLog>> = dao.observeLog()
+    val activityLog: Flow<List<ActivityLog>> = dao.observeLog(200)
     val expenses: Flow<List<Expense>> = dao.observeExpenses()
 
     fun attendanceOn(date: LocalDate): Flow<List<Attendance>> = dao.observeAttendanceOn(date)
-    fun attendanceFor(studentId: Long): Flow<List<Attendance>> = dao.observeAttendanceFor(studentId)
+    fun attendanceFor(studentId: Long): Flow<List<Attendance>> = dao.observeAttendanceFor(studentId, 60)
 
     val state: Flow<LibraryState> = combine(
         combine(dao.observeProfile(), dao.observeShifts(), dao.observeSeats(), dao.observePlans()) { p, sh, se, pl ->
@@ -345,17 +345,17 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     /* ======================= Attendance ======================= */
 
     suspend fun checkIn(studentId: Long, date: LocalDate, method: AttendanceMethod = AttendanceMethod.MANUAL) {
-        if (dao.getAttendance(studentId, date) != null) return
+        if (dao.findAttendance(studentId, date) != null) return
         dao.upsertAttendance(Attendance(studentId = studentId, date = date, inMinute = nowMinute(), method = method))
     }
 
     suspend fun checkOut(studentId: Long, date: LocalDate) {
-        val a = dao.getAttendance(studentId, date) ?: return
+        val a = dao.findAttendance(studentId, date) ?: return
         dao.upsertAttendance(a.copy(outMinute = nowMinute()))
     }
 
     suspend fun clearAttendance(studentId: Long, date: LocalDate) {
-        val a = dao.getAttendance(studentId, date) ?: return
+        val a = dao.findAttendance(studentId, date) ?: return
         // Undo a wrong tap: keep the row but drop the out time, or remove the in time by
         // re-marking. Rows are cheap; a full delete is not needed for v0.1.
         dao.upsertAttendance(a.copy(outMinute = null))

@@ -212,7 +212,11 @@ sales call). No ads except AVS.
 3. **Lifetime option:** ~₹2499 one-time for owners who hate subscriptions.
 4. **Later:** a multi-device sync / multi-branch tier; an optional paid "done-for-you"
    setup (we import their register); printed QR standees and ID cards.
-5. **Never:** ads, selling or using student data, message credits.
+5. **Ads (decided Oct 2026):** AdMob in the free tier. Rewarded ads unlock extras
+   (bulk reminder run, export, poster, 24h Pro); banner/native on dashboard and lists
+   only, **never** on payment or receipt screens. Pro removes ads.
+6. **Never:** selling or sharing student data (DPDP Act risk; one "fraud calls" review
+   kills the app in owner groups), crypto/tokens, message credits.
 
 ## Product principles
 - **Offline-first.** Owners are on cheap phones with patchy internet.
@@ -236,15 +240,32 @@ sales call). No ads except AVS.
   D30 retention, Play rating ≥ 4.5.
 
 ## Roadmap
-1. Fork from RentUp; set the new applicationId, name, icon, Firebase app.
-2. Move all strings to resources; apply the rename map; add Hindi.
-3. Reshape the data model (Seat, Shift, Allocation, Attendance) with Room migrations
-   or a fresh schema (fresh is fine; there are no users yet).
-4. Build the seat map and shift allocation, then fees, receipts and reminders.
-5. Encrypted Drive backup.
-6. Closed testing with pilot libraries, then production launch.
+See `TASKS.md` for the live task list. v0.1 (PR #1) covers the P0 list above.
+
+## Code map
+| Path | What |
+|---|---|
+| `domain/` | Pure Kotlin rules, JVM-tested: `Billing.kt` (cycles, plans, freeze), `Dues.kt` (status), `Seats.kt` (shift windows, conflicts, seat map), `Messaging.kt` (receipt no., UPI link, en/hi templates), `Csv.kt` (export/import), `BackupCrypto.kt`, `Reports.kt` |
+| `app/.../data/local/entity/Entities.kt` | Room entities (schema v1) |
+| `app/.../data/local/dao/LibraryDao.kt` | All queries |
+| `app/.../data/repository/LibraryRepository.kt` | Every write; transactions + activity log; builds `LibraryState` |
+| `app/.../data/backup/` | Backup zip, encryption secrets, Google Drive backup |
+| `app/.../ui/library/` | All library screens + `LibraryViewModel` (activity-scoped) |
+| `app/.../MainActivity.kt` | Auth flow → setup wizard → bottom-nav shell and routes |
+| `app/.../ui/screens/` | Inherited RentUp screens: sign-in, app lock, settings |
+| `app/.../notifications/` | Owner's morning digest (WorkManager) |
+| `docs/` | Data safety draft, Play listing draft |
+
+## How to build and run
+- Android Studio (Ladybug or newer), JDK 17. Put the Firebase `google-services.json` for
+  `ai.sach.libraryup` in `app/` (CI uses `.github/ci/google-services.dummy.json`).
+- `./gradlew :domain:test` runs the business-rule tests (no Android needed).
+- `./gradlew :app:assembleDebug :app:testDebugUnitTest` builds the app; CI runs both on every PR.
+- Strings: every user-facing string in `res/values/*.xml` and `res/values-hi/strings.xml`
+  (library screens are generated as `strings_library.xml`; edit both languages together).
+- Schema changes need a Room `Migration`; never destructive migration once real owners exist.
 
 ## Open decisions
 - Name decided: **LibraryUp**, Play title `LibraryUp: Library Manager`. Check Play, domain and trademark before upload.
-- Free vs freemium at launch.
+- Exact free-tier limit and Pro price (Remote Config so it can be tuned).
 - Whether attendance needs a student-side app or desk-QR only.
