@@ -37,30 +37,35 @@ Must be done before any real owner uses it.
 ### Quality and correctness (P0)
 - [ ] Test on a real low-end phone (3 GB RAM, Android 8–10): setup, 200 seats × 3 shifts,
       seat map scroll, receipt PDF, WhatsApp intents, Drive backup
-- [ ] Room DAO/repository instrumented tests: admission conflict, renew, change seat,
-      freeze/unfreeze date extension, mark left frees seat, receipt sequence, restore round trip
-      (`app/src/androidTest`)
-- [ ] Backup round-trip test: export → clear → restore → equal (all tables + attachments)
-- [ ] Release build with R8: verify Gson backup still reads (keep rules in `proguard-rules.pro`)
-- [ ] Translate the inherited settings/auth screens (still hardcoded English):
-      `ui/screens/settingsScreen/**`, `ui/screens/authentication/**`
-- [ ] Remove dead RentUp code: Firestore guest-migration of `tenants`/`properties`
+- [x] Repository tests (Robolectric + in-memory Room, `app/src/test/.../data/`): admission
+      conflict, renew, change seat, freeze/unfreeze date extension, mark left frees seat,
+      receipt sequence, payment edit/delete, late fee, student delete, attendance undo
+- [x] Backup round-trip test: export → clear → restore → equal (all tables, plain and
+      encrypted with password or recovery code). Attachments not covered yet
+- [x] Release build with R8 runs in CI (`assembleRelease`); still verify a real restore on
+      a release build on a phone
+- [ ] Commit the exported Room schema (`app/schemas/.../1.json`, uploaded by CI) before the
+      first release, so later migrations can be tested against it
+- [x] Translate the main inherited settings/auth screens (sign-in, splash, lock, settings,
+      backup, security). Help & support and privacy policy text still English
+- [x] Remove dead RentUp code: Firestore guest-migration of `tenants`/`properties`
       (`AuthRepository.migrateFirestoreReferences`), "Additional Settings" empty card and
       `showProperties` pref (`AppPreferences*`), `WHATSAPP_INTEGRATION` route, unused
       Retrofit/OkHttp wiring in `AppModule`
-- [ ] `firestore.rules`: keep only `users/{uid}` profile docs; drop tenants/properties/guests paths
-- [ ] New icon, adaptive icon, splash, notification icon (currently RentUp's house)
-- [ ] App lock covers resume from background, not just cold start
+- [x] `firestore.rules`: keep only `users/{uid}` profile docs; drop tenants/properties/guests paths
+- [x] New icon (indigo open book + chevron), adaptive + legacy PNGs, notification icon.
+      Splash/sign-in still use the green brand circle; final icon from a designer before launch
+- [x] App lock covers resume from background, not just cold start
 
 ### Small P0 gaps found while building v0.1
-- [ ] Edit / delete a payment's amount (today: delete + re-collect)
-- [ ] Delete a student entirely (today: mark left)
-- [ ] Seat label conflicts: warn on duplicate labels in one block
-- [ ] Attendance: undo a wrong "In" tap (`clearAttendance` only clears Out)
-- [ ] Plans tied to a shift: picker in plan dialog (`Plan.shiftId` exists, no UI)
-- [ ] Message templates editable per library (`MessageTemplates` defaults only)
-- [ ] Holiday broadcast: one message to all active students (template exists)
-- [ ] Late fee auto-rule (e.g. ₹10/day after grace) instead of manual entry
+- [x] Edit / delete a payment's amount (today: delete + re-collect)
+- [x] Delete a student entirely (today: mark left)
+- [x] Seat label conflicts: warn on duplicate labels in one block
+- [x] Attendance: undo a wrong "In" tap (`clearAttendance` only clears Out)
+- [x] Plans tied to a shift: picker in plan dialog (`Plan.shiftId` exists, no UI)
+- [x] Message templates editable per library (`MessageTemplates` defaults only)
+- [x] Holiday broadcast: one message to all active students (template exists)
+- [x] Late fee auto-rule (e.g. ₹10/day after grace) instead of manual entry
 
 ## Milestone 2: public launch (P1 differentiators)
 - [ ] **Student ID card**: photo, seat, shift, validity, father's name, QR (PDF/image share)

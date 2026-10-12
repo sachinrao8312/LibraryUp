@@ -245,7 +245,7 @@ See `TASKS.md` for the live task list. v0.1 (PR #1) covers the P0 list above.
 ## Code map
 | Path | What |
 |---|---|
-| `domain/` | Pure Kotlin rules, JVM-tested: `Billing.kt` (cycles, plans, freeze), `Dues.kt` (status), `Seats.kt` (shift windows, conflicts, seat map), `Messaging.kt` (receipt no., UPI link, en/hi templates), `Csv.kt` (export/import), `BackupCrypto.kt`, `Reports.kt` |
+| `domain/` | Pure Kotlin rules, JVM-tested: `Billing.kt` (cycles, plans, freeze), `Dues.kt` (status), `Seats.kt` (shift windows, conflicts, seat map, label checks), `Messaging.kt` (receipt no., UPI link, en/hi templates), `Csv.kt` (export/import), `BackupCrypto.kt`, `Reports.kt`, `LateFee.kt` (automatic late-fee rule) |
 | `app/.../data/local/entity/Entities.kt` | Room entities (schema v1) |
 | `app/.../data/local/dao/LibraryDao.kt` | All queries |
 | `app/.../data/repository/LibraryRepository.kt` | Every write; transactions + activity log; builds `LibraryState` |
@@ -254,15 +254,19 @@ See `TASKS.md` for the live task list. v0.1 (PR #1) covers the P0 list above.
 | `app/.../MainActivity.kt` | Auth flow → setup wizard → bottom-nav shell and routes |
 | `app/.../ui/screens/` | Inherited RentUp screens: sign-in, app lock, settings |
 | `app/.../notifications/` | Owner's morning digest (WorkManager) |
+| `app/src/test/.../data/` | Robolectric + in-memory Room tests for the repository and backup round trip |
+| `tools/strings_gen.py` | Source of truth for screen strings (English + Hindi) |
+| `firestore.rules` | Firestore holds only account/session docs; no library data |
 | `docs/` | Data safety draft, Play listing draft |
 
 ## How to build and run
 - Android Studio (Ladybug or newer), JDK 17. Put the Firebase `google-services.json` for
   `ai.sach.libraryup` in `app/` (CI uses `.github/ci/google-services.dummy.json`).
 - `./gradlew :domain:test` runs the business-rule tests (no Android needed).
-- `./gradlew :app:assembleDebug :app:testDebugUnitTest` builds the app; CI runs both on every PR.
+- `./gradlew :app:assembleDebug :app:testDebugUnitTest` builds the app and runs the Robolectric tests;
+  CI runs these plus `:app:assembleRelease` (R8) on every PR.
 - Strings: every user-facing string in `res/values/*.xml` and `res/values-hi/strings.xml`
-  (library screens: edit `tools/strings_gen.py`, then run `python3 tools/strings_gen.py app/src/main/res`).
+  (edit `tools/strings_gen.py`, then run `python3 tools/strings_gen.py app/src/main/res`).
 - Schema changes need a Room `Migration`; never destructive migration once real owners exist.
 
 ## Open decisions
