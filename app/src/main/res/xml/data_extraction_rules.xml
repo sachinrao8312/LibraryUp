@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android's Auto Backup for Apps: https://developer.android.com/identity/data/autobackup
+  This is the OS-level, automatic backup to the user's Google account (cloud-backup) and
+  the local phone-to-phone transfer flow when setting up a new device (device-transfer).
+  It runs on its own, roughly once a day when idle and on Wi-Fi - separate from, and a
+  complement to, the user-initiated JSON export in Settings > Backup & Restore.
+
+  auth_secure_prefs and notification_preferences are both encrypted with a key from the
+  Android Keystore (see EncryptedPrefsUtils), which is tied to this device and does not
+  travel with a restore to a new one. Restoring the encrypted file there produces a
+  ciphertext the new device's Keystore can never decrypt; both preference managers already
+  fall back to plain SharedPreferences on decrypt failure rather than crash, so this only
+  costs a silent reset of sign-in state and notification settings on the very device a
+  restore is meant to help - worth excluding rather than shipping as-is.
+
+  com.google.android.gms.appid.xml caches this install's FCM token. Restored onto another
+  device it would be registered with the backend as that device's token, sending rent
+  reminders to the old phone.
+
+  drive_backup.xml is excluded because photos and documents don't come back with a
+  restore (below): restored with Drive backup switched on, the new phone would start
+  uploading daily backups that are missing them. Drive backup starts off after a restore;
+  the owner turns it back on, ideally after restoring a full backup from Drive.
+
+  Tenant photos and documents (files domain) are deliberately left out: the 25 MB Auto
+  Backup quota applies to everything, and going over it drops the whole backup, database
+  included. The .zip backup (manual or Google Drive) is what carries those files.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="database" path="."/>
+        <include domain="sharedpref" path="."/>
+
+        <exclude domain="sharedpref" path="auth_secure_prefs.xml"/>
+        <exclude domain="sharedpref" path="notification_preferences.xml"/>
+        <exclude domain="sharedpref" path="device.xml"/>
+        <exclude domain="sharedpref" path="com.google.android.gms.appid.xml"/>
+        <exclude domain="sharedpref" path="drive_backup.xml"/>
+    </cloud-backup>
+
+    <device-transfer>
+        <include domain="database" path="."/>
+        <include domain="sharedpref" path="."/>
+
+        <exclude domain="sharedpref" path="auth_secure_prefs.xml"/>
+        <exclude domain="sharedpref" path="notification_preferences.xml"/>
+        <exclude domain="sharedpref" path="device.xml"/>
+        <exclude domain="sharedpref" path="com.google.android.gms.appid.xml"/>
+        <exclude domain="sharedpref" path="drive_backup.xml"/>
+    </device-transfer>
+</data-extraction-rules>

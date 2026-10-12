@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User document and subcollections
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Subcollections
+      match /syncStatus/{docId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      match /tenants/{tenantId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      match /properties/{propertyId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Guests - Allow authenticated users to read guest data for migration
+    match /guests/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // The account-collision conversion flow signs in as a different (pre-existing)
+      // permanent account and then fetches the old guest doc by its known id to
+      // migrate data over. Only `get` (fetch-by-id) is allowed here, never `list` —
+      // the app never queries this collection, and allowing list would let any
+      // signed-in user (including a brand-new guest) enumerate every guest's data.
+      allow get: if request.auth != null;
+    }
+
+    // Sessions
+    match /sessions/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Standalone properties collection
+    match /properties/{propertyId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.ownerId;
+    }
+
+    // Standalone tenants collection
+    match /tenants/{tenantId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.ownerId;
+    }
+
+    // Tenant forms - written by the backend (Admin SDK, which bypasses these rules) when a
+    // tenant submits. The document id is the form id from the shared link, so anyone who
+    // has seen the link knows it: clients must never be able to create a form for someone
+    // else's account, or move an existing one (and the tenant's details) to their own.
+    match /tenant-forms/{formId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.ownerId;
+      allow update: if request.auth != null
+                    && request.auth.uid == resource.data.ownerId
+                    && request.resource.data.ownerId == resource.data.ownerId;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.ownerId;
+    }
+
+    // Deny all other reads and writes
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

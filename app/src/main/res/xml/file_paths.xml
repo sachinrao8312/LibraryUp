@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- App-specific standard directories -->
+    <files-path name="app_files" path="." />
+    <cache-path name="app_cache" path="." />
+
+    <!-- Specific backup and document directories -->
+    <external-files-path name="documents" path="Pictures/" />
+    <external-files-path name="backup_files" path="RentUpBackups/" />
+    <files-path name="internal_backup_files" path="RentUpBackups/" />
+
+    <!-- Export directories -->
+    <external-files-path name="exports" path="exports/" />
+    <external-files-path name="backups" path="backups/" />
+
+    <!-- Temporary files -->
+    <cache-path name="temp_backups" path="/" />
+
+</paths>

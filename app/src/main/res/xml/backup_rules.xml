@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Legacy full-backup config, read on Android 11 and below (API <= 30); data_extraction_rules.xml
+  covers API 31+. Same reasoning as that file: auth_secure_prefs and notification_preferences
+  are Keystore-encrypted and the key doesn't survive a restore to a new device, so they're
+  excluded rather than backed up as ciphertext neither device can read, and drive_backup
+  and the FCM token cache are excluded for the reasons given there.
+-->
+<full-backup-content>
+    <include domain="database" path="."/>
+    <include domain="sharedpref" path="."/>
+
+    <exclude domain="sharedpref" path="auth_secure_prefs.xml"/>
+    <exclude domain="sharedpref" path="notification_preferences.xml"/>
+    <exclude domain="sharedpref" path="device.xml"/>
+    <exclude domain="sharedpref" path="com.google.android.gms.appid.xml"/>
+    <exclude domain="sharedpref" path="drive_backup.xml"/>
+</full-backup-content>
