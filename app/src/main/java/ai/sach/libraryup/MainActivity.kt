@@ -1,11 +1,26 @@
 package ai.sach.libraryup
 
+import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.ui.common.composables.BottomNavigationBar
-import ai.sach.libraryup.ui.common.composables.ExpandableFAB
-import ai.sach.libraryup.ui.common.composables.rememberWindowSizeClass
 import ai.sach.libraryup.ui.common.responsiveness.AccessibilityScalingProvider
 import ai.sach.libraryup.ui.common.responsiveness.DimensionsProvider
-import ai.sach.libraryup.service.FcmTokenSyncWorker
+import ai.sach.libraryup.ui.library.ActivityLogScreen
+import ai.sach.libraryup.ui.library.AttendanceScreen
+import ai.sach.libraryup.ui.library.DashboardScreen
+import ai.sach.libraryup.ui.library.DataScreen
+import ai.sach.libraryup.ui.library.ExpensesScreen
+import ai.sach.libraryup.ui.library.LibrarySettingsScreen
+import ai.sach.libraryup.ui.library.LibraryTopBar
+import ai.sach.libraryup.ui.library.LibraryViewModel
+import ai.sach.libraryup.ui.library.MoreScreen
+import ai.sach.libraryup.ui.library.PaymentsScreen
+import ai.sach.libraryup.ui.library.RemindersScreen
+import ai.sach.libraryup.ui.library.SeatMapScreen
+import ai.sach.libraryup.ui.library.SetupScreen
+import ai.sach.libraryup.ui.library.StudentDetailScreen
+import ai.sach.libraryup.ui.library.StudentFilter
+import ai.sach.libraryup.ui.library.StudentFormScreen
+import ai.sach.libraryup.ui.library.StudentsScreen
 import ai.sach.libraryup.ui.navigation.AppRoutes
 import ai.sach.libraryup.ui.navigation.NavigationItems
 import ai.sach.libraryup.ui.screens.authentication.AuthRepository
@@ -14,11 +29,6 @@ import ai.sach.libraryup.ui.screens.authentication.BiometricAuthManager
 import ai.sach.libraryup.ui.screens.authentication.BiometricLockScreen
 import ai.sach.libraryup.ui.screens.authentication.GoogleAuthScreen
 import ai.sach.libraryup.ui.screens.authentication.SplashScreen
-import ai.sach.libraryup.ui.screens.historyScreen.PaymentHistoryScreen
-import ai.sach.libraryup.ui.screens.homescreen.HomeScreen
-import ai.sach.libraryup.ui.screens.homescreen.TenantFormSubmissionHandler
-import ai.sach.libraryup.ui.screens.properties.PropertiesScreen
-import ai.sach.libraryup.ui.screens.properties.composables.PropertyDetailsScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.SettingsScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.AppPreferencesScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.AccountScreen
@@ -31,13 +41,9 @@ import ai.sach.libraryup.ui.screens.settingsScreen.composable.PinLockScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.PrivacyPolicyScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.SecurityScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
-import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationIntent
-import ai.sach.libraryup.ui.screens.settingsScreen.notifications.PendingNotificationTarget
 import ai.sach.libraryup.ui.theme.LibraryUpTheme
 import android.Manifest
-import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -45,10 +51,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -58,16 +68,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -76,9 +86,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -95,14 +102,7 @@ enum class AppState {
 }
 
 /**
- * Main Activity class for the RentUp application.
- * This serves as the entry point for the app and configures the main UI structure.
- * Now includes improved authentication flow and integration.
- */
-/**
- * Main Activity class for the RentUp application.
- * This serves as the entry point for the app and configures the main UI structure.
- * Now includes improved authentication flow with unified BiometricAuthManager.
+ * Entry point: sign-in, then the optional biometric/PIN lock, then the library app.
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @AndroidEntryPoint
@@ -112,650 +112,268 @@ class MainActivity : FragmentActivity() {
         private const val TAG = "MainActivity"
     }
 
-    // Inject the BiometricAuthManager
     @Inject
     lateinit var biometricAuthManager: BiometricAuthManager
 
-    // Inject TenantFormSubmissionHandler
-    @Inject
-    lateinit var tenantFormSubmissionHandler: TenantFormSubmissionHandler
-
-    // Lazily create a safe version that falls back to manual creation if injection fails
+    // Falls back to manual creation if injection failed.
     private val bioAuthManager: BiometricAuthManager by lazy {
-        if (::biometricAuthManager.isInitialized) {
-            biometricAuthManager
-        } else {
-            // Fallback if injection fails
-            Log.w(TAG, "BiometricAuthManager injection failed, creating manually")
-            BiometricAuthManager(applicationContext)
-        }
+        if (::biometricAuthManager.isInitialized) biometricAuthManager else BiometricAuthManager(applicationContext)
     }
 
-    // Notification permission request launcher
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            // Permission granted, initialize notification system
-            initializeNotifications()
-        }
-    }
-
-    /**
-     * Route (and, for rent reminders, the tenant-list chip to pre-select) requested by a
-     * notification tap, consumed once navigation is ready.
-     */
-    private val pendingNotificationTarget = MutableStateFlow<PendingNotificationTarget?>(null)
-
-    /**
-     * MainActivity is singleTask, so a tap while the app is already running arrives here
-     * rather than through onCreate. Without this override those taps were silently
-     * dropped, or cost the user their UI state when the task was cleared instead.
-     */
-    override fun onNewIntent(intent: android.content.Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        handleNotificationIntent(intent)
+    ) { granted ->
+        if (granted) scheduleDigest()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Enable edge-to-edge display mode - this handles status bar and navigation bar automatically
         enableEdgeToEdge()
-
-        // Get application instance once
         val app = application as LibraryUpApplication
-
-        // Initialize notification system
         checkNotificationPermission()
 
-        // Check if we were launched from a notification
-        handleNotificationIntent(intent)
-
         setContent {
-            // Create fixed density with 1.0 scale
-            val density = Density(
-                density = LocalDensity.current.density,
-                fontScale = 1.0f
-            )
-
-            // Apply fixed density to entire app
+            // Fixed font scale: layouts are tuned for it; large system fonts broke rows on small phones.
+            val density = Density(density = LocalDensity.current.density, fontScale = 1.0f)
             CompositionLocalProvider(LocalDensity provides density) {
-                // Set up the app theme with system's default dark/light mode
-                LibraryUpTheme(
-                    dynamicColor = false // Set to true if you want to use Material You dynamic colors
-                ) {
-                    // Wrap the entire app in responsive dimension providers
+                LibraryUpTheme(dynamicColor = false) {
                     DimensionsProvider {
-                        // Add accessibility scaling support
                         AccessibilityScalingProvider {
-                            // Enhanced Authentication Flow with GoogleAuthScreen
                             var appState by remember { mutableStateOf(AppState.Loading) }
                             val authRepository = remember { AuthRepository(this@MainActivity) }
 
-                            // Check authentication state on app launch
                             LaunchedEffect(Unit) {
-                                // Use IO dispatcher for all heavy operations
                                 withContext(Dispatchers.IO) {
                                     try {
-                                        // Minimal delay for faster startup
-                                        delay(500) // Reduced from 1000ms to 500ms
-
-                                        // Check current authentication state
-                                        val currentUser = authRepository.getCurrentFirebaseUser()
-                                        
+                                        delay(300)
+                                        val user = authRepository.getCurrentFirebaseUser()
                                         withContext(Dispatchers.Main) {
-                                            when {
-                                                currentUser == null -> {
-                                                    // No user signed in - show authentication screen
-                                                    appState = AppState.Unauthenticated
-                                                }
-                                                bioAuthManager.shouldUseBiometricAuth() -> {
-                                                    // User exists but needs biometric auth
-                                                    appState = AppState.BiometricLock
-                                                }
-                                                else -> {
-                                                    // User authenticated and no biometric needed
-                                                    // Republish the FCM token now that a uid exists;
-                                                    // a rotation while signed out lands here.
-                                                    FcmTokenSyncWorker.enqueue(applicationContext)
-                                                    appState = AppState.Ready
-                                                }
+                                            appState = when {
+                                                user == null -> AppState.Unauthenticated
+                                                bioAuthManager.shouldUseBiometricAuth() -> AppState.BiometricLock
+                                                else -> AppState.Ready
                                             }
                                         }
-
                                     } catch (e: Exception) {
                                         Log.e(TAG, "Error checking authentication state", e)
-                                        // On error, show authentication screen for safety
-                                        withContext(Dispatchers.Main) {
-                                            appState = AppState.Unauthenticated
-                                        }
+                                        withContext(Dispatchers.Main) { appState = AppState.Unauthenticated }
                                     }
                                 }
                             }
 
                             when (appState) {
-                                AppState.Loading -> {
-                                    // Show splash screen during authentication check
-                                    SplashScreen(onSplashFinished = { /* Handled by LaunchedEffect */ })
-                                }
-                                AppState.Unauthenticated -> {
-                                    // Show Google authentication screen
-                                    GoogleAuthScreen(
-                                        authViewModel = viewModel(
-                                            factory = AuthViewModelFactory(
-                                                application = app,
-                                                authRepository = authRepository
-                                            )
-                                        ),
-                                        onNavigateToMain = {
-                                            // Check if biometric auth is needed after successful auth
-                                            if (bioAuthManager.shouldUseBiometricAuth()) {
-                                                appState = AppState.BiometricLock
-                                            } else {
-                                                appState = AppState.Ready
-                                            }
-                                        }
-                                    )
-                                }
-                                AppState.BiometricLock -> {
-                                    // Show biometric lock screen
-                                    BiometricLockScreen(
-                                        activity = this@MainActivity,
-                                        biometricAuthManager = bioAuthManager,
-                                        onAuthenticationSuccess = {
-                                            appState = AppState.Ready
-                                        },
-                                        onSkipAuthentication = {
-                                            appState = AppState.Ready
-                                        }
-                                    )
-                                }
-                                AppState.Ready -> {
-                                    // Show main app
-                                    LibraryUpApp(
-                                        onSignOut = {
-                                            // Handle sign out - reset to unauthenticated state
-                                            (application as? LibraryUpApplication)
-                                                ?.fcmTokenRegistrar?.onSignedOut()
-                                            appState = AppState.Unauthenticated
-                                        },
-                                        pendingNotificationTarget = pendingNotificationTarget,
-                                        onNotificationTargetConsumed = {
-                                            pendingNotificationTarget.value = null
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // If the user re-enabled notifications in system settings while the in-app master
-        // toggle was off, flip it back on, re-arm reminders, and republish the FCM opt-in
-        // flag so the backend resumes addressing this device.
-        runCatching {
-            val app = application as? LibraryUpApplication ?: return@runCatching
-            if (app.notificationHelper.reconcileOptInFromSystemSettings()) {
-                app.reminderScheduler.ensureScheduled()
-                FcmTokenSyncWorker.enqueue(this, force = true)
-                Log.d(TAG, "Notifications re-enabled from system settings; republished opt-in")
-            }
-        }
-
-        // Defer heavy operations to avoid blocking onResume
-        lifecycleScope.launch {
-            // Small delay to let onResume complete first
-            delay(100)
-            
-            // Then do heavy work on IO thread
-            withContext(Dispatchers.IO) {
-                try {
-                    if (::tenantFormSubmissionHandler.isInitialized) {
-                        tenantFormSubmissionHandler.refreshTenantSubmissions()
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error in onResume background task", e)
-                }
-            }
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        // Keep lifecycle registration on main thread but make it fast
-        try {
-            // Register the tenant form submission handler with the lifecycle
-            if (::tenantFormSubmissionHandler.isInitialized) {
-                lifecycle.addObserver(tenantFormSubmissionHandler)
-                Log.d(TAG, "TenantFormSubmissionHandler registered with lifecycle")
-            } else {
-                Log.w(TAG, "TenantFormSubmissionHandler not initialized")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error registering lifecycle observer", e)
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        // Keep lifecycle unregistration on main thread but make it fast
-        try {
-            // Unregister the tenant form submission handler from the lifecycle
-            if (::tenantFormSubmissionHandler.isInitialized) {
-                lifecycle.removeObserver(tenantFormSubmissionHandler)
-                Log.d(TAG, "TenantFormSubmissionHandler unregistered from lifecycle")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error unregistering lifecycle observer", e)
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        
-        try {
-            // Clean up lifecycle observers
-            if (::tenantFormSubmissionHandler.isInitialized) {
-                lifecycle.removeObserver(tenantFormSubmissionHandler)
-                tenantFormSubmissionHandler.cancel() // Cancel any ongoing operations
-                Log.d(TAG, "TenantFormSubmissionHandler cleaned up in onDestroy")
-            }
-            
-            // Clean up biometric auth manager
-            if (::biometricAuthManager.isInitialized) {
-                // Note: BiometricAuthManager cleanup method needs to be added
-                Log.d(TAG, "BiometricAuthManager cleaned up in onDestroy")
-            }
-            
-            // Cancel any ongoing coroutines
-            lifecycleScope.cancel()
-            
-            Log.d(TAG, "MainActivity cleanup completed successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in onDestroy cleanup", e)
-        }
-    }
-
-    /**
-     * Checks and requests notification permission if needed
-     */
-    private fun checkNotificationPermission() {
-        // Only needed for Android 13+ (Tiramisu)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            initializeNotifications()
-            return
-        }
-
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            initializeNotifications()
-            return
-        }
-
-        val prefs = (application as? LibraryUpApplication)?.notificationPreferences
-
-        when {
-            // First time ever asked: the system dialog will still be shown, so ask.
-            prefs?.hasRequestedNotificationPermission() != true -> {
-                prefs?.markNotificationPermissionRequested()
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-            // Denied before, but "don't ask again" was not picked: the dialog can show again.
-            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-            // Permanently denied ("don't ask again"): a launch() here is a silent no-op. Don't
-            // nag at startup; the Notifications screen offers the system-settings path instead.
-            else -> {
-                Log.d(TAG, "Notification permission permanently denied; skipping startup prompt")
-            }
-        }
-    }
-
-    /**
-     * Initializes the notification system
-     */
-    private fun initializeNotifications() {
-        val application = application as LibraryUpApplication
-
-        // Create notification channels
-        application.notificationHelper.createNotificationChannels()
-
-        // Arm the daily reminder sweep now that we know the permission state. Scheduling
-        // touches no database and sends nothing, so this is safe on the main thread.
-        if (application.notificationPreferences.areRentRemindersEnabled()) {
-            application.reminderScheduler.ensureScheduled()
-        } else {
-            application.reminderScheduler.cancel()
-        }
-    }
-    
-    /**
-     * Turns a notification tap into a navigation route, plus - for rent reminders - the
-     * tenant-list chip that should already be selected when the user gets there.
-     *
-     * The target is published to [pendingNotificationTarget] rather than applied directly,
-     * because the NavController does not exist yet when this runs from onCreate. The app
-     * composable consumes it once navigation is ready.
-     */
-    private fun handleNotificationIntent(intent: android.content.Intent?) {
-        if (intent == null) return
-        try {
-            val notificationType = intent.getStringExtra(NotificationIntent.EXTRA_TYPE)
-            val propertyId = intent.getStringExtra(NotificationIntent.EXTRA_PROPERTY_ID)
-            val tenantId = intent.getStringExtra(NotificationIntent.EXTRA_TENANT_ID)
-            val formId = intent.getStringExtra(NotificationIntent.EXTRA_FORM_ID)
-            val filterKey = intent.getStringExtra(NotificationIntent.EXTRA_FILTER)
-
-            if (notificationType == null) return
-
-            // Mark onboarding notification as seen if formId is present
-            if (formId != null) {
-                (application as? LibraryUpApplication)
-                    ?.notificationPreferences
-                    ?.markOnboardingNotificationSeen(formId)
-                Log.d(TAG, "Marked onboarding notification as seen for formId=$formId")
-            }
-
-            Log.d(
-                TAG,
-                "Notification tapped: type=$notificationType, propertyId=$propertyId, " +
-                    "tenantId=$tenantId, formId=$formId, filter=$filterKey"
-            )
-
-            val route = NotificationIntent.routeFor(notificationType, propertyId)
-            if (route != null) {
-                pendingNotificationTarget.value = PendingNotificationTarget(route, filterKey)
-                Log.d(TAG, "Queued navigation to $route (filter=$filterKey)")
-            }
-
-            // The tenant this submission created may not exist locally yet - the sync
-            // worker that imports it runs independently of this notification tap - so the
-            // lookup happens here, asynchronously, rather than at the time the notification
-            // was built. Enriching the same target (rather than replacing it) is safe even
-            // after the fast path above has already navigated: Home only reacts to a route
-            // change, and simply reads tenantIdToOpen off whatever target arrives.
-            if (notificationType == NotificationIntent.TYPE_TENANT_SUBMISSION && formId != null) {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    try {
-                        val tenant = (application as? LibraryUpApplication)
-                            ?.tenantRepository
-                            ?.getTenantByFormId(formId)
-                        if (tenant != null) {
-                            withContext(Dispatchers.Main) {
-                                pendingNotificationTarget.value = PendingNotificationTarget(
-                                    route = AppRoutes.HOME,
-                                    tenantIdToOpen = tenant.id
+                                AppState.Loading -> SplashScreen(onSplashFinished = {})
+                                AppState.Unauthenticated -> GoogleAuthScreen(
+                                    authViewModel = viewModel(factory = AuthViewModelFactory(application = app, authRepository = authRepository)),
+                                    onNavigateToMain = {
+                                        appState = if (bioAuthManager.shouldUseBiometricAuth()) AppState.BiometricLock else AppState.Ready
+                                    }
                                 )
-                                Log.d(TAG, "Resolved formId=$formId to tenantId=${tenant.id}")
+                                AppState.BiometricLock -> BiometricLockScreen(
+                                    activity = this@MainActivity,
+                                    biometricAuthManager = bioAuthManager,
+                                    onAuthenticationSuccess = { appState = AppState.Ready },
+                                    onSkipAuthentication = { appState = AppState.Ready }
+                                )
+                                AppState.Ready -> LibraryUpApp(onSignOut = { appState = AppState.Unauthenticated })
                             }
-                        } else {
-                            Log.d(TAG, "No local tenant yet for formId=$formId; sync may still be pending")
                         }
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error resolving tenant for formId=$formId", e)
                     }
                 }
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error handling notification intent", e)
+        }
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        ) {
+            scheduleDigest()
+            return
+        }
+        val prefs = (application as LibraryUpApplication).notificationPrefs
+        if (!prefs.permissionRequested || shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+            prefs.permissionRequested = true
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    private fun scheduleDigest() {
+        val app = application as LibraryUpApplication
+        runCatching {
+            if (app.notificationPrefs.dailyDigestEnabled) app.reminderScheduler.ensureScheduled() else app.reminderScheduler.cancel()
         }
     }
 }
 
 /**
- * Main composable function for the RentUp application.
- * Sets up the navigation controller, navigation routes, and floating action button.
- * Now with responsive layout handling for different screen sizes and orientations.
- *
- * @param onSignOut Callback for signing out of the application
+ * The library app once signed in: first-run setup if the library has no profile yet,
+ * otherwise the bottom-navigation shell around every library screen.
  */
-@RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun LibraryUpApp(
-    onSignOut: () -> Unit = {},
-    pendingNotificationTarget: StateFlow<PendingNotificationTarget?> = MutableStateFlow(null),
-    onNotificationTargetConsumed: () -> Unit = {}
-) {
-    // Get application and auto restore manager
+fun LibraryUpApp(onSignOut: () -> Unit = {}) {
     val context = LocalContext.current
-    context.applicationContext as LibraryUpApplication
-    val coroutineScope = rememberCoroutineScope()
+    val app = context.applicationContext as LibraryUpApplication
+    val vm: LibraryViewModel = viewModel(factory = LibraryViewModel.Factory(app.libraryRepository))
+    val state by vm.state.collectAsState()
+    val snackbar = remember { SnackbarHostState() }
+
+    LaunchedEffect(vm) {
+        vm.messages.collect { m ->
+            val text = if (m.arg != null) context.getString(m.res, m.arg) else context.getString(m.res)
+            snackbar.showSnackbar(text)
+        }
+    }
+
+    val current = state
+    when {
+        current == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+        current.profile == null -> Scaffold(snackbarHost = { SnackbarHost(snackbar) }) { padding ->
+            Box(Modifier.padding(padding)) { SetupScreen(vm) }
+        }
+        else -> LibraryShell(current, vm, snackbar, onSignOut)
+    }
+}
+
+@Composable
+private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: SnackbarHostState, onSignOut: () -> Unit) {
     val navController = rememberNavController()
-    var isAddTenantFormVisible by remember { mutableStateOf(false) }
-    var isAddPropertyFormVisible by remember { mutableStateOf(false) }
-    var isHomeInSelectionMode by remember { mutableStateOf(false) }
-
-    // Tenant-list filter chip a rent reminder tap asked Home to pre-select, consumed once
-    // HomeScreen applies it. Held here, above the NavHost, so it survives regardless of
-    // whether Home's own composition is torn down and rebuilt in between.
-    var pendingHomeFilter by remember { mutableStateOf<String?>(null) }
-
-    // Tenant a "new tenant submission" notification tap asked Home to open details for,
-    // consumed once HomeScreen shows it. See pendingHomeFilter above for why this is
-    // hoisted here rather than held inside HomeScreen.
-    var pendingHomeTenantId by remember { mutableStateOf<Long?>(null) }
-
-    // Get current route for conditional FAB display
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
-    // ponytail: reset hoisted select-mode flag off Home so FAB never stays hidden
-    LaunchedEffect(currentRoute) {
-        if (currentRoute != NavigationItems.Home.route) isHomeInSelectionMode = false
-    }
-
-    // Apply a target requested by a notification tap. Collected here rather than acted on
-    // in the Activity because this is the first point at which the NavController exists.
-    val notificationTarget by pendingNotificationTarget.collectAsState()
-    LaunchedEffect(notificationTarget) {
-        val target = notificationTarget ?: return@LaunchedEffect
-        if (target.route == AppRoutes.HOME) {
-            pendingHomeFilter = target.filterKey
-            target.tenantIdToOpen?.let { pendingHomeTenantId = it }
-        }
-        if (target.route != currentRoute) {
-            navController.navigate(target.route) {
-                launchSingleTop = true
-                restoreState = true
-            }
-        }
-        onNotificationTargetConsumed()
-    }
-
-    // Get screen orientation and size class
-    val configuration = LocalConfiguration.current
-    val orientation = configuration.orientation
-    val windowSizeClass = rememberWindowSizeClass()
-    val isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    // Determine if we should use bottom navigation or side navigation based on screen size and orientation
-    val useBottomNav = !isLandscape || !windowSizeClass.isExpandedWidth
-
-
-
-    // The guest-conversion prompts used to run from here. They advertised cloud backup
-    // and multi-device sync, and after 60 days locked the app behind a mandatory
-    // sign-up - all for a sync service that does nothing. Backup & Restore in Settings
-    // is the real thing now, so there is nothing left for these to sell.
+    val entry by navController.currentBackStackEntryAsState()
+    val route = entry?.destination?.route
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Scaffold(
-        bottomBar = {
-            // Only show bottom bar if we're using bottom navigation and on main screens
-            val shouldShowBottomBar = useBottomNav && when(currentRoute) {
-                NavigationItems.Home.route,
-                NavigationItems.PaymentHistory.route,
-                NavigationItems.Properties.route,
-                NavigationItems.Settings.route -> true
-                else -> false
-            }
-
-            if (shouldShowBottomBar) {
-                BottomNavigationBar(navController)
-            }
-        },
-        floatingActionButton = {
-
-            // Only show FAB on HomeScreen and PropertiesScreen
-            when (currentRoute) {
-                NavigationItems.Home.route -> {
-                    // Hide FAB in select mode so it never covers the BatchDeleteBar
-                    if (!isHomeInSelectionMode) {
-                        // Use standard FloatingActionButton instead of ExpandableFAB
-                        ExpandableFAB(
-                            onAddTenant = { isAddTenantFormVisible = true },
-                            onAddProperty = {
-                                isAddPropertyFormVisible = true
-                            }
-
-                        )
-                    }
-                }
-                NavigationItems.Properties.route -> {
-                    // The FAB for PropertiesScreen is handled within the screen
-                }
-            }
-        }
-    ) { innerPadding ->
-        // Content area with responsive padding
-        NavHost(
-            navController = navController,
-            startDestination = NavigationItems.Home.route,
-            modifier = Modifier.padding(
-                bottom = innerPadding.calculateBottomPadding(),
-                top = innerPadding.calculateTopPadding(),
-                start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-                end = innerPadding.calculateEndPadding(LayoutDirection.Ltr)
-            )
-        ) {
-            // Navigation routes defined here
-            composable(NavigationItems.Home.route) {
-                HomeScreen(
-                    navController = navController,
-                    isAddTenantFormVisible = isAddTenantFormVisible,
-                    isAddPropertyFormVisible = isAddPropertyFormVisible,
-                    onAddTenantFormDismiss = { isAddTenantFormVisible = false },
-                    onAddPropertyFormDismiss = { isAddPropertyFormVisible = false },
-                    onShowAddPropertyFormRequest = { isAddPropertyFormVisible = true },
-                    onShowAddTenantFormRequest = { isAddTenantFormVisible = true },
-                    initialFilterKey = pendingHomeFilter,
-                    onInitialFilterConsumed = { pendingHomeFilter = null },
-                    initialTenantIdToOpen = pendingHomeTenantId,
-                    onInitialTenantConsumed = { pendingHomeTenantId = null },
-                    onSelectionModeChange = { isHomeInSelectionMode = it }
+        snackbarHost = { SnackbarHost(snackbar) },
+        bottomBar = { if (route in NavigationItems.routes) BottomNavigationBar(navController) }
+    ) { padding ->
+        NavHost(navController = navController, startDestination = AppRoutes.HOME, modifier = Modifier.padding(padding)) {
+            composable(AppRoutes.HOME) {
+                DashboardScreen(
+                    state = state,
+                    onOpenStudents = { navController.navigate(AppRoutes.students(it.name)) { launchSingleTop = true } },
+                    onAddStudent = { navController.navigate(AppRoutes.studentForm()) },
+                    onOpenReminders = { navController.navigate(AppRoutes.REMINDERS) },
+                    onOpenAttendance = { navController.navigate(AppRoutes.ATTENDANCE) },
+                    onOpenPayments = { navController.navigate(AppRoutes.PAYMENTS) { launchSingleTop = true } }
                 )
             }
-
-            composable(NavigationItems.PaymentHistory.route) {
-                PaymentHistoryScreen(navController = navController)
-            }
-
-            composable(NavigationItems.Properties.route) {
-                PropertiesScreen(
-                    isAddPropertyFormVisible = isAddPropertyFormVisible,
-                    onAddPropertyFormDismiss = { isAddPropertyFormVisible = false },
-                    onAddPropertyClicked = { isAddPropertyFormVisible = true },
-                    navController = navController
-                )
-            }
-
-            composable(NavigationItems.Settings.route) {
-                SettingsScreen(
-                    navController = navController,
-                    onLogout = {
-                        // Get auth repository and sign out
-                        val authRepository = AuthRepository(context)
-                        coroutineScope.launch {
-                            authRepository.signOut()
-                            // Call the onSignOut callback to return to auth screen
-                            onSignOut()
-                        }
-                    } // Connect the sign out button to auth
-                )
-            }
-
-            // Property details screen
-            composable(AppRoutes.PROPERTY_DETAILS_PATTERN) { backStackEntry ->
-                val propertyId = backStackEntry.arguments?.getString("propertyId")
-                if (propertyId != null) {
-                    PropertyDetailsScreen(
-                        propertyId = propertyId,
-                        onBackPressed = { navController.popBackStack() }
+            composable(AppRoutes.SEATS) {
+                TabScreen(stringResource(R.string.nav_seats)) {
+                    SeatMapScreen(
+                        state = state,
+                        onOpenStudent = { navController.navigate(AppRoutes.student(it)) },
+                        onAssignSeat = { seatId, shiftId -> navController.navigate(AppRoutes.studentForm(seatId = seatId, shiftId = shiftId)) }
                     )
                 }
             }
-
-            // Settings sub-screens
-            composable(SettingsNavRoutes.ACCOUNT) {
-                AccountScreen(navController = navController)
-            }
-
-            composable(SettingsNavRoutes.PROFILE_EDIT) {
-                AccountScreen(navController = navController, isEditing = true)
-            }
-
-            composable(SettingsNavRoutes.SECURITY) {
-                SecurityScreen(navController = navController)
-            }
-
-            composable(SettingsNavRoutes.PASSWORD_CHANGE) {
-                PasswordChangeScreen(navController = navController)
-            }
-
             composable(
-                route = SettingsNavRoutes.PIN_SETUP + "?isPinSet={isPinSet}",
+                AppRoutes.STUDENTS,
+                arguments = listOf(navArgument("filter") { type = NavType.StringType; defaultValue = "ALL" })
+            ) { back ->
+                val filter = runCatching { StudentFilter.valueOf(back.arguments?.getString("filter") ?: "ALL") }.getOrDefault(StudentFilter.ALL)
+                TabScreen(stringResource(R.string.nav_students)) {
+                    StudentsScreen(
+                        state = state,
+                        initialFilter = filter,
+                        onOpenStudent = { navController.navigate(AppRoutes.student(it)) },
+                        onAddStudent = { navController.navigate(AppRoutes.studentForm()) }
+                    )
+                }
+            }
+            composable(AppRoutes.PAYMENTS) {
+                TabScreen(stringResource(R.string.nav_payments)) {
+                    PaymentsScreen(state) { navController.navigate(AppRoutes.student(it)) }
+                }
+            }
+            composable(AppRoutes.MORE) {
+                TabScreen(stringResource(R.string.nav_more)) {
+                    MoreScreen(
+                        onReminders = { navController.navigate(AppRoutes.REMINDERS) },
+                        onAttendance = { navController.navigate(AppRoutes.ATTENDANCE) },
+                        onExpenses = { navController.navigate(AppRoutes.EXPENSES) },
+                        onLibrarySettings = { navController.navigate(AppRoutes.LIBRARY_SETTINGS) },
+                        onData = { navController.navigate(AppRoutes.DATA) },
+                        onActivityLog = { navController.navigate(AppRoutes.ACTIVITY_LOG) },
+                        onBackup = { navController.navigate(SettingsNavRoutes.BACKUP) },
+                        onAppSettings = { navController.navigate(AppRoutes.SETTINGS) }
+                    )
+                }
+            }
+            composable(AppRoutes.STUDENT, arguments = listOf(navArgument("studentId") { type = NavType.LongType })) { back ->
+                val id = back.arguments?.getLong("studentId") ?: return@composable
+                StudentDetailScreen(
+                    state = state,
+                    vm = vm,
+                    studentId = id,
+                    onEdit = { navController.navigate(AppRoutes.studentForm(studentId = id)) },
+                    onAssignSeat = { navController.navigate(AppRoutes.studentForm(studentId = id)) },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable(
+                AppRoutes.STUDENT_FORM,
                 arguments = listOf(
-                    navArgument("isPinSet") {
-                        type = NavType.BoolType
-                        defaultValue = false
+                    navArgument("studentId") { type = NavType.LongType; defaultValue = -1L },
+                    navArgument("seatId") { type = NavType.LongType; defaultValue = -1L },
+                    navArgument("shiftId") { type = NavType.LongType; defaultValue = -1L }
+                )
+            ) { back ->
+                fun arg(name: String) = back.arguments?.getLong(name)?.takeIf { it > 0 }
+                StudentFormScreen(
+                    state = state,
+                    vm = vm,
+                    studentId = arg("studentId"),
+                    presetSeatId = arg("seatId"),
+                    presetShiftId = arg("shiftId"),
+                    onDone = { navController.popBackStack() },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable(AppRoutes.REMINDERS) { RemindersScreen(state) { navController.popBackStack() } }
+            composable(AppRoutes.ATTENDANCE) { AttendanceScreen(state, vm) { navController.popBackStack() } }
+            composable(AppRoutes.EXPENSES) { ExpensesScreen(state, vm) { navController.popBackStack() } }
+            composable(AppRoutes.LIBRARY_SETTINGS) { LibrarySettingsScreen(state, vm) { navController.popBackStack() } }
+            composable(AppRoutes.DATA) { DataScreen(state, vm) { navController.popBackStack() } }
+            composable(AppRoutes.ACTIVITY_LOG) { ActivityLogScreen(vm) { navController.popBackStack() } }
+
+            // App settings (inherited screens).
+            composable(AppRoutes.SETTINGS) {
+                SettingsScreen(
+                    navController = navController,
+                    onLogout = {
+                        scope.launch {
+                            AuthRepository(context).signOut()
+                            onSignOut()
+                        }
                     }
                 )
-            ) { backStackEntry ->
-                val isPinSet = backStackEntry.arguments?.getBoolean("isPinSet") ?: false
-                PinLockScreen(
-                    navController = navController,
-                    isPinAlreadySet = isPinSet
-                )
             }
-            // Add the new App Preferences route
-            composable(SettingsNavRoutes.APP_PREFERENCES) {
-                AppPreferencesScreen(navController = navController)
+            composable(SettingsNavRoutes.ACCOUNT) { AccountScreen(navController = navController) }
+            composable(SettingsNavRoutes.PROFILE_EDIT) { AccountScreen(navController = navController, isEditing = true) }
+            composable(SettingsNavRoutes.SECURITY) { SecurityScreen(navController = navController) }
+            composable(SettingsNavRoutes.PASSWORD_CHANGE) { PasswordChangeScreen(navController = navController) }
+            composable(
+                route = SettingsNavRoutes.PIN_SETUP + "?isPinSet={isPinSet}",
+                arguments = listOf(navArgument("isPinSet") { type = NavType.BoolType; defaultValue = false })
+            ) { back ->
+                PinLockScreen(navController = navController, isPinAlreadySet = back.arguments?.getBoolean("isPinSet") ?: false)
             }
-
-            composable(SettingsNavRoutes.NOTIFICATIONS) {
-                NotificationsScreen(navController = navController)
-            }
-
-            composable(SettingsNavRoutes.LANGUAGE) {
-                LanguageScreen(navController = navController)
-            }
-
-            composable(SettingsNavRoutes.HELP) {
-                HelpAndSupportScreen(navController = navController)
-            }
-
-            composable(SettingsNavRoutes.PRIVACY) {
-                PrivacyPolicyScreen(navController = navController)
-            }
-
-            composable(SettingsNavRoutes.BACKUP) {
-                BackupRestoreScreen(navController = navController)
-            }
+            composable(SettingsNavRoutes.APP_PREFERENCES) { AppPreferencesScreen(navController = navController) }
+            composable(SettingsNavRoutes.NOTIFICATIONS) { NotificationsScreen(navController = navController) }
+            composable(SettingsNavRoutes.LANGUAGE) { LanguageScreen(navController = navController) }
+            composable(SettingsNavRoutes.HELP) { HelpAndSupportScreen(navController = navController) }
+            composable(SettingsNavRoutes.PRIVACY) { PrivacyPolicyScreen(navController = navController) }
+            composable(SettingsNavRoutes.BACKUP) { BackupRestoreScreen(navController = navController) }
         }
+    }
+}
 
-
+/** A bottom-tab screen: title bar plus content. */
+@Composable
+private fun TabScreen(title: String, content: @Composable () -> Unit) {
+    Column(Modifier.fillMaxSize()) {
+        LibraryTopBar(title)
+        content()
     }
 }

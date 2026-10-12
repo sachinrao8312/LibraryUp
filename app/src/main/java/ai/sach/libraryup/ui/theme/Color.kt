@@ -3,7 +3,7 @@ package ai.sach.libraryup.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * RentUp color constants used throughout the application.
+ * LibraryUp color constants used throughout the application.
  * Provides consistent access to brand colors and their variants.
  */
 object AppColors {

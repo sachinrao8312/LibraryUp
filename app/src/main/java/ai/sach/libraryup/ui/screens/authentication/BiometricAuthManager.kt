@@ -182,7 +182,7 @@ class BiometricAuthManager(context: Context) {
     fun showBiometricPrompt(
         activity: FragmentActivity,
         title: String = "Verify your identity",
-        subtitle: String = "Use your fingerprint to access RentUp",
+        subtitle: String = "Use your fingerprint to access LibraryUp",
         description: String = "Authentication required to continue",
         negativeButtonText: String = "Cancel",
         onSuccess: () -> Unit,

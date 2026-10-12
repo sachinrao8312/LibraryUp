@@ -54,13 +54,13 @@ sealed interface DriveAccess {
 }
 
 class NothingToBackUpException :
-    IllegalStateException("There's nothing to back up yet - add a property or tenant first.")
+    IllegalStateException("There's nothing to back up yet - add a student first.")
 
 /**
- * Automatic backup of the same `.zip` [BackupManager] writes, into a "RentUp Backups"
+ * Automatic backup of the same `.zip` [BackupManager] writes, into a "LibraryUp Backups"
  * folder in the user's own Google Drive, plus restore from it.
  *
- * Access uses the `drive.file` scope: RentUp can see only the files it created, and the
+ * Access uses the `drive.file` scope: LibraryUp can see only the files it created, and the
  * scope needs no Google verification review. The access token is fetched fresh for every
  * run and never stored.
  *
@@ -72,6 +72,8 @@ class DriveBackupManager(
     private val backupManager: BackupManager,
     private val client: DriveClient = DriveClient(defaultHttpClient())
 ) {
+    private val secrets by lazy { ai.sach.libraryup.data.backup.BackupSecrets(context) }
+
     companion object {
         private const val TAG = "DriveBackupManager"
 
@@ -107,7 +109,7 @@ class DriveBackupManager(
             .build()
 
         /**
-         * Daily, on Wi-Fi only: a backup carrying tenant documents can run to tens of MB,
+         * Daily, on Wi-Fi only: a backup carrying student photos and ID proofs can run to tens of MB,
          * which shouldn't come out of a mobile data plan every day. "Back up now" works on
          * any network.
          *
@@ -247,8 +249,8 @@ class DriveBackupManager(
     private suspend fun backUpLocked(token: String, skipIfUnchanged: Boolean): BackupSummary? = withContext(Dispatchers.IO) {
         val temp = File(context.cacheDir, "drive-backup-${System.currentTimeMillis()}.zip")
         try {
-            val summary = backupManager.exportTo(Uri.fromFile(temp)).getOrThrow()
-            if (summary.tenantCount == 0 && summary.propertyCount == 0) throw NothingToBackUpException()
+            val summary = backupManager.exportTo(Uri.fromFile(temp), secrets.current()).getOrThrow()
+            if (summary.studentCount == 0) throw NothingToBackUpException()
             if (skipIfUnchanged && summary.contentHash == prefs.getString(KEY_LAST_UPLOADED_HASH, null)) {
                 return@withContext null
             }
@@ -283,7 +285,7 @@ class DriveBackupManager(
 
     // ------------------------------------------------------------------ restore
 
-    /** Newest first. Empty when this Google account has no RentUp backups. */
+    /** Newest first. Empty when this Google account has no LibraryUp backups. */
     suspend fun listBackups(token: String): List<DriveFile> = withContext(Dispatchers.IO) {
         rejectingStaleToken(token) {
             val folderId = client.findFolder(token) ?: return@rejectingStaleToken emptyList()
@@ -292,12 +294,13 @@ class DriveBackupManager(
     }
 
     /** Replaces all local data with [backup] - confirm with the user first. */
-    suspend fun restore(token: String, backup: DriveFile): BackupSummary = mutex.withLock {
+    /** @param secret password or recovery code for an encrypted backup; the saved password is tried first. */
+    suspend fun restore(token: String, backup: DriveFile, secret: String? = null): BackupSummary = mutex.withLock {
         withContext(Dispatchers.IO) {
             val temp = File(context.cacheDir, "drive-restore-${System.currentTimeMillis()}.zip")
             try {
                 rejectingStaleToken(token) { client.download(token, backup.id, temp) }
-                backupManager.importFrom(Uri.fromFile(temp)).getOrThrow()
+                backupManager.importFrom(Uri.fromFile(temp), secret ?: secrets.password()).getOrThrow()
             } finally {
                 temp.delete()
             }

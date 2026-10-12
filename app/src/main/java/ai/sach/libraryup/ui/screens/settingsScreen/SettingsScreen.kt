@@ -72,7 +72,7 @@ data class SettingsUiState(
 )
 
 /**
- * Main Settings Screen for the RentUp application.
+ * Main Settings Screen for the LibraryUp application.
  * Provides access to all app settings including account management, security,
  * notifications, appearance, and more.
  *
@@ -128,7 +128,7 @@ fun SettingsScreen(
             AlertDialog(
                 onDismissRequest = { uiState = uiState.copy(showLogoutDialog = false) },
                 title = { Text("Sign Out") },
-                text = { Text("Are you sure you want to sign out of RentUp?") },
+                text = { Text("Are you sure you want to sign out of LibraryUp?") },
                 confirmButton = {
                     Button(
                         onClick = {
@@ -316,14 +316,14 @@ fun AppInfoSection() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "RentUp v ${getVersionName()}",
+            text = "LibraryUp v ${getVersionName()}",
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
             color = Color.Gray
         )
 
         Text(
-            text = "© ${Year.now().value} RentUp. All rights reserved.",
+            text = "© ${Year.now().value} LibraryUp. All rights reserved.",
             fontSize = 12.sp,
             color = Color.Gray,
             modifier = Modifier.padding(top = 4.dp)

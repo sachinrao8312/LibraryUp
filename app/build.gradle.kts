@@ -112,9 +112,6 @@ dependencies {
     implementation(libs.firebase.analytics.ktx) {
         exclude(group = "androidx.legacy", module = "legacy-support-core-utils")
     }
-    implementation(libs.firebase.messaging.ktx) {
-        exclude(group = "androidx.legacy", module = "legacy-support-core-utils")
-    }
 
     // Google Services & APIs
     implementation(libs.play.services.auth) {

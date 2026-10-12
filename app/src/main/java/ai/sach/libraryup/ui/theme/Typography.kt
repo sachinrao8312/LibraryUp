@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * Enhanced RentUp typography styles following Material 3 guidelines.
+ * Enhanced LibraryUp typography styles following Material 3 guidelines.
  * Defines consistent text styles used throughout the application with improved readability.
  */
 val AppTypography = Typography(

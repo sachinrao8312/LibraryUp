@@ -112,7 +112,7 @@
 # fields would make a backup written by one release unreadable by the next.
 -keep class ai.sach.libraryup.data.backup.** { *; }
 # Retrofit request/response models are serialized by Gson by field name.
--keep class ai.sach.libraryup.data.api.** { *; }
+-keep class ai.sach.libraryup.domain.** { *; }
 # Retrofit 2.9 predates its own R8 full-mode rules; without these, a suspend API method
 # fails in release builds with "Class cannot be cast to ParameterizedType".
 -keep,allowobfuscation,allowshrinking interface retrofit2.Call

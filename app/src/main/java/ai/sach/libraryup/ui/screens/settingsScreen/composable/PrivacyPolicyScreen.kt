@@ -102,7 +102,7 @@ fun PrivacyPolicyScreen(navController: NavController) {
             PrivacySection(
                 title = "Introduction",
                 content = """
-                    At RentUp, we respect your privacy and are committed to protecting your personal data. 
+                    At LibraryUp, we respect your privacy and are committed to protecting your personal data. 
                     This policy outlines how we collect, use, and secure your information.
                 """.trimIndent()
             )
@@ -111,14 +111,14 @@ fun PrivacyPolicyScreen(navController: NavController) {
                 title = "Data We Collect",
                 content = """
                     • Personal details (Name, Email, Phone Number)
-                    • Tenant and property details
+                    • Library, student, seat, fee and attendance details you enter
                     • Application usage statistics
                     • Device information including device identifiers for security purposes
                     
-                    Your tenant, property and payment records are stored on your device and are
-                    not uploaded to RentUp's servers. Earlier versions copied them to our cloud
-                    database for users signed in with Google - contact us to have those copies
-                    deleted.
+                    Your library's records (students, ID proofs, payments, attendance) are stored on
+                    your device and are not uploaded to LibraryUp's servers. If you turn on Google
+                    Drive backup, they are copied to your own Google Drive, optionally encrypted
+                    with a password only you know.
                 """.trimIndent()
             )
 
@@ -153,11 +153,11 @@ fun PrivacyPolicyScreen(navController: NavController) {
             PrivacySection(
                 title = "Data Storage and Security",
                 content = """
-                    • Tenant, property and payment records are stored in the app's private storage on your device.
+                    • Student, seat, payment and attendance records are stored in the app's private storage on your device.
                     • Android's system backup may copy this data to your Google account, following your device's backup settings.
-                    • If you turn on Google Drive backup, a backup file is saved to a "RentUp Backups" folder in your own Google Drive. RentUp can only see files it created there.
-                    • Backup files you save yourself are not encrypted - keep them somewhere private.
-                    • Details and files a tenant submits through an onboarding link are stored on our servers (Firebase and Cloudflare R2) so the app can import them.
+                    • If you turn on Google Drive backup, a backup file is saved to a "LibraryUp Backups" folder in your own Google Drive. LibraryUp can only see files it created there.
+                    • Backups are encrypted (AES-256) when you turn on password protection in Backup & Restore; otherwise keep backup files somewhere private.
+                    • LibraryUp does not send your students' details to any LibraryUp server, and never shares or sells them.
                 """.trimIndent()
             )
 

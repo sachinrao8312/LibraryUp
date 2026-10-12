@@ -286,7 +286,7 @@ private fun ModernAppBranding(
                     // Use the original logo with 2x zoom to crop out rectangular edges
                     Image(
                         painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = "RentUp Logo",
+                        contentDescription = "LibraryUp Logo",
                         modifier = Modifier
                             .size(if (isSmallScreen) 125.dp else 156.dp)
                             .padding(0.dp)
@@ -297,7 +297,7 @@ private fun ModernAppBranding(
         
         // App name with modern typography
         Text(
-            text = "RentUp",
+            text = "LibraryUp",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontSize = if (isSmallScreen) 32.sp else 40.sp
             ),

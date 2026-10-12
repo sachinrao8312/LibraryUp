@@ -182,7 +182,7 @@ fun SplashScreen(
                     // Use the original logo with 2x zoom to crop out rectangular edges
                     Image(
                         painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = "RentUp Logo",
+                        contentDescription = "LibraryUp Logo",
                         modifier = Modifier
                             .size(187.dp)
                             .padding(0.dp)
@@ -202,7 +202,7 @@ fun SplashScreen(
                         )
             ) {
                 Text(
-                    text = "RentUp",
+                    text = "LibraryUp",
                     fontSize = 40.sp, // Increased by 25% from 32sp
                     fontWeight = FontWeight.Bold,
                     color = AppColors.PrimaryGreen,

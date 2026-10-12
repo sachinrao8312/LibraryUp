@@ -102,7 +102,7 @@ private fun createLightColorScheme(primaryColor: Color): ColorScheme {
 }
 
 /**
- * RentUp theme that applies the app's color schemes, typography, and shapes.
+ * LibraryUp theme that applies the app's color schemes, typography, and shapes.
  * Respects the system's dark/light theme settings and user's theme color preference.
  *
  * @param darkTheme Whether to use dark theme

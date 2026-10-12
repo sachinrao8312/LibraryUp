@@ -269,42 +269,6 @@ fun AppPreferencesScreen(
                         color = textColor
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Show Properties toggle
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Show Properties Screen",
-                                color = textColor,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 16.sp
-                            )
-
-                            Text(
-                                text = "Display Properties tab in navigation bar",
-                                color = secondaryTextColor,
-                                fontSize = 14.sp
-                            )
-                        }
-
-                        Switch(
-                            checked = showProperties,
-                            onCheckedChange = {
-                                scope.launch {
-                                    viewModel.setShowProperties(it)
-                                }
-                            },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color.White,
-                                checkedTrackColor = primaryColor,
-                                uncheckedThumbColor = Color.White
-                            )
-                        )
-                    }
                 }
             }
         }
@@ -688,7 +652,7 @@ fun getColorName(colorHex: String): String {
         "#795548" -> "Brown"
         "#9E9E9E" -> "Gray"
         "#607D8B" -> "Blue Gray"
-        "#0F9B4B" -> "RentUp Green"
+        "#0F9B4B" -> "LibraryUp Green"
         // Specialized color shades
         "#D32F2F" -> "Red 700"
         "#C2185B" -> "Pink 700"
@@ -746,7 +710,7 @@ fun getBaseColor(colorHex: String): String {
         colorHex.startsWith("#79") || colorHex.startsWith("#6D") -> "#795548" // Brown
         colorHex.startsWith("#9E") || colorHex.startsWith("#8E") -> "#9E9E9E" // Gray
         colorHex.startsWith("#60") || colorHex.startsWith("#54") -> "#607D8B" // Blue Gray
-        colorHex.startsWith("#0F") || colorHex.startsWith("#10") -> "#0F9B4B" // RentUp Green
+        colorHex.startsWith("#0F") || colorHex.startsWith("#10") -> "#0F9B4B" // LibraryUp Green
         else -> "#4CAF50" // Default to Green
     }
 }

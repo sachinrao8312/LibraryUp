@@ -3,6 +3,8 @@ package ai.sach.libraryup.ui.screens.settingsScreen.composable
 import ai.sach.libraryup.BuildConfig
 import ai.sach.libraryup.LibraryUpApplication
 import ai.sach.libraryup.data.backup.BackupManager
+import ai.sach.libraryup.data.backup.BackupPasswordRequiredException
+import ai.sach.libraryup.data.backup.BackupSecrets
 import ai.sach.libraryup.data.backup.BackupSummary
 import ai.sach.libraryup.data.backup.drive.DriveAccess
 import ai.sach.libraryup.data.backup.drive.DriveBackupStatus
@@ -42,7 +44,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -59,6 +63,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -100,6 +105,12 @@ fun BackupRestoreScreen(navController: NavController) {
 
     var isWorking by remember { mutableStateOf(false) }
     var pendingImportUri by remember { mutableStateOf<Uri?>(null) }
+    val secrets = remember { BackupSecrets(context) }
+    var protectionOn by remember { mutableStateOf(secrets.isEnabled) }
+    var askNewPassword by remember { mutableStateOf(false) }
+    var recoveryCodeToShow by remember { mutableStateOf<String?>(null) }
+    // A restore waiting for the password of an encrypted backup: retried with what the user types.
+    var passwordPrompt by remember { mutableStateOf<PasswordPrompt?>(null) }
 
     val driveStatus by drive.status.collectAsState()
     var pendingDriveAction by rememberSaveable { mutableStateOf<DriveAction?>(null) }
@@ -112,28 +123,13 @@ fun BackupRestoreScreen(navController: NavController) {
         if (uri == null) return@rememberLauncherForActivityResult
         isWorking = true
         scope.launch {
-            val result = application.backupManager.exportTo(uri)
+            val result = application.backupManager.exportTo(uri, secrets.current())
             isWorking = false
             result.fold(
                 onSuccess = { summary -> snackbar.showSnackbar(backedUpMessage(summary)) },
                 onFailure = { error ->
                     snackbar.showSnackbar("Backup failed: ${error.message ?: "unknown error"}")
                 }
-            )
-        }
-    }
-
-    val csvExportLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument(BackupManager.MIME_TYPE_CSV)
-    ) { uri ->
-        if (uri == null) return@rememberLauncherForActivityResult
-        isWorking = true
-        scope.launch {
-            val result = application.backupManager.exportTenantsCsv(uri)
-            isWorking = false
-            result.fold(
-                onSuccess = { count -> snackbar.showSnackbar("Exported $count tenants to CSV") },
-                onFailure = { error -> snackbar.showSnackbar("CSV export failed: ${error.message ?: "unknown error"}") }
             )
         }
     }
@@ -148,6 +144,7 @@ fun BackupRestoreScreen(navController: NavController) {
     // ---------------------------------------------------------------- Google Drive
 
     suspend fun performDriveAction(action: DriveAction, token: String) {
+        // Restores ask for a password themselves; see passwordPrompt.
         isWorking = true
         val message: String? = try {
             when (action) {
@@ -163,7 +160,7 @@ fun BackupRestoreScreen(navController: NavController) {
                 DriveAction.RESTORE -> {
                     val backups = drive.listBackups(token)
                     if (backups.isEmpty()) {
-                        "No RentUp backups found in this Google Drive."
+                        "No LibraryUp backups found in this Google Drive."
                     } else {
                         driveRestoreChoice = DriveRestoreChoice(token, backups)
                         null
@@ -174,7 +171,7 @@ fun BackupRestoreScreen(navController: NavController) {
             throw e
         } catch (e: NothingToBackUpException) {
             if (action == DriveAction.TURN_ON) {
-                "Google Drive backup is on. The first backup runs once you've added a property or tenant."
+                "Google Drive backup is on. The first backup runs once you've added a student."
             } else {
                 e.message
             }
@@ -240,12 +237,18 @@ fun BackupRestoreScreen(navController: NavController) {
                 pendingImportUri = null
                 isWorking = true
                 scope.launch {
-                    val result = application.backupManager.importFrom(uri)
+                    val result = application.backupManager.importFrom(uri, secrets.password())
                     isWorking = false
                     result.fold(
                         onSuccess = { summary -> snackbar.showSnackbar(restoredMessage(summary)) },
                         onFailure = { error ->
-                            snackbar.showSnackbar("Restore failed: ${error.message ?: "unknown error"}")
+                            if (error is BackupPasswordRequiredException) {
+                                passwordPrompt = PasswordPrompt(wrong = false) { pw ->
+                                    application.backupManager.importFrom(uri, pw).getOrThrow()
+                                }
+                            } else {
+                                snackbar.showSnackbar("Restore failed: ${error.message ?: "unknown error"}")
+                            }
                         }
                     )
                 }
@@ -305,14 +308,75 @@ fun BackupRestoreScreen(navController: NavController) {
                         restoredMessage(drive.restore(pending.token, pending.backup))
                     } catch (e: CancellationException) {
                         throw e
+                    } catch (e: BackupPasswordRequiredException) {
+                        passwordPrompt = PasswordPrompt(wrong = false) { pw -> drive.restore(pending.token, pending.backup, pw) }
+                        null
                     } catch (e: Exception) {
                         "Restore failed: ${e.message ?: "unknown error"}"
                     } finally {
                         isWorking = false
                     }
-                    snackbar.showSnackbar(message)
+                    message?.let { snackbar.showSnackbar(it) }
                 }
             }
+        )
+    }
+
+    passwordPrompt?.let { prompt ->
+        PasswordDialog(
+            title = "Backup password",
+            message = if (prompt.wrong) "That password or recovery code didn't work. Try again."
+                else "This backup is password-protected. Enter the backup password or the recovery code.",
+            confirmTwice = false,
+            onDismiss = { passwordPrompt = null },
+            onConfirm = { pw ->
+                passwordPrompt = null
+                isWorking = true
+                scope.launch {
+                    try {
+                        snackbar.showSnackbar(restoredMessage(prompt.retry(pw)))
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: BackupPasswordRequiredException) {
+                        passwordPrompt = prompt.copy(wrong = true)
+                    } catch (e: Exception) {
+                        snackbar.showSnackbar("Restore failed: ${e.message ?: "unknown error"}")
+                    } finally {
+                        isWorking = false
+                    }
+                }
+            }
+        )
+    }
+
+    if (askNewPassword) {
+        PasswordDialog(
+            title = "Protect backups with a password",
+            message = "Backup files and Google Drive backups will be encrypted. You'll need this password, " +
+                "or the recovery code shown next, to restore them. LibraryUp cannot recover a lost password.",
+            confirmTwice = true,
+            onDismiss = { askNewPassword = false },
+            onConfirm = { pw ->
+                askNewPassword = false
+                runCatching { secrets.enable(pw) }
+                    .onSuccess { code -> protectionOn = true; recoveryCodeToShow = code }
+                    .onFailure { scope.launch { snackbar.showSnackbar("Couldn't turn on protection on this phone.") } }
+            }
+        )
+    }
+
+    recoveryCodeToShow?.let { code ->
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("Write down your recovery code") },
+            text = {
+                Column {
+                    Text("If you forget the password, this code opens your backups. Keep it somewhere safe, not only on this phone.")
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(code, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                }
+            },
+            confirmButton = { Button(onClick = { recoveryCodeToShow = null }) { Text("I've saved it") } }
         )
     }
 
@@ -371,7 +435,7 @@ fun BackupRestoreScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "RentUp doesn't upload your tenant records. Save a backup file " +
+                        text = "LibraryUp doesn't upload your students' records. Save a backup file " +
                             "yourself before changing phones or reinstalling, or turn on " +
                             "Google Drive backup below.",
                         fontSize = 16.sp,
@@ -412,27 +476,8 @@ fun BackupRestoreScreen(navController: NavController) {
                             }
                         }
 
-                        // A lighter-weight secondary action: a flat spreadsheet of the
-                        // tenant roster, not a restorable backup - see exportTenantsCsv.
-                        TextButton(
-                            onClick = { csvExportLauncher.launch(BackupManager.suggestedCsvFileName()) },
-                            modifier = Modifier.padding(top = 4.dp)
-                        ) {
-                            Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Export tenant list as CSV")
-                        }
                     }
 
-                    if (BuildConfig.DEBUG) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        OutlinedButton(onClick = {
-                            scope.launch {
-                                val count = application.seedMockData()
-                                snackbar.showSnackbar(if (count == 0) "Demo data already exists" else "Added $count demo tenants")
-                            }
-                        }) { Text("Seed demo data") }
-                    }
                 }
             }
 
@@ -446,6 +491,34 @@ fun BackupRestoreScreen(navController: NavController) {
                 onRestore = { startDriveAction(DriveAction.RESTORE) },
                 onTurnOff = { drive.disable() }
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Row(modifier = Modifier.fillMaxWidth().padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Password-protect backups", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(
+                            if (!secrets.isAvailable) "Not available on this phone."
+                            else if (protectionOn) "On. Backup files and Drive backups are encrypted (AES-256)."
+                            else "Encrypt backups so only you can open them. Recommended: they contain students' ID proofs.",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = protectionOn,
+                        enabled = secrets.isAvailable && !isWorking,
+                        onCheckedChange = { on ->
+                            if (on) askNewPassword = true else { secrets.disable(); protectionOn = false }
+                        }
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -472,31 +545,15 @@ fun BackupRestoreScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "• All your properties and tenants\n" +
-                            "• Family members and payment history\n" +
-                            "• Tenant photos and uploaded documents",
+                        text = "• Library settings, shifts, seats and plans\n" +
+                            "• Students, memberships, payments and receipts\n" +
+                            "• Attendance, expenses and the activity log\n" +
+                            "• Student photos and ID proofs",
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(
-                        text = "Android's own device backup also saves your records to your Google " +
-                            "account, but not tenant photos or documents. A backup file or Google " +
-                            "Drive backup keeps those too.",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.65f)
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Need a spreadsheet instead? \"Export tenant list as CSV\" above gives " +
-                            "you a flat list of tenants to open in Excel or Sheets - it's not a full " +
-                            "backup, and can't be restored back into the app.",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.65f)
-                    )
                 }
             }
         }
@@ -537,8 +594,8 @@ private fun DriveBackupCard(
 
             val (statusText, isProblem) = when {
                 !status.enabled ->
-                    "Back up automatically every day on Wi-Fi to a \"RentUp Backups\" folder in " +
-                        "your own Google Drive - photos and documents included. RentUp can only " +
+                    "Back up automatically every day on Wi-Fi to a \"LibraryUp Backups\" folder in " +
+                        "your own Google Drive - photos and ID proofs included. LibraryUp can only " +
                         "see the files it creates there." to false
                 status.needsReconnect ->
                     "Google Drive access was removed. Tap \"Back up now\" to reconnect." to true
@@ -591,7 +648,7 @@ private fun ReplaceAllDataDialog(source: String, onDismiss: () -> Unit, onConfir
         title = { Text("Replace all data on this device?") },
         text = {
             Text(
-                "Restoring $source replaces every property, tenant, and payment " +
+                "Restoring $source replaces every student, seat, payment and attendance record " +
                     "currently on this device with what's in it. This can't be undone."
             )
         },
@@ -607,13 +664,13 @@ private fun backedUpMessage(summary: BackupSummary): String {
     } else {
         ""
     }
-    return "Backed up ${summary.propertyCount} properties, ${summary.tenantCount} tenants$photos$missing"
+    val lock = if (summary.encrypted) " (encrypted)" else ""
+    return "Backed up ${summary.studentCount} students, ${summary.paymentCount} payments$photos$missing$lock"
 }
 
 private fun restoredMessage(summary: BackupSummary): String {
     val photos = if (summary.attachmentCount > 0) ", ${summary.attachmentCount} photos/documents" else ""
-    val damaged = if (summary.rowsSkipped > 0) " (${summary.rowsSkipped} damaged row(s) skipped)" else ""
-    return "Restored ${summary.propertyCount} properties, ${summary.tenantCount} tenants$photos$damaged"
+    return "Restored ${summary.studentCount} students, ${summary.paymentCount} payments$photos"
 }
 
 private val backupTimeFormat: DateTimeFormatter =
@@ -626,3 +683,51 @@ private fun backupLabel(backup: DriveFile): String =
     backup.createdTime
         ?.let { runCatching { formatInstant(Instant.parse(it)) }.getOrNull() }
         ?: backup.name
+
+/** A restore that stopped for a password; [retry] runs it again with the one typed. */
+private data class PasswordPrompt(val wrong: Boolean, val retry: suspend (String) -> BackupSummary)
+
+@Composable
+private fun PasswordDialog(
+    title: String,
+    message: String,
+    confirmTwice: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var password by remember { mutableStateOf("") }
+    var again by remember { mutableStateOf("") }
+    val tooShort = confirmTwice && password.length < 6
+    val mismatch = confirmTwice && password != again
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Column {
+                Text(message, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text(if (confirmTwice) "Password (at least 6 characters)" else "Password or recovery code") },
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation()
+                )
+                if (confirmTwice) {
+                    OutlinedTextField(
+                        value = again,
+                        onValueChange = { again = it },
+                        label = { Text("Repeat password") },
+                        singleLine = true,
+                        isError = again.isNotEmpty() && mismatch,
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(enabled = password.isNotEmpty() && !tooShort && !mismatch, onClick = { onConfirm(password) }) { Text("OK") }
+        },
+        dismissButton = { OutlinedButton(onClick = onDismiss) { Text("Cancel") } }
+    )
+}

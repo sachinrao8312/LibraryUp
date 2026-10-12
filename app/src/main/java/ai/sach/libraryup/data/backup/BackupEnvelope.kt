@@ -1,59 +1,48 @@
 package ai.sach.libraryup.data.backup
 
-import ai.sach.libraryup.data.local.entity.PaymentHistory
-import ai.sach.libraryup.data.local.entity.Property
-import ai.sach.libraryup.data.local.entity.Tenant
-import ai.sach.libraryup.data.local.entity.TenantDocument
-import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
-import ai.sach.libraryup.data.local.entity.TenantPropertyCrossRef
+import ai.sach.libraryup.data.local.entity.ActivityLog
+import ai.sach.libraryup.data.local.entity.Attendance
+import ai.sach.libraryup.data.local.entity.Enquiry
+import ai.sach.libraryup.data.local.entity.Expense
+import ai.sach.libraryup.data.local.entity.LibraryProfile
+import ai.sach.libraryup.data.local.entity.Locker
+import ai.sach.libraryup.data.local.entity.Membership
+import ai.sach.libraryup.data.local.entity.Payment
+import ai.sach.libraryup.data.local.entity.Plan
+import ai.sach.libraryup.data.local.entity.Seat
+import ai.sach.libraryup.data.local.entity.Shift
+import ai.sach.libraryup.data.local.entity.Student
 
 /**
- * The whole shape of a backup: one JSON document, everything a landlord's account holds,
- * restorable on any device. It travels as the `backup.json` entry inside the backup zip,
- * alongside the `attachments/` the rows point at - see [BackupManager].
+ * The `backup.json` entry inside a LibraryUp backup zip: every row of every table.
+ * Reuses the Room entities directly; they are plain data classes.
  *
- * Deliberately reuses the Room entities directly rather than a parallel DTO layer - they
- * are already plain data classes, Gson serializes them the same way either way, and a
- * second set of types to keep in sync with the schema is exactly the complexity this
- * feature is meant to avoid.
+ * [app] identifies which app wrote the file, so a RentUp (or any sibling app) backup is
+ * refused with a clear message instead of being half-read.
  *
- * [NotificationLog] is not included: it is a delivery ledger the reminder sweep re-derives
- * on its own, not user data. Restoring stale entries would only suppress reminders that
- * are genuinely due.
- *
- * A [Tenant.avatarUri] and a [TenantDocument.documentPath] in here are not device URIs.
- * They are either blank, or a `rentup-backup:attachments/...` marker naming an entry in
- * the same zip, which [BackupManager] rewrites into a real URI on restore. A raw
- * `content://` path is never written: it names a sandbox that will not exist on the device
- * reading it.
- *
- * @param schemaVersion Bumped whenever this shape changes, so [BackupManager] can refuse
- *   (or one day migrate) a file from an incompatible version instead of silently
- *   misreading it.
- * @param appVersionName The app's own version at export time - shown to the user, not
- *   otherwise interpreted, so a support conversation about an old backup has something to
- *   go on.
- * @param exportedAt ISO-8601 instant, for the same reason.
+ * Student photo and ID-proof URIs in here are either blank or a
+ * `libraryup-backup:attachments/...` marker naming an entry in the same zip.
  */
 data class BackupEnvelope(
+    val app: String = APP_ID,
     val schemaVersion: Int = CURRENT_SCHEMA_VERSION,
     val appVersionName: String,
     val exportedAt: String,
-    val properties: List<Property>,
-    val tenants: List<Tenant>,
-    val tenantFamilyInfo: List<TenantFamilyInfo>,
-    val paymentHistory: List<PaymentHistory>,
-    val tenantPropertyCrossRef: List<TenantPropertyCrossRef>,
-    val tenantDocuments: List<TenantDocument>
+    val profile: List<LibraryProfile>,
+    val shifts: List<Shift>,
+    val seats: List<Seat>,
+    val plans: List<Plan>,
+    val students: List<Student>,
+    val memberships: List<Membership>,
+    val payments: List<Payment>,
+    val attendance: List<Attendance>,
+    val expenses: List<Expense>,
+    val lockers: List<Locker>,
+    val enquiries: List<Enquiry>,
+    val activityLog: List<ActivityLog>
 ) {
     companion object {
-        /**
-         * 1 - JSON document; document paths blanked, tenant photos not carried.
-         * 2 - zip container; photos and documents carried in `attachments/`.
-         *
-         * A version 1 file still restores every row it holds, so [BackupManager] reads one
-         * rather than refusing it. Only a version newer than this is refused.
-         */
-        const val CURRENT_SCHEMA_VERSION = 2
+        const val APP_ID = "libraryup"
+        const val CURRENT_SCHEMA_VERSION = 1
     }
 }

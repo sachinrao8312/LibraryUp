@@ -73,20 +73,23 @@ fun HelpAndSupportScreen(navController: NavController) {
     // FAQ state
     val faqs = remember {
         listOf(
-            FAQ("How do I add a new tenant?",
-                "To add a new tenant, tap the + button on the Home screen and select 'Add Tenant'. " +
-                        "Fill in the required information and tap 'Save'."),
-            FAQ("How do I record a rent payment?",
-                "Go to the tenant's card on the Home screen and tap 'Collect Rent'. Enter the " +
-                        "payment details and tap 'Confirm'."),
+            FAQ("How do I add a student?",
+                "Tap Students > Add student (or the quick action on Home). Pick the shift, a free seat " +
+                        "and the plan, then save. You can record the first payment on the same screen."),
+            FAQ("How do I collect a fee and send a receipt?",
+                "Open the student and tap 'Collect fee'. After saving, the receipt PDF opens in the " +
+                        "share sheet - choose WhatsApp to send it."),
+            FAQ("How do I see which seats are free in a shift?",
+                "Open Seats and tap the shift at the top. Green seats are free in that shift."),
+            FAQ("How do I send fee reminders to everyone?",
+                "More > Fee reminders. Tap 'Send' - WhatsApp opens with the message ready. Send it, " +
+                        "come back and tap 'Send next'. No message credits, it uses your own WhatsApp."),
             FAQ("Can I export my data to Excel?",
-                "Yes, go to Settings > Backup & Restore > Export tenant list as CSV."),
-            FAQ("How do I set up WhatsApp notifications?",
-                "Go to Settings > Notifications > WhatsApp Integration and follow the instructions."),
-            FAQ("How secure is my data?",
-                "Your tenant records are stored on your device and aren't uploaded to RentUp's " +
-                        "servers. Backup files aren't encrypted, so keep them somewhere private - " +
-                        "or turn on Google Drive backup in Settings > Backup & Restore.")
+                "Yes: More > Import & export. Students and payments export as CSV files that open in Excel."),
+            FAQ("Where is my data stored?",
+                "On this phone, and in your own Google Drive if you turn on Drive backup. LibraryUp has " +
+                        "no server holding your students' data. Turn on password protection in Backup & " +
+                        "Restore to encrypt backups.")
         )
     }
 
@@ -129,7 +132,7 @@ fun HelpAndSupportScreen(navController: NavController) {
                 onContactEmailClick = {
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                         data = "mailto:thetechgovernor@gmail.com".toUri()
-                        putExtra(Intent.EXTRA_SUBJECT, "RentUp Support Request")
+                        putExtra(Intent.EXTRA_SUBJECT, "LibraryUp Support Request")
                     }
                     context.startActivity(intent)
                 },
@@ -176,7 +179,7 @@ fun HelpAndSupportScreen(navController: NavController) {
                                 showContactDialog = false
                                 val intent = Intent(Intent.ACTION_SENDTO).apply {
                                     data = "mailto:thetechgovernor@gmail.com".toUri()
-                                    putExtra(Intent.EXTRA_SUBJECT, "RentUp Support Request")
+                                    putExtra(Intent.EXTRA_SUBJECT, "LibraryUp Support Request")
                                 }
                                 context.startActivity(intent)
                             }

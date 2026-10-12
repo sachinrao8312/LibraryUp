@@ -69,7 +69,7 @@ fun BiometricLockScreen(
     showSkipOption: Boolean = false,
     showPinOption: Boolean = true,
     onUsePinInstead: (() -> Unit)? = null,
-    title: String = "RentUp"
+    title: String = "LibraryUp"
 ) {
     val context = LocalContext.current
     val authManager = biometricAuthManager ?: remember { BiometricAuthManager(context) }
@@ -96,7 +96,7 @@ fun BiometricLockScreen(
                 authManager.showBiometricPrompt(
                     activity = activity,
                     title = "Verify your identity",
-                    subtitle = "Use your fingerprint to unlock RentUp",
+                    subtitle = "Use your fingerprint to unlock LibraryUp",
                     onSuccess = {
                         state.value = state.value.copy(isAuthenticating = false, showLoadingAnimation = false)
                         onAuthenticationSuccess()

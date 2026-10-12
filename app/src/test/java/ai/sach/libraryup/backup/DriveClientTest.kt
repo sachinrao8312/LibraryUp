@@ -47,7 +47,7 @@ class DriveClientTest {
 
     @Test
     fun `findOrCreateFolder reuses an existing folder`() {
-        server.enqueue(json("""{"files":[{"id":"folder-1","name":"RentUp Backups"}]}"""))
+        server.enqueue(json("""{"files":[{"id":"folder-1","name":"LibraryUp Backups"}]}"""))
 
         assertEquals("folder-1", client.findOrCreateFolder("tok"))
 
@@ -55,7 +55,7 @@ class DriveClientTest {
         assertEquals("GET", request.method)
         assertEquals("Bearer tok", request.getHeader("Authorization"))
         val q = request.requestUrl!!.queryParameter("q")!!
-        assertTrue(q, q.contains("name = 'RentUp Backups'"))
+        assertTrue(q, q.contains("name = 'LibraryUp Backups'"))
         assertTrue(q, q.contains("mimeType = 'application/vnd.google-apps.folder'"))
         assertTrue(q, q.contains("trashed = false"))
         assertEquals(1, server.requestCount)
@@ -73,7 +73,7 @@ class DriveClientTest {
         assertEquals("POST", create.method)
         assertEquals("/drive/v3/files", create.requestUrl!!.encodedPath)
         val body = create.body.readUtf8()
-        assertTrue(body, body.contains("\"name\":\"RentUp Backups\""))
+        assertTrue(body, body.contains("\"name\":\"LibraryUp Backups\""))
         assertTrue(body, body.contains("\"mimeType\":\"application/vnd.google-apps.folder\""))
     }
 
@@ -88,8 +88,8 @@ class DriveClientTest {
         server.enqueue(
             json(
                 """{"files":[
-                  {"id":"b","name":"rentup-backup-2","size":"2048","createdTime":"2026-09-28T10:00:00.000Z"},
-                  {"id":"a","name":"rentup-backup-1","createdTime":"2026-09-27T10:00:00.000Z"}
+                  {"id":"b","name":"libraryup-backup-2","size":"2048","createdTime":"2026-09-28T10:00:00.000Z"},
+                  {"id":"a","name":"libraryup-backup-1","createdTime":"2026-09-27T10:00:00.000Z"}
                 ]}"""
             )
         )
@@ -108,11 +108,11 @@ class DriveClientTest {
     fun `upload starts a resumable session then PUTs the file to it`() {
         val file = temp.newFile("backup.zip").apply { writeBytes(ByteArray(1234) { it.toByte() }) }
         server.enqueue(MockResponse().setResponseCode(200).setHeader("Location", server.url("/upload-session?id=xyz").toString()))
-        server.enqueue(json("""{"id":"file-9","name":"rentup-backup-x.zip","size":"1234","createdTime":"2026-09-28T10:00:00.000Z"}"""))
+        server.enqueue(json("""{"id":"file-9","name":"libraryup-backup-x.zip","size":"1234","createdTime":"2026-09-28T10:00:00.000Z"}"""))
 
-        val uploaded = client.upload("tok", "folder-1", "rentup-backup-x.zip", file)
+        val uploaded = client.upload("tok", "folder-1", "libraryup-backup-x.zip", file)
 
-        assertEquals(DriveFile("file-9", "rentup-backup-x.zip", 1234L, "2026-09-28T10:00:00.000Z"), uploaded)
+        assertEquals(DriveFile("file-9", "libraryup-backup-x.zip", 1234L, "2026-09-28T10:00:00.000Z"), uploaded)
         assertEquals(emptyMap<String, String>(), uploaded.appProperties)
 
         val init = server.takeRequest()
@@ -123,7 +123,7 @@ class DriveClientTest {
         assertEquals("application/zip", init.getHeader("X-Upload-Content-Type"))
         val metadata = init.body.readUtf8()
         assertTrue(metadata, metadata.contains("\"parents\":[\"folder-1\"]"))
-        assertTrue(metadata, metadata.contains("\"name\":\"rentup-backup-x.zip\""))
+        assertTrue(metadata, metadata.contains("\"name\":\"libraryup-backup-x.zip\""))
 
         val put = server.takeRequest()
         assertEquals("PUT", put.method)
@@ -188,7 +188,7 @@ class DriveClientTest {
         }
     }
 
-    private fun backup(id: String, day: Int, install: String?, name: String = "rentup-backup-$id.zip") =
+    private fun backup(id: String, day: Int, install: String?, name: String = "libraryup-backup-$id.zip") =
         DriveFile(
             id, name, null, "2026-09-${"%02d".format(day)}T00:00:00.000Z",
             install?.let { mapOf(DriveClient.PROPERTY_INSTALL_ID to it) } ?: emptyMap()
@@ -223,19 +223,19 @@ class DriveClientTest {
     fun `upload tags the file with the given app properties and reads them back`() {
         val file = temp.newFile("backup.zip").apply { writeBytes(ByteArray(10)) }
         server.enqueue(MockResponse().setResponseCode(200).setHeader("Location", server.url("/session").toString()))
-        server.enqueue(json("""{"id":"f","name":"rentup-backup-x.zip","appProperties":{"rentupInstallId":"abc"}}"""))
+        server.enqueue(json("""{"id":"f","name":"libraryup-backup-x.zip","appProperties":{"libraryupInstallId":"abc"}}"""))
 
-        val uploaded = client.upload("tok", "folder", "rentup-backup-x.zip", file, mapOf(DriveClient.PROPERTY_INSTALL_ID to "abc"))
+        val uploaded = client.upload("tok", "folder", "libraryup-backup-x.zip", file, mapOf(DriveClient.PROPERTY_INSTALL_ID to "abc"))
 
         assertEquals("abc", uploaded.appProperties[DriveClient.PROPERTY_INSTALL_ID])
         val metadata = server.takeRequest().body.readUtf8()
-        assertTrue(metadata, metadata.contains("\"appProperties\":{\"rentupInstallId\":\"abc\"}"))
+        assertTrue(metadata, metadata.contains("\"appProperties\":{\"libraryupInstallId\":\"abc\"}"))
         assertEquals("PUT", server.takeRequest().method)
     }
 
     @Test
     fun `listed files carry their app properties`() {
-        server.enqueue(json("""{"files":[{"id":"a","name":"rentup-backup-a.zip","appProperties":{"rentupInstallId":"xyz"}}]}"""))
+        server.enqueue(json("""{"files":[{"id":"a","name":"libraryup-backup-a.zip","appProperties":{"libraryupInstallId":"xyz"}}]}"""))
         val listed = client.listBackups("tok", "folder")
         assertEquals("xyz", listed.single().appProperties[DriveClient.PROPERTY_INSTALL_ID])
         val fields = server.takeRequest().requestUrl!!.queryParameter("fields")!!

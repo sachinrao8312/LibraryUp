@@ -1,20 +1,25 @@
 package ai.sach.libraryup.ui.navigation
 
-/**
- * Navigation route strings, kept free of Compose types so non-UI code - notification
- * routing in particular - can target a screen without a typo-prone string literal.
- *
- * [NavigationItems] builds its bottom-bar entries from these, so there is one definition
- * per route and a wrong route name is a compile error rather than a tap that goes nowhere.
- */
+/** Navigation routes. One definition per route so a typo is a compile error. */
 object AppRoutes {
     const val HOME = "home"
-    const val PROPERTIES = "properties"
-    const val PAYMENT_HISTORY = "payment_history"
+    const val SEATS = "seats"
+    const val STUDENTS = "students?filter={filter}"
+    const val PAYMENTS = "payments"
+    const val MORE = "more"
+
+    const val STUDENT = "student/{studentId}"
+    const val STUDENT_FORM = "studentForm?studentId={studentId}&seatId={seatId}&shiftId={shiftId}"
+    const val REMINDERS = "reminders"
+    const val ATTENDANCE = "attendance"
+    const val EXPENSES = "expenses"
+    const val LIBRARY_SETTINGS = "librarySettings"
+    const val DATA = "data"
+    const val ACTIVITY_LOG = "activityLog"
     const val SETTINGS = "settings"
 
-    /** Property details takes the property id as a path argument. */
-    const val PROPERTY_DETAILS_PATTERN = "propertyDetails/{propertyId}"
-
-    fun propertyDetails(propertyId: String): String = "propertyDetails/$propertyId"
+    fun students(filter: String = "ALL") = "students?filter=$filter"
+    fun student(id: Long) = "student/$id"
+    fun studentForm(studentId: Long? = null, seatId: Long? = null, shiftId: Long? = null) =
+        "studentForm?studentId=${studentId ?: -1}&seatId=${seatId ?: -1}&shiftId=${shiftId ?: -1}"
 }

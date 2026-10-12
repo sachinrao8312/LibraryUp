@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 
 
 /**
- * Enhanced TopAppBar for the RentUp application.
+ * Enhanced TopAppBar for the LibraryUp application.
  * Takes inspiration from WhatsApp's clean interface with a transparent app bar
  * and the app name displayed prominently in the brand color.
  *
@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopAppBar(
-    title: String = "RentUp",
+    title: String = "LibraryUp",
     showBackButton: Boolean = false,
     onBackPressed: () -> Unit = {},
     actions: @Composable () -> Unit = {},
@@ -66,7 +66,7 @@ fun AppTopAppBar(
     val isDarkTheme = isSystemInDarkTheme()
 
     // Determine colors based on theme and whether this is the main screen
-    val isMainScreen = !showBackButton && title.equals("RentUp", ignoreCase = true)
+    val isMainScreen = !showBackButton && title.equals("LibraryUp", ignoreCase = true)
 
     // Use system background color instead of a colored app bar
     val backgroundColor = Color.Transparent

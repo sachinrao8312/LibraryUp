@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">RentUp</string>
+    <string name="app_name">LibraryUp</string>
 
     <!-- Google Sign In Configuration -->
     <!-- Use the Android OAuth client ID (not Web client ID) for Android authentication -->
@@ -60,12 +60,12 @@
 
 
     <!-- Authentication Screen -->
-    <string name="welcome_title">Welcome to RentUp</string>
-    <string name="welcome_subtitle">Your complete property and tenant management solution</string>
+    <string name="welcome_title">Welcome to LibraryUp</string>
+    <string name="welcome_subtitle">Seats, students, fees and attendance for your study library</string>
     <string name="get_started_button">Get Started</string>
 
     <!-- Accessibility -->
-    <string name="app_logo_content_description">RentUp Logo</string>
+    <string name="app_logo_content_description">LibraryUp logo</string>
     <string name="get_started_button_description">Get Started as Guest User</string>
 
     <!-- Error Messages -->

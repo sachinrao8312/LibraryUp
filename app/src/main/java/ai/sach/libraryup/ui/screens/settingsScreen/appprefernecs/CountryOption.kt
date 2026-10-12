@@ -93,7 +93,7 @@ object SupportedThemeColors {
         // Greens
         ThemeColorOption("Green", "#4CAF50", ColorCategory.GREEN),
         ThemeColorOption("Light Green", "#8BC34A", ColorCategory.GREEN),
-        ThemeColorOption("RentUp Green", "#0F9B4B", ColorCategory.GREEN),
+        ThemeColorOption("LibraryUp Green", "#0F9B4B", ColorCategory.GREEN),
         
         // Yellows
         ThemeColorOption("Yellow", "#FFEB3B", ColorCategory.YELLOW),
@@ -115,11 +115,11 @@ object SupportedThemeColors {
      * Find a theme color by its hex value.
      *
      * @param hexColor Hex color value to search for
-     * @return The ThemeColorOption matching the hex value or the default (RentUp Green) if not found
+     * @return The ThemeColorOption matching the hex value or the default (LibraryUp Green) if not found
      */
     fun findByHexColor(hexColor: String): ThemeColorOption {
         return colors.find { it.hexColor.equals(hexColor, ignoreCase = true) } 
-               ?: colors.find { it.name == "RentUp Green" } 
+               ?: colors.find { it.name == "LibraryUp Green" } 
                ?: colors[0]
     }
     

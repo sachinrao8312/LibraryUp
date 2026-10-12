@@ -27,7 +27,7 @@ data class DriveFile(
 )
 
 /**
- * The handful of Google Drive v3 REST calls RentUp's backup needs, over plain OkHttp.
+ * The handful of Google Drive v3 REST calls LibraryUp's backup needs, over plain OkHttp.
  *
  * Deliberately not the Google API client library: that pulls in a large dependency tree
  * for five HTTP calls. Every call takes an OAuth access token for the `drive.file` scope,
@@ -42,11 +42,11 @@ class DriveClient(
 ) {
     companion object {
         const val SCOPE_DRIVE_FILE = "https://www.googleapis.com/auth/drive.file"
-        const val FOLDER_NAME = "RentUp Backups"
-        const val BACKUP_NAME_PREFIX = "rentup-backup-"
+        const val FOLDER_NAME = "LibraryUp Backups"
+        const val BACKUP_NAME_PREFIX = "libraryup-backup-"
 
         /** Drive `appProperties` key naming the app install that uploaded a backup. */
-        const val PROPERTY_INSTALL_ID = "rentupInstallId"
+        const val PROPERTY_INSTALL_ID = "libraryupInstallId"
 
         private const val FOLDER_MIME = "application/vnd.google-apps.folder"
         private const val ZIP_MIME = "application/zip"
@@ -84,7 +84,7 @@ class DriveClient(
 
     /**
      * Resumable upload - a single PUT of the whole file, but unlike a multipart upload it
-     * has no 5 MB guidance ceiling, and a backup carrying tenant documents can exceed that.
+     * has no 5 MB guidance ceiling, and a backup carrying student photos can exceed that.
      */
     fun upload(
         token: String,
@@ -202,8 +202,8 @@ class DriveClient(
  *
  * Only this install's own backups are ever candidates. Another phone on the same Google
  * account - or this phone before a reinstall - must never have its backups pushed out:
- * a fresh install with one test tenant backing up daily would otherwise delete every
- * real backup within a week. Files that don't look like RentUp backups are never touched.
+ * a fresh install with one test student backing up daily would otherwise delete every
+ * real backup within a week. Files that don't look like LibraryUp backups are never touched.
  */
 fun backupsBeyondRetention(backups: List<DriveFile>, keep: Int, installId: String): List<DriveFile> =
     backups

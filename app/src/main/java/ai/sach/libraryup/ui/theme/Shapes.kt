@@ -5,7 +5,7 @@ import androidx.compose.material3.Shapes
 import androidx.compose.ui.unit.dp
 
 /**
- * Modern RentUp shape styles defining corner radii for different UI elements.
+ * Modern LibraryUp shape styles defining corner radii for different UI elements.
  * Uses Material 3 design principles for consistent and contemporary appearance.
  */
 val Shapes = Shapes(

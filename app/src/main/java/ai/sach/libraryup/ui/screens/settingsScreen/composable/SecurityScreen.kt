@@ -276,7 +276,7 @@ fun SecurityScreen(
             title = { Text("Delete All Data?") },
             text = {
                 Text(
-                    "This will permanently delete all your data including properties, tenants, and settings. This action cannot be undone.\n\n" +
+                    "This will permanently delete all your data including students, payments, attendance and settings. This action cannot be undone.\n\n" +
                             "Are you sure you want to continue?"
                 )
             },
