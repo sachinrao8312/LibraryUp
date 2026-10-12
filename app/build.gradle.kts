@@ -105,25 +105,17 @@ ksp {
 dependencies {
     implementation(project(":domain"))
 
-    // Firebase - using the Bill of Materials (BoM)
+    // Firebase - using the Bill of Materials (BoM). Don't exclude androidx.legacy:
+    // Analytics' AppMeasurementReceiver extends its WakefulBroadcastReceiver.
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth.ktx) {
-        exclude(group = "androidx.legacy", module = "legacy-support-core-utils")
-    }
-    implementation(libs.firebase.firestore.ktx) {
-        exclude(group = "androidx.legacy", module = "legacy-support-core-utils")
-    }
-    implementation(libs.firebase.crashlytics.ktx) {
-        exclude(group = "androidx.legacy", module = "legacy-support-core-utils")
-    }
-    implementation(libs.firebase.analytics.ktx) {
-        exclude(group = "androidx.legacy", module = "legacy-support-core-utils")
-    }
+    implementation(libs.androidx.legacy.support.core.utils)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.crashlytics.ktx)
+    implementation(libs.firebase.analytics.ktx)
 
     // Google Services & APIs
-    implementation(libs.play.services.auth) {
-        exclude(group = "androidx.legacy", module = "legacy-support-core-utils")
-    }
+    implementation(libs.play.services.auth)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
