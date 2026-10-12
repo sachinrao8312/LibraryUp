@@ -50,17 +50,6 @@ class AppPreferencesViewModel(private val repository: AppPreferencesRepository) 
         )
 
     /**
-     * StateFlow that emits whether to show the Properties screen in navigation.
-     * Collects from the repository and caches the latest value.
-     */
-    val showProperties: StateFlow<Boolean> = repository.showProperties
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = AppPreferencesRepository.DEFAULT_SHOW_PROPERTIES
-        )
-
-    /**
      * Update the primary color setting.
      *
      * @param colorHex The hex color code to set as the primary color
@@ -87,14 +76,6 @@ class AppPreferencesViewModel(private val repository: AppPreferencesRepository) 
         repository.setCountry(country)
     }
 
-    /**
-     * Update the show Properties setting.
-     *
-     * @param show Boolean indicating whether to show the Properties screen
-     */
-    suspend fun setShowProperties(show: Boolean) {
-        repository.setShowProperties(show)
-    }
 }
 
 /**

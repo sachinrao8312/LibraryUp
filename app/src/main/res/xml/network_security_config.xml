@@ -23,13 +23,4 @@
             <certificates src="system"/>
         </trust-anchors>
     </domain-config>
-    
-    <!-- Backend API domain -->
-    <domain-config>
-        <domain includeSubdomains="true">rentuppro.vercel.app</domain>
-        <domain includeSubdomains="true">rentup-nine.vercel.app</domain>
-        <trust-anchors>
-            <certificates src="system"/>
-        </trust-anchors>
-    </domain-config>
 </network-security-config> 

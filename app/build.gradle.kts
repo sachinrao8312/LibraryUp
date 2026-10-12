@@ -28,7 +28,6 @@ android {
         buildConfigField("boolean", "ENABLE_PERFORMANCE_MONITORING", "false")
         buildConfigField("boolean", "ENABLE_MEMORY_LEAK_DETECTION", "false")
         buildConfigField("boolean", "ENABLE_TEST_FEATURES", "false")
-        buildConfigField("String", "BACKEND_BASE_URL", "\"https://rentuppro.vercel.app/\"")
     }
 
     buildTypes {
@@ -43,8 +42,7 @@ android {
             buildConfigField("boolean", "ENABLE_PERFORMANCE_MONITORING", "false")
             buildConfigField("boolean", "ENABLE_MEMORY_LEAK_DETECTION", "false")
             buildConfigField("boolean", "ENABLE_TEST_FEATURES", "false")
-            buildConfigField("String", "BACKEND_BASE_URL", "\"https://rentuppro.vercel.app/\"")
-        }
+            }
         debug {
             isMinifyEnabled = false
             isShrinkResources = false
@@ -52,8 +50,7 @@ android {
             buildConfigField("boolean", "ENABLE_PERFORMANCE_MONITORING", "true")
             buildConfigField("boolean", "ENABLE_MEMORY_LEAK_DETECTION", "true")
             buildConfigField("boolean", "ENABLE_TEST_FEATURES", "true")
-            buildConfigField("String", "BACKEND_BASE_URL", "\"https://rentuppro.vercel.app/\"")
-        }
+            }
     }
     
     compileOptions {
@@ -140,10 +137,8 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     // Networking
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.gson) // backup envelope
+    implementation(libs.okhttp) // Google Drive REST client
     implementation(libs.libphonenumber)
 
     // Lifecycle

@@ -46,7 +46,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -110,6 +112,7 @@ class MainActivity : FragmentActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
+        private const val RELOCK_AFTER_MS = 2 * 60 * 1000L
     }
 
     @Inject
@@ -119,6 +122,11 @@ class MainActivity : FragmentActivity() {
     private val bioAuthManager: BiometricAuthManager by lazy {
         if (::biometricAuthManager.isInitialized) biometricAuthManager else BiometricAuthManager(applicationContext)
     }
+
+    /** True while the app lock covers the (still composed) app after a return from background. */
+    private var relocked by mutableStateOf(false)
+    private var stoppedAt = 0L
+    private var unlockedOnce = false
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -175,12 +183,47 @@ class MainActivity : FragmentActivity() {
                                     onAuthenticationSuccess = { appState = AppState.Ready },
                                     onSkipAuthentication = { appState = AppState.Ready }
                                 )
-                                AppState.Ready -> LibraryUpApp(onSignOut = { appState = AppState.Unauthenticated })
+                                AppState.Ready -> {
+                                    LaunchedEffect(Unit) { unlockedOnce = true }
+                                    // The lock is drawn over the app rather than replacing it, so
+                                    // the screen the owner was on survives a trip to WhatsApp.
+                                    Box(Modifier.fillMaxSize()) {
+                                        LibraryUpApp(onSignOut = { appState = AppState.Unauthenticated })
+                                        if (relocked) {
+                                            // Back must not reach the app hidden underneath.
+                                            BackHandler { moveTaskToBack(true) }
+                                            BiometricLockScreen(
+                                                activity = this@MainActivity,
+                                                biometricAuthManager = bioAuthManager,
+                                                onAuthenticationSuccess = { relocked = false },
+                                                onSkipAuthentication = { relocked = false }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        stoppedAt = SystemClock.elapsedRealtime()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Lock again after a real absence. Short trips (sending a WhatsApp reminder, picking
+        // a photo) stay unlocked, or the bulk reminder queue would ask for a fingerprint
+        // on every student.
+        if (unlockedOnce && stoppedAt > 0 &&
+            SystemClock.elapsedRealtime() - stoppedAt > RELOCK_AFTER_MS &&
+            bioAuthManager.shouldUseBiometricAuth()
+        ) {
+            relocked = true
         }
     }
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  LibraryUp mark: an open book with an upward chevron above it. Everything sits inside the
+  66dp adaptive-icon safe zone (21..87) so no launcher mask clips it. Also used as the
+  monochrome (themed) icon and on the splash/sign-in screens.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M52.5,48C45,43.5 36,42.5 29,44.5L29,73C36,71 45,72 52.5,77Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M55.5,48C63,43.5 72,42.5 79,44.5L79,73C72,71 63,72 55.5,77Z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFC107"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M44,38L54,29L64,38" />
+</vector>

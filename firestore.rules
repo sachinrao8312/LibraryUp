@@ -1,63 +1,34 @@
 rules_version = '2';
 
+// LibraryUp keeps no library data in Firestore: students, payments and attendance live
+// on the owner's phone and in their own Google Drive backup. Firestore only holds the
+// signed-in owner's account profile and session records.
 service cloud.firestore {
   match /databases/{database}/documents {
-    // User document and subcollections
+
+    // Owner account profile.
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      // Subcollections
-      match /syncStatus/{docId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
-      match /tenants/{tenantId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
-      match /properties/{propertyId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
     }
 
-    // Guests - Allow authenticated users to read guest data for migration
+    // Guest accounts. The account-collision flow signs in as a different, existing
+    // account and fetches the old guest doc by id to migrate it, so `get` is open to
+    // any signed-in user; `list` never is, or anyone could enumerate guests.
     match /guests/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      // The account-collision conversion flow signs in as a different (pre-existing)
-      // permanent account and then fetches the old guest doc by its known id to
-      // migrate data over. Only `get` (fetch-by-id) is allowed here, never `list` —
-      // the app never queries this collection, and allowing list would let any
-      // signed-in user (including a brand-new guest) enumerate every guest's data.
       allow get: if request.auth != null;
     }
 
-    // Sessions
-    match /sessions/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Session records. Docs are keyed by user id (AuthRepository) or by a random session id
+    // (SessionManager); both carry a `userId` field, so ownership is checked on that field.
+    // SessionManager lists a user's active sessions with where("userId", "==", uid), which
+    // these rules allow because every returned doc must match.
+    match /sessions/{sessionId} {
+      allow read, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
     }
 
-    // Standalone properties collection
-    match /properties/{propertyId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.ownerId;
-    }
-
-    // Standalone tenants collection
-    match /tenants/{tenantId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.ownerId;
-    }
-
-    // Tenant forms - written by the backend (Admin SDK, which bypasses these rules) when a
-    // tenant submits. The document id is the form id from the shared link, so anyone who
-    // has seen the link knows it: clients must never be able to create a form for someone
-    // else's account, or move an existing one (and the tenant's details) to their own.
-    match /tenant-forms/{formId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.ownerId;
-      allow update: if request.auth != null
-                    && request.auth.uid == resource.data.ownerId
-                    && request.resource.data.ownerId == resource.data.ownerId;
-      allow delete: if request.auth != null && request.auth.uid == resource.data.ownerId;
-    }
-
-    // Deny all other reads and writes
+    // Everything else is closed.
     match /{document=**} {
       allow read, write: if false;
     }

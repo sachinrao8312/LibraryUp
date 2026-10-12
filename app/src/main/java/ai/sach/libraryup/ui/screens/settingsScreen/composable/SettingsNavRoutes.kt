@@ -20,7 +20,6 @@ object SettingsNavRoutes {
 
     // Communication preferences
     const val NOTIFICATIONS = "notifications"
-    const val WHATSAPP_INTEGRATION = "notifications/whatsapp"
 
     // App preferences
     const val LANGUAGE = "language"
@@ -59,7 +58,6 @@ object SettingsNavRoutes {
         PASSWORD_CHANGE,
         PIN_SETUP,
         NOTIFICATIONS,
-        WHATSAPP_INTEGRATION,
         LANGUAGE,
         APP_PREFERENCES, // Added to the list
         BACKUP,

@@ -79,7 +79,6 @@ fun AppPreferencesScreen(
     // Get current theme preferences
     val isDarkTheme = isSystemInDarkTheme()
     val primaryColorHex by viewModel.primaryColor.collectAsState(initial = AppPreferencesRepository.DEFAULT_PRIMARY_COLOR)
-    val showProperties by viewModel.showProperties.collectAsState(initial = AppPreferencesRepository.DEFAULT_SHOW_PROPERTIES)
     val currentCurrency by viewModel.currency.collectAsState(initial = AppPreferencesRepository.DEFAULT_CURRENCY)
     val currentCountry by viewModel.country.collectAsState(initial = AppPreferencesRepository.DEFAULT_COUNTRY)
 
@@ -250,25 +249,6 @@ fun AppPreferencesScreen(
                         color = secondaryTextColor,
                         fontSize = 14.sp
                     )
-                }
-            }
-
-            // Additional UI Settings
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = cardBackgroundColor),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Additional Settings",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = textColor
-                    )
-
                 }
             }
         }

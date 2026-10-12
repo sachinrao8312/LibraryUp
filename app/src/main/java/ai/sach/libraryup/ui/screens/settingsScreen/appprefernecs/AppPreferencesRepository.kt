@@ -27,14 +27,12 @@ class AppPreferencesRepository(private val context: Context) {
         private val PRIMARY_COLOR_KEY = stringPreferencesKey("primary_color")
         private val CURRENCY_KEY = stringPreferencesKey("currency")
         private val COUNTRY_KEY = stringPreferencesKey("country")
-        private val SHOW_PROPERTIES_KEY = booleanPreferencesKey("show_properties")
         private val INSTALL_DATE_KEY = stringPreferencesKey("install_date")
 
         // Default values
-        const val DEFAULT_PRIMARY_COLOR = "#0F9B4B"  // Default LibraryUp Green
+        const val DEFAULT_PRIMARY_COLOR = "#0F9B4B"  // Default brand green
         const val DEFAULT_CURRENCY = "INR"
         const val DEFAULT_COUNTRY = "IN"
-        const val DEFAULT_SHOW_PROPERTIES = true
     }
 
     /**
@@ -100,15 +98,6 @@ class AppPreferencesRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Get whether to show the Properties screen in navigation as a Flow.
-     * This Flow will emit a new value whenever the setting changes.
-     */
-    val showProperties: Flow<Boolean> = context.dataStore.data
-        .map { preferences ->
-            // Return the current value or default if not set
-            preferences[SHOW_PROPERTIES_KEY] ?: DEFAULT_SHOW_PROPERTIES
-        }
 
     /**
      * Get the app install date as a Flow (timestamp string or null if not set).
@@ -127,14 +116,4 @@ class AppPreferencesRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Update the show Properties setting.
-     *
-     * @param show Boolean indicating whether to show the Properties screen
-     */
-    suspend fun setShowProperties(show: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[SHOW_PROPERTIES_KEY] = show
-        }
-    }
 }
