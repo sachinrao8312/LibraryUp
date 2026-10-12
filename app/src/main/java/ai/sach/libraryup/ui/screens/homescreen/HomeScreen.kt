@@ -1,26 +1,26 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
-package ai.sach.rentup.ui.screens.homescreen
+package ai.sach.libraryup.ui.screens.homescreen
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantWithMultipleProperties
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.data.viewmodel.TenantViewModelFactory
-import ai.sach.rentup.ui.common.composables.BatchDeleteBar
-import ai.sach.rentup.ui.common.composables.RentUpSearchBar
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
-import ai.sach.rentup.ui.common.composables.filterTenants
-import ai.sach.rentup.ui.common.dialog.AddPropertyForm
-import ai.sach.rentup.ui.common.dialog.AddTenantDialog
-import ai.sach.rentup.ui.common.responsiveness.rememberDimensions
-import ai.sach.rentup.ui.screens.homescreen.composable.EmptyStateGuide
-import ai.sach.rentup.ui.screens.homescreen.composable.FilterChips
-import ai.sach.rentup.ui.screens.homescreen.composable.TenantCard
-import ai.sach.rentup.ui.screens.homescreen.composable.TenantDetailBottomSheet
-import ai.sach.rentup.ui.theme.RentUpColors
-import ai.sach.rentup.ui.viewmodel.PropertyViewModel
-import ai.sach.rentup.ui.viewmodel.PropertyViewModelFactory
-import ai.sach.rentup.ui.screens.settingsScreen.composable.SettingsNavRoutes
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantWithMultipleProperties
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.data.viewmodel.TenantViewModelFactory
+import ai.sach.libraryup.ui.common.composables.BatchDeleteBar
+import ai.sach.libraryup.ui.common.composables.AppSearchBar
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.common.composables.filterTenants
+import ai.sach.libraryup.ui.common.dialog.AddPropertyForm
+import ai.sach.libraryup.ui.common.dialog.AddTenantDialog
+import ai.sach.libraryup.ui.common.responsiveness.rememberDimensions
+import ai.sach.libraryup.ui.screens.homescreen.composable.EmptyStateGuide
+import ai.sach.libraryup.ui.screens.homescreen.composable.FilterChips
+import ai.sach.libraryup.ui.screens.homescreen.composable.TenantCard
+import ai.sach.libraryup.ui.screens.homescreen.composable.TenantDetailBottomSheet
+import ai.sach.libraryup.ui.theme.AppColors
+import ai.sach.libraryup.ui.viewmodel.PropertyViewModel
+import ai.sach.libraryup.ui.viewmodel.PropertyViewModelFactory
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import android.util.Log
@@ -169,8 +169,8 @@ enum class TenantFilterOption(val displayName: String) {
 fun HomeScreen(
     navController: NavController? = null,
     viewModel: TenantViewModel = viewModel(factory = TenantViewModelFactory(
-        (LocalContext.current.applicationContext as RentUpApplication).tenantRepository,
-        (LocalContext.current.applicationContext as RentUpApplication).propertyRepository
+        (LocalContext.current.applicationContext as LibraryUpApplication).tenantRepository,
+        (LocalContext.current.applicationContext as LibraryUpApplication).propertyRepository
     )),
     isAddTenantFormVisible: Boolean = false,
     isAddPropertyFormVisible: Boolean = false,
@@ -188,14 +188,14 @@ fun HomeScreen(
 
     // Add PropertyViewModel instance
     val context = LocalContext.current
-    val application = context.applicationContext as RentUpApplication
+    val application = context.applicationContext as LibraryUpApplication
     val propertyViewModel: PropertyViewModel = viewModel(
         factory = PropertyViewModelFactory(application.propertyRepository)
     )
 
     val tenants by viewModel.allTenants.observeAsState(emptyList())
     val isDarkTheme = isSystemInDarkTheme()
-    val backgroundColor = if (isDarkTheme) Color(0xFF121212) else RentUpColors.BackgroundGray
+    val backgroundColor = if (isDarkTheme) Color(0xFF121212) else AppColors.BackgroundGray
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var uiState by remember { mutableStateOf(HomeScreenUiState()) }
@@ -249,7 +249,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = if (uiState.isSelectionMode) {
                     if (uiState.selectedTenantIds.isEmpty()) "Select tenants" else "${uiState.selectedTenantIds.size} selected"
                 } else "RentUp",
@@ -480,7 +480,7 @@ private fun HomeScreenContent(
             .fillMaxWidth()
             .padding(horizontal = 16.dp) // Apply consistent horizontal padding to the whole column
     ) {
-        RentUpSearchBar(
+        AppSearchBar(
             query = uiState.searchQuery,
             onQueryChange = { onUiStateChange(uiState.copy(searchQuery = it)) },
             placeholder = "Search tenants by name, property, or phone...",
@@ -530,7 +530,7 @@ private fun PropertySummarySection(tenants: List<TenantWithMultipleProperties>, 
     val cardBgColor = if (isDarkTheme) {
         Color(0xFF1E1E1E)
     } else {
-        RentUpColors.White
+        AppColors.White
     }
     val textColor = if (isDarkTheme) {
         Color.White

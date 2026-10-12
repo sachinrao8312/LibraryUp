@@ -1,11 +1,11 @@
-package ai.sach.rentup.ui.screens.settingsScreen
+package ai.sach.libraryup.ui.screens.settingsScreen
 
-import ai.sach.rentup.RentUpApplication
+import ai.sach.libraryup.LibraryUpApplication
 
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
-import ai.sach.rentup.ui.screens.settingsScreen.composable.SettingsNavRoutes
-import ai.sach.rentup.ui.screens.settingsScreen.composable.ThemeViewModel
-import ai.sach.rentup.ui.screens.settingsScreen.composable.ThemeViewModelFactory
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.ThemeViewModel
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.ThemeViewModelFactory
 import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -90,7 +90,7 @@ fun SettingsScreen(
     val userName = prefs.getString("user_name", "Guest User") ?: "Guest User"
     val userEmail = prefs.getString("user_email", "") ?: ""
     val viewModel = themeViewModel ?: viewModel<ThemeViewModel>(
-        factory = ThemeViewModelFactory((context.applicationContext as RentUpApplication).themeRepository)
+        factory = ThemeViewModelFactory((context.applicationContext as LibraryUpApplication).themeRepository)
     )
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -99,7 +99,7 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = "Settings",
                 showDefaultMenu = true
                 // No backup action here: the Backup & Restore row below goes to the

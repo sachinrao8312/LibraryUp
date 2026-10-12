@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.screens.settingsScreen.notifications
+package ai.sach.libraryup.ui.screens.settingsScreen.notifications
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.local.entity.NotificationLog
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.local.entity.NotificationLog
 import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
@@ -31,7 +31,7 @@ class DailyReminderWorker(
     }
 
     override suspend fun doWork(): Result {
-        val app = applicationContext as? RentUpApplication ?: return Result.success()
+        val app = applicationContext as? LibraryUpApplication ?: return Result.success()
 
         return try {
             sweep(app)
@@ -42,7 +42,7 @@ class DailyReminderWorker(
         }
     }
 
-    private suspend fun sweep(app: RentUpApplication) {
+    private suspend fun sweep(app: LibraryUpApplication) {
         val preferences = app.notificationPreferences
         if (!preferences.areRentRemindersEnabled()) {
             Log.d(TAG, "Rent reminders disabled, nothing to do")
@@ -127,7 +127,7 @@ class DailyReminderWorker(
         prune(app, today)
     }
 
-    private suspend fun prune(app: RentUpApplication, today: LocalDate) {
+    private suspend fun prune(app: LibraryUpApplication, today: LocalDate) {
         val oldest = ReminderPolicy.cycleKeyFor(today.minusMonths(LEDGER_RETENTION_MONTHS))
         runCatching { app.database.notificationLogDao().pruneBefore(oldest) }
             .onFailure { Log.w(TAG, "Ledger prune failed", it) }

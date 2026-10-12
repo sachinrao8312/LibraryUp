@@ -1,17 +1,17 @@
-package ai.sach.rentup.ui.screens.properties
+package ai.sach.libraryup.ui.screens.properties
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.data.viewmodel.TenantViewModelFactory
-import ai.sach.rentup.ui.common.composables.BatchDeleteBar
-import ai.sach.rentup.ui.common.composables.RentUpSearchBar
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
-import ai.sach.rentup.ui.common.composables.filterProperties
-import ai.sach.rentup.ui.common.dialog.AddPropertyForm
-import ai.sach.rentup.ui.viewmodel.PropertyViewModel
-import ai.sach.rentup.ui.viewmodel.PropertyViewModelFactory
-import ai.sach.rentup.ui.screens.settingsScreen.composable.SettingsNavRoutes
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.data.viewmodel.TenantViewModelFactory
+import ai.sach.libraryup.ui.common.composables.BatchDeleteBar
+import ai.sach.libraryup.ui.common.composables.AppSearchBar
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.common.composables.filterProperties
+import ai.sach.libraryup.ui.common.dialog.AddPropertyForm
+import ai.sach.libraryup.ui.viewmodel.PropertyViewModel
+import ai.sach.libraryup.ui.viewmodel.PropertyViewModelFactory
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -118,7 +118,7 @@ fun PropertiesScreen(
     val darkTheme = isSystemInDarkTheme()
     val backgroundColor = if (darkTheme) Color(0xFF121212) else Color(0xFFF8F9FA)
     val context = LocalContext.current
-    val application = context.applicationContext as RentUpApplication
+    val application = context.applicationContext as LibraryUpApplication
     val propertyViewModel: PropertyViewModel = viewModel(
         factory = PropertyViewModelFactory(application.propertyRepository)
     )
@@ -147,7 +147,7 @@ fun PropertiesScreen(
     val sortedProperties = filterAndSortProperties(properties, uiState.searchQuery, uiState.sortBy, tenantCountsMap)
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = "Properties",
                 showDefaultMenu = true,
                 onNavigateToBackup = { navController.navigate(SettingsNavRoutes.BACKUP) },
@@ -181,7 +181,7 @@ fun PropertiesScreen(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                RentUpSearchBar(
+                AppSearchBar(
                     query = uiState.searchQuery,
                     onQueryChange = { uiState = uiState.copy(searchQuery = it) },
                     placeholder = "Search properties by name or address...",

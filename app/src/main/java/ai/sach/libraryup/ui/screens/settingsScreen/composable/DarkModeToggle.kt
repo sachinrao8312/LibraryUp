@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.screens.settingsScreen.composable
+package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.rentup.ui.theme.RentUpColors
+import ai.sach.libraryup.ui.theme.AppColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme

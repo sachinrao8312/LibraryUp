@@ -1,20 +1,20 @@
-package ai.sach.rentup.data.local
+package ai.sach.libraryup.data.local
 
-import ai.sach.rentup.data.local.dao.PaymentHistoryDao
-import ai.sach.rentup.data.local.dao.PropertyDao
-import ai.sach.rentup.data.local.dao.TenantDao
-import ai.sach.rentup.data.local.dao.TenantDocumentDao
-import ai.sach.rentup.data.local.dao.TenantFamilyInfoDao
-import ai.sach.rentup.data.local.dao.NotificationLogDao
-import ai.sach.rentup.data.local.dao.TenantPropertyDao
-import ai.sach.rentup.data.local.entity.NotificationLog
-import ai.sach.rentup.data.local.entity.PaymentHistory
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantDocument
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
-import ai.sach.rentup.data.local.entity.TenantPropertyCrossRef
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.local.entity.Converters // Import the Converters class
+import ai.sach.libraryup.data.local.dao.PaymentHistoryDao
+import ai.sach.libraryup.data.local.dao.PropertyDao
+import ai.sach.libraryup.data.local.dao.TenantDao
+import ai.sach.libraryup.data.local.dao.TenantDocumentDao
+import ai.sach.libraryup.data.local.dao.TenantFamilyInfoDao
+import ai.sach.libraryup.data.local.dao.NotificationLogDao
+import ai.sach.libraryup.data.local.dao.TenantPropertyDao
+import ai.sach.libraryup.data.local.entity.NotificationLog
+import ai.sach.libraryup.data.local.entity.PaymentHistory
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantDocument
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.local.entity.TenantPropertyCrossRef
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.local.entity.Converters // Import the Converters class
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -37,7 +37,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
     exportSchema = false
 )
 @TypeConverters(Converters::class) // Add TypeConverters annotation
-abstract class RentUpDatabase : RoomDatabase() {
+abstract class LibraryUpDatabase : RoomDatabase() {
     abstract fun tenantDao(): TenantDao
     abstract fun tenantFamilyInfoDao(): TenantFamilyInfoDao
     abstract fun tenantDocumentDao(): TenantDocumentDao
@@ -48,7 +48,7 @@ abstract class RentUpDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: RentUpDatabase? = null
+        private var INSTANCE: LibraryUpDatabase? = null
 
         // Migration from version 1 to 2
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -153,11 +153,11 @@ abstract class RentUpDatabase : RoomDatabase() {
             }
         }
 
-        fun getDatabase(context: Context): RentUpDatabase {
+        fun getDatabase(context: Context): LibraryUpDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    RentUpDatabase::class.java,
+                    LibraryUpDatabase::class.java,
                     "rentup_database"
                 )
                     .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8) // Register all migrations including the reminder ledger

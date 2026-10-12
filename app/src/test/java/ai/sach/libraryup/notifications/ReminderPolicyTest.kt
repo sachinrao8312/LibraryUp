@@ -1,7 +1,7 @@
-package ai.sach.rentup.notifications
+package ai.sach.libraryup.notifications
 
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.ReminderKind
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.ReminderPolicy
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.ReminderKind
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.ReminderPolicy
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -23,7 +23,7 @@ class ReminderPolicyTest {
 
     /**
      * Replays a whole billing cycle one day at a time against an in-memory ledger,
-     * exactly as [ai.sach.rentup.ui.screens.settingsScreen.notifications.DailyReminderWorker]
+     * exactly as [ai.sach.libraryup.ui.screens.settingsScreen.notifications.DailyReminderWorker]
      * would, and returns what was actually sent.
      */
     private fun simulate(

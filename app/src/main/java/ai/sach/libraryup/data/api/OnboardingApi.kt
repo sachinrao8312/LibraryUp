@@ -2,7 +2,7 @@
 // Used to generate unique tenant onboarding links via the backend
 //
 // See INTEGRATION_GUIDE.md for details
-package ai.sach.rentup.data.api
+package ai.sach.libraryup.data.api
 
 import retrofit2.Response
 import retrofit2.http.Body

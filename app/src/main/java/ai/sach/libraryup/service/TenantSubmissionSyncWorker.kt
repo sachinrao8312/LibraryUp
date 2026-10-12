@@ -1,6 +1,6 @@
-package ai.sach.rentup.service
+package ai.sach.libraryup.service
 
-import ai.sach.rentup.RentUpApplication
+import ai.sach.libraryup.LibraryUpApplication
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -48,7 +48,7 @@ class TenantSubmissionSyncWorker(
     }
 
     override suspend fun doWork(): Result {
-        val app = applicationContext as? RentUpApplication ?: return Result.success()
+        val app = applicationContext as? LibraryUpApplication ?: return Result.success()
 
         return try {
             app.tenantRepository.processTenantFormSubmissions().fold(

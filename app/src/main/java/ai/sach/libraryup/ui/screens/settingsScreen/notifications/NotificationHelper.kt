@@ -1,8 +1,8 @@
-package ai.sach.rentup.ui.screens.settingsScreen.notifications
+package ai.sach.libraryup.ui.screens.settingsScreen.notifications
 
-import ai.sach.rentup.MainActivity
-import ai.sach.rentup.R
-import ai.sach.rentup.data.local.entity.Tenant
+import ai.sach.libraryup.MainActivity
+import ai.sach.libraryup.R
+import ai.sach.libraryup.data.local.entity.Tenant
 import android.annotation.SuppressLint
 import android.Manifest
 import android.app.NotificationChannel
@@ -85,8 +85,8 @@ class NotificationHelper(private val context: Context) {
         private const val CHANNEL_LEGACY_RENT_REMINDERS = "rent_reminders"
 
         // Notification groups. Children post silently; one summary per group alerts.
-        const val GROUP_RENT_DUE = "ai.sach.rentup.RENT_DUE"
-        const val GROUP_RENT_OVERDUE = "ai.sach.rentup.RENT_OVERDUE"
+        const val GROUP_RENT_DUE = "ai.sach.libraryup.RENT_DUE"
+        const val GROUP_RENT_OVERDUE = "ai.sach.libraryup.RENT_OVERDUE"
 
         /**
          * Shared group used only on a mixed day (both overdue and upcoming present).
@@ -94,7 +94,7 @@ class NotificationHelper(private val context: Context) {
          * shows collapsed; the per-tenant children below nest under it instead of each
          * kind posting its own separate, independently-visible group summary card.
          */
-        const val GROUP_RENT_DIGEST = "ai.sach.rentup.RENT_DIGEST"
+        const val GROUP_RENT_DIGEST = "ai.sach.libraryup.RENT_DIGEST"
 
         // Notification ID bands. Kept far enough apart that per-tenant offsets in one
         // band can never collide with another band.

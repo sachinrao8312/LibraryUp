@@ -1,17 +1,17 @@
-package ai.sach.rentup.ui.common.dialog
+package ai.sach.libraryup.ui.common.dialog
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantFloors
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.data.viewmodel.TenantViewModelFactory
-import ai.sach.rentup.ui.common.composables.processSelectedImage
-import ai.sach.rentup.ui.common.responsiveness.LocalAccessibilityScaling
-import ai.sach.rentup.ui.common.responsiveness.LocalDimensions
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.getCurrencySymbol
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.PhoneNumberFormatter
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantFloors
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.data.viewmodel.TenantViewModelFactory
+import ai.sach.libraryup.ui.common.composables.processSelectedImage
+import ai.sach.libraryup.ui.common.responsiveness.LocalAccessibilityScaling
+import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.getCurrencySymbol
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.PhoneNumberFormatter
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -69,9 +69,9 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 
 // Import the ResponsivePropertySelectionDialog from AddTenantForm
-import ai.sach.rentup.ui.common.dialog.ResponsivePropertySelectionDialog
+import ai.sach.libraryup.ui.common.dialog.ResponsivePropertySelectionDialog
 // Import TenantFormFields
-import ai.sach.rentup.ui.common.dialog.TenantFormFields
+import ai.sach.libraryup.ui.common.dialog.TenantFormFields
 
 /**
  * Data class to hold all tenant edit state in a single object
@@ -111,8 +111,8 @@ fun EditTenantDialog(
     onUpdateTenant: (Tenant) -> Unit,
     viewModel: TenantViewModel = viewModel(
         factory = TenantViewModelFactory(
-            (LocalContext.current.applicationContext as RentUpApplication).tenantRepository,
-            (LocalContext.current.applicationContext as RentUpApplication).propertyRepository
+            (LocalContext.current.applicationContext as LibraryUpApplication).tenantRepository,
+            (LocalContext.current.applicationContext as LibraryUpApplication).propertyRepository
         )
     )
 ) {
@@ -176,7 +176,7 @@ fun EditTenantDialog(
     }
 
     val appPreferencesRepository = remember {
-        (context.applicationContext as RentUpApplication).appPreferencesRepository
+        (context.applicationContext as LibraryUpApplication).appPreferencesRepository
     }
     val currencyCode by appPreferencesRepository.currency.collectAsState(initial = AppPreferencesRepository.DEFAULT_CURRENCY)
     val currencySymbol = getCurrencySymbol(currencyCode)

@@ -1,16 +1,16 @@
-package ai.sach.rentup.ui.screens.homescreen.composable
+package ai.sach.libraryup.ui.screens.homescreen.composable
 
 import RentalAmountButtons
-import ai.sach.rentup.data.local.entity.PaymentHistory
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantFloors
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.ui.common.responsiveness.rememberDimensions
-import ai.sach.rentup.ui.screens.homescreen.PaymentStatus
-import ai.sach.rentup.ui.screens.homescreen.Quadruple
-import ai.sach.rentup.ui.screens.homescreen.TenantAvatar
-import ai.sach.rentup.ui.screens.homescreen.getPaymentStatus
-import ai.sach.rentup.ui.theme.RentUpColors
+import ai.sach.libraryup.data.local.entity.PaymentHistory
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantFloors
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.ui.common.responsiveness.rememberDimensions
+import ai.sach.libraryup.ui.screens.homescreen.PaymentStatus
+import ai.sach.libraryup.ui.screens.homescreen.Quadruple
+import ai.sach.libraryup.ui.screens.homescreen.TenantAvatar
+import ai.sach.libraryup.ui.screens.homescreen.getPaymentStatus
+import ai.sach.libraryup.ui.theme.AppColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 
@@ -87,7 +87,7 @@ private fun getStatusInfo(paymentStatus: PaymentStatus, isDarkTheme: Boolean): Q
             )
         }
         PaymentStatus.OVERDUE -> {
-            val color = if (isDarkTheme) Color(0xFFFF6B6B) else RentUpColors.Red
+            val color = if (isDarkTheme) Color(0xFFFF6B6B) else AppColors.Red
             Quadruple(
                 color,
                 if (isDarkTheme) color.copy(alpha = 0.2f) else Color(0xFFFEE9E9),
@@ -426,7 +426,7 @@ fun TenantCard(
     }
 
     // Card styling
-    val cardBgColor by remember { derivedStateOf { if (isDarkTheme) Color(0xFF1E1E1E) else RentUpColors.White } }
+    val cardBgColor by remember { derivedStateOf { if (isDarkTheme) Color(0xFF1E1E1E) else AppColors.White } }
     val cardBorder by remember { 
         derivedStateOf { 
             if (!currentTenant.isPaid) {

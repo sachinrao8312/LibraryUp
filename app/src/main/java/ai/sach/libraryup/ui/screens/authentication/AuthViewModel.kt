@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.authentication
+package ai.sach.libraryup.ui.screens.authentication
 
 import android.app.Application
 import android.content.Context
@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
-import ai.sach.rentup.BuildConfig
+import ai.sach.libraryup.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

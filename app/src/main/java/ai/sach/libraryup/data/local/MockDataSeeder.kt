@@ -1,11 +1,11 @@
-package ai.sach.rentup.data.local
+package ai.sach.libraryup.data.local
 
-import ai.sach.rentup.BuildConfig
-import ai.sach.rentup.data.local.entity.PaymentHistory
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.repository.PropertyRepository
-import ai.sach.rentup.data.repository.TenantRepository
+import ai.sach.libraryup.BuildConfig
+import ai.sach.libraryup.data.local.entity.PaymentHistory
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.repository.PropertyRepository
+import ai.sach.libraryup.data.repository.TenantRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate

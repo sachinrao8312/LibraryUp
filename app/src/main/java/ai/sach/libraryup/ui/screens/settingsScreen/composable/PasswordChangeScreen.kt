@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.screens.settingsScreen.composable
+package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -67,7 +67,7 @@ fun PasswordChangeScreen(navController: NavController) {
     
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = "Change Password",
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },

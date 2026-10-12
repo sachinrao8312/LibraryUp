@@ -1,8 +1,8 @@
-package ai.sach.rentup.service
+package ai.sach.libraryup.service
 
 import android.content.Context
 import android.util.Log
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationPreferencesManager
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationPreferencesManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore

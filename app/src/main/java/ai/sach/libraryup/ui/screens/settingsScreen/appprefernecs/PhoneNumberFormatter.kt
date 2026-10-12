@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.settingsScreen.appprefernecs
+package ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat

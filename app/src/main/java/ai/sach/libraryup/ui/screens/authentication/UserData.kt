@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.authentication
+package ai.sach.libraryup.ui.screens.authentication
 
 /**
  * Data class to hold user information including profile photo URL.

@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.screens.authentication
+package ai.sach.libraryup.ui.screens.authentication
 
-import ai.sach.rentup.ui.common.responsiveness.Dimensions
-import ai.sach.rentup.ui.common.responsiveness.LocalDimensions
+import ai.sach.libraryup.ui.common.responsiveness.Dimensions
+import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat

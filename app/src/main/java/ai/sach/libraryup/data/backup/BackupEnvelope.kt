@@ -1,11 +1,11 @@
-package ai.sach.rentup.data.backup
+package ai.sach.libraryup.data.backup
 
-import ai.sach.rentup.data.local.entity.PaymentHistory
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantDocument
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
-import ai.sach.rentup.data.local.entity.TenantPropertyCrossRef
+import ai.sach.libraryup.data.local.entity.PaymentHistory
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantDocument
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.local.entity.TenantPropertyCrossRef
 
 /**
  * The whole shape of a backup: one JSON document, everything a landlord's account holds,

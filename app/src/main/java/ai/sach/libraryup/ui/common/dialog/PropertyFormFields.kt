@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.common.dialog
+package ai.sach.libraryup.ui.common.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

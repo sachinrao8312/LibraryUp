@@ -1,23 +1,23 @@
-package ai.sach.rentup
+package ai.sach.libraryup
 
-import ai.sach.rentup.data.backup.BackupManager
-import ai.sach.rentup.data.backup.drive.DriveBackupManager
-import ai.sach.rentup.data.firestore.repository.FirestoreRepository
-import ai.sach.rentup.data.local.RentUpDatabase
-import ai.sach.rentup.data.local.MockDataSeeder
-import ai.sach.rentup.data.repository.PropertyRepository
-import ai.sach.rentup.data.repository.TenantRepository
-import ai.sach.rentup.ui.screens.authentication.AuthRepository
-import ai.sach.rentup.service.FcmTokenRegistrar
-import ai.sach.rentup.service.FcmTokenSyncWorker
-import ai.sach.rentup.ui.screens.homescreen.TenantFormSubmissionHandler
-import ai.sach.rentup.ui.screens.settingsScreen.ThemePreferencesRepository
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationHelper
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationPreferencesManager
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.ReminderScheduler
-import ai.sach.rentup.utils.GooglePlayServicesHelper
-import ai.sach.rentup.BuildConfig
+import ai.sach.libraryup.data.backup.BackupManager
+import ai.sach.libraryup.data.backup.drive.DriveBackupManager
+import ai.sach.libraryup.data.firestore.repository.FirestoreRepository
+import ai.sach.libraryup.data.local.LibraryUpDatabase
+import ai.sach.libraryup.data.local.MockDataSeeder
+import ai.sach.libraryup.data.repository.PropertyRepository
+import ai.sach.libraryup.data.repository.TenantRepository
+import ai.sach.libraryup.ui.screens.authentication.AuthRepository
+import ai.sach.libraryup.service.FcmTokenRegistrar
+import ai.sach.libraryup.service.FcmTokenSyncWorker
+import ai.sach.libraryup.ui.screens.homescreen.TenantFormSubmissionHandler
+import ai.sach.libraryup.ui.screens.settingsScreen.ThemePreferencesRepository
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationHelper
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationPreferencesManager
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.ReminderScheduler
+import ai.sach.libraryup.utils.GooglePlayServicesHelper
+import ai.sach.libraryup.BuildConfig
 import android.app.Application
 import android.app.PendingIntent
 import android.content.ComponentCallbacks2
@@ -43,10 +43,10 @@ import kotlinx.coroutines.withContext
  * helpers at process start-up.
  */
 @HiltAndroidApp
-class RentUpApplication : Application(), Configuration.Provider {
+class LibraryUpApplication : Application(), Configuration.Provider {
 
     companion object {
-        private const val TAG = "RentUpApplication"
+        private const val TAG = "LibraryUpApplication"
     }
 
     // Application scope for coroutines that should live as long as the application
@@ -54,7 +54,7 @@ class RentUpApplication : Application(), Configuration.Provider {
 
     /* ----------- DB & Repository stack ----------- */
 
-    val database by lazy { RentUpDatabase.getDatabase(this) }
+    val database by lazy { LibraryUpDatabase.getDatabase(this) }
 
     // Firebase instances
     val firebaseAuth by lazy { FirebaseAuth.getInstance() }
@@ -169,7 +169,7 @@ class RentUpApplication : Application(), Configuration.Provider {
         // preference; doesn't build the backup stack.
         applicationScope.launch(Dispatchers.IO) {
             try {
-                DriveBackupManager.ensureScheduled(this@RentUpApplication)
+                DriveBackupManager.ensureScheduled(this@LibraryUpApplication)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to schedule Drive backup", e)
             }

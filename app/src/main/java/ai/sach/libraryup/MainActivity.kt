@@ -1,39 +1,39 @@
-package ai.sach.rentup
+package ai.sach.libraryup
 
-import ai.sach.rentup.ui.common.composables.BottomNavigationBar
-import ai.sach.rentup.ui.common.composables.ExpandableFAB
-import ai.sach.rentup.ui.common.composables.rememberWindowSizeClass
-import ai.sach.rentup.ui.common.responsiveness.AccessibilityScalingProvider
-import ai.sach.rentup.ui.common.responsiveness.DimensionsProvider
-import ai.sach.rentup.service.FcmTokenSyncWorker
-import ai.sach.rentup.ui.navigation.AppRoutes
-import ai.sach.rentup.ui.navigation.NavigationItems
-import ai.sach.rentup.ui.screens.authentication.AuthRepository
-import ai.sach.rentup.ui.screens.authentication.AuthViewModelFactory
-import ai.sach.rentup.ui.screens.authentication.BiometricAuthManager
-import ai.sach.rentup.ui.screens.authentication.BiometricLockScreen
-import ai.sach.rentup.ui.screens.authentication.GoogleAuthScreen
-import ai.sach.rentup.ui.screens.authentication.SplashScreen
-import ai.sach.rentup.ui.screens.historyScreen.PaymentHistoryScreen
-import ai.sach.rentup.ui.screens.homescreen.HomeScreen
-import ai.sach.rentup.ui.screens.homescreen.TenantFormSubmissionHandler
-import ai.sach.rentup.ui.screens.properties.PropertiesScreen
-import ai.sach.rentup.ui.screens.properties.composables.PropertyDetailsScreen
-import ai.sach.rentup.ui.screens.settingsScreen.SettingsScreen
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.AppPreferencesScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.AccountScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.BackupRestoreScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.HelpAndSupportScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.LanguageScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.NotificationsScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.PasswordChangeScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.PinLockScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.PrivacyPolicyScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.SecurityScreen
-import ai.sach.rentup.ui.screens.settingsScreen.composable.SettingsNavRoutes
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationIntent
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.PendingNotificationTarget
-import ai.sach.rentup.ui.theme.RentUpTheme
+import ai.sach.libraryup.ui.common.composables.BottomNavigationBar
+import ai.sach.libraryup.ui.common.composables.ExpandableFAB
+import ai.sach.libraryup.ui.common.composables.rememberWindowSizeClass
+import ai.sach.libraryup.ui.common.responsiveness.AccessibilityScalingProvider
+import ai.sach.libraryup.ui.common.responsiveness.DimensionsProvider
+import ai.sach.libraryup.service.FcmTokenSyncWorker
+import ai.sach.libraryup.ui.navigation.AppRoutes
+import ai.sach.libraryup.ui.navigation.NavigationItems
+import ai.sach.libraryup.ui.screens.authentication.AuthRepository
+import ai.sach.libraryup.ui.screens.authentication.AuthViewModelFactory
+import ai.sach.libraryup.ui.screens.authentication.BiometricAuthManager
+import ai.sach.libraryup.ui.screens.authentication.BiometricLockScreen
+import ai.sach.libraryup.ui.screens.authentication.GoogleAuthScreen
+import ai.sach.libraryup.ui.screens.authentication.SplashScreen
+import ai.sach.libraryup.ui.screens.historyScreen.PaymentHistoryScreen
+import ai.sach.libraryup.ui.screens.homescreen.HomeScreen
+import ai.sach.libraryup.ui.screens.homescreen.TenantFormSubmissionHandler
+import ai.sach.libraryup.ui.screens.properties.PropertiesScreen
+import ai.sach.libraryup.ui.screens.properties.composables.PropertyDetailsScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.SettingsScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.AppPreferencesScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.AccountScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.BackupRestoreScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.HelpAndSupportScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.LanguageScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.NotificationsScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.PasswordChangeScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.PinLockScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.PrivacyPolicyScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.SecurityScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationIntent
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.PendingNotificationTarget
+import ai.sach.libraryup.ui.theme.LibraryUpTheme
 import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
@@ -165,7 +165,7 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
 
         // Get application instance once
-        val app = application as RentUpApplication
+        val app = application as LibraryUpApplication
 
         // Initialize notification system
         checkNotificationPermission()
@@ -183,7 +183,7 @@ class MainActivity : FragmentActivity() {
             // Apply fixed density to entire app
             CompositionLocalProvider(LocalDensity provides density) {
                 // Set up the app theme with system's default dark/light mode
-                RentUpTheme(
+                LibraryUpTheme(
                     dynamicColor = false // Set to true if you want to use Material You dynamic colors
                 ) {
                     // Wrap the entire app in responsive dimension providers
@@ -274,10 +274,10 @@ class MainActivity : FragmentActivity() {
                                 }
                                 AppState.Ready -> {
                                     // Show main app
-                                    RentUpApp(
+                                    LibraryUpApp(
                                         onSignOut = {
                                             // Handle sign out - reset to unauthenticated state
-                                            (application as? RentUpApplication)
+                                            (application as? LibraryUpApplication)
                                                 ?.fcmTokenRegistrar?.onSignedOut()
                                             appState = AppState.Unauthenticated
                                         },
@@ -302,7 +302,7 @@ class MainActivity : FragmentActivity() {
         // toggle was off, flip it back on, re-arm reminders, and republish the FCM opt-in
         // flag so the backend resumes addressing this device.
         runCatching {
-            val app = application as? RentUpApplication ?: return@runCatching
+            val app = application as? LibraryUpApplication ?: return@runCatching
             if (app.notificationHelper.reconcileOptInFromSystemSettings()) {
                 app.reminderScheduler.ensureScheduled()
                 FcmTokenSyncWorker.enqueue(this, force = true)
@@ -405,7 +405,7 @@ class MainActivity : FragmentActivity() {
             return
         }
 
-        val prefs = (application as? RentUpApplication)?.notificationPreferences
+        val prefs = (application as? LibraryUpApplication)?.notificationPreferences
 
         when {
             // First time ever asked: the system dialog will still be shown, so ask.
@@ -429,7 +429,7 @@ class MainActivity : FragmentActivity() {
      * Initializes the notification system
      */
     private fun initializeNotifications() {
-        val application = application as RentUpApplication
+        val application = application as LibraryUpApplication
 
         // Create notification channels
         application.notificationHelper.createNotificationChannels()
@@ -464,7 +464,7 @@ class MainActivity : FragmentActivity() {
 
             // Mark onboarding notification as seen if formId is present
             if (formId != null) {
-                (application as? RentUpApplication)
+                (application as? LibraryUpApplication)
                     ?.notificationPreferences
                     ?.markOnboardingNotificationSeen(formId)
                 Log.d(TAG, "Marked onboarding notification as seen for formId=$formId")
@@ -491,7 +491,7 @@ class MainActivity : FragmentActivity() {
             if (notificationType == NotificationIntent.TYPE_TENANT_SUBMISSION && formId != null) {
                 lifecycleScope.launch(Dispatchers.IO) {
                     try {
-                        val tenant = (application as? RentUpApplication)
+                        val tenant = (application as? LibraryUpApplication)
                             ?.tenantRepository
                             ?.getTenantByFormId(formId)
                         if (tenant != null) {
@@ -525,14 +525,14 @@ class MainActivity : FragmentActivity() {
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun RentUpApp(
+fun LibraryUpApp(
     onSignOut: () -> Unit = {},
     pendingNotificationTarget: StateFlow<PendingNotificationTarget?> = MutableStateFlow(null),
     onNotificationTargetConsumed: () -> Unit = {}
 ) {
     // Get application and auto restore manager
     val context = LocalContext.current
-    context.applicationContext as RentUpApplication
+    context.applicationContext as LibraryUpApplication
     val coroutineScope = rememberCoroutineScope()
     val navController = rememberNavController()
     var isAddTenantFormVisible by remember { mutableStateOf(false) }

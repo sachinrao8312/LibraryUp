@@ -6,8 +6,8 @@
 
     <!-- Specific backup and document directories -->
     <external-files-path name="documents" path="Pictures/" />
-    <external-files-path name="backup_files" path="RentUpBackups/" />
-    <files-path name="internal_backup_files" path="RentUpBackups/" />
+    <external-files-path name="backup_files" path="LibraryUpBackups/" />
+    <files-path name="internal_backup_files" path="LibraryUpBackups/" />
 
     <!-- Export directories -->
     <external-files-path name="exports" path="exports/" />

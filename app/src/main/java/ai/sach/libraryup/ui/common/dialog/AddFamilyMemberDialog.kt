@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.common.dialog
+package ai.sach.libraryup.ui.common.dialog
 
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import ai.sach.rentup.ui.common.composables.ResponsiveMultiplePhoneNumbersSection
+import ai.sach.libraryup.ui.common.composables.ResponsiveMultiplePhoneNumbersSection
 
 // AddFamilyMemberDialog.kt
 @OptIn(ExperimentalMaterial3Api::class)

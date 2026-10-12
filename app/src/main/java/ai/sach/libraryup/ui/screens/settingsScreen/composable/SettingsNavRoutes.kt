@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.settingsScreen.composable
+package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
 /**
  * Object containing route constants for all settings-related screens.

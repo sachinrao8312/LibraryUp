@@ -1,14 +1,14 @@
-package ai.sach.rentup.ui.screens.settingsScreen.composable
+package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.rentup.R
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
+import ai.sach.libraryup.R
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
 
-import ai.sach.rentup.ui.common.responsiveness.LocalDimensions
-import ai.sach.rentup.ui.screens.authentication.AuthRepository
-import ai.sach.rentup.ui.screens.authentication.AuthViewModel
-import ai.sach.rentup.ui.screens.authentication.AuthViewModelFactory
-import ai.sach.rentup.ui.screens.authentication.GuestConversionState
-import ai.sach.rentup.ui.screens.authentication.UserData
+import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
+import ai.sach.libraryup.ui.screens.authentication.AuthRepository
+import ai.sach.libraryup.ui.screens.authentication.AuthViewModel
+import ai.sach.libraryup.ui.screens.authentication.AuthViewModelFactory
+import ai.sach.libraryup.ui.screens.authentication.GuestConversionState
+import ai.sach.libraryup.ui.screens.authentication.UserData
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -153,7 +153,7 @@ fun AccountScreen(
     ) { result ->
         try {
             // Check if this is our dummy intent with an error
-            val isDummy = result.data?.action == "ai.sach.rentup.DUMMY_GOOGLE_SIGN_IN"
+            val isDummy = result.data?.action == "ai.sach.libraryup.DUMMY_GOOGLE_SIGN_IN"
             if (isDummy) {
                 val errorType = result.data?.getStringExtra("ERROR_TYPE") ?: "UNKNOWN_ERROR"
                 val errorMessage = result.data?.getStringExtra("ERROR_MESSAGE")
@@ -284,7 +284,7 @@ fun AccountScreen(
 
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = if (editMode) "Edit Profile" else "Account",
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },

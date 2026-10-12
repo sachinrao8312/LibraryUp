@@ -1,10 +1,10 @@
-package ai.sach.rentup.ui.screens.settingsScreen.composable
+package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationViewModel
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationViewModelFactory
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationViewModel
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationViewModelFactory
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
@@ -86,7 +86,7 @@ import kotlinx.coroutines.launch
 fun NotificationsScreen(navController: NavController) {
     val context = LocalContext.current
     val activity = context as? Activity
-    val application = context.applicationContext as RentUpApplication
+    val application = context.applicationContext as LibraryUpApplication
 
     // Create ViewModel using factory
     val viewModel: NotificationViewModel = viewModel(
@@ -161,7 +161,7 @@ fun NotificationsScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = "Notifications",
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },
@@ -751,7 +751,7 @@ data class NotificationSwitchItem(
  * This extension method should be called in the MainActivity when the payment
  * is collected to trigger a notification.
  */
-fun RentUpApplication.notifyPaymentCollected(tenant: Tenant, amount: String) {
+fun LibraryUpApplication.notifyPaymentCollected(tenant: Tenant, amount: String) {
     // Get notification preferences
     val preferencesManager = notificationPreferences
 

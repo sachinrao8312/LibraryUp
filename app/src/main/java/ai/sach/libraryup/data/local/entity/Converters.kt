@@ -1,4 +1,4 @@
-package ai.sach.rentup.data.local.entity
+package ai.sach.libraryup.data.local.entity
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

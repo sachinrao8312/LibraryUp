@@ -1,11 +1,11 @@
-package ai.sach.rentup.ui.screens.homescreen.composable
+package ai.sach.libraryup.ui.screens.homescreen.composable
 
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.ui.common.dialog.AddFamilyMemberDialog
-import ai.sach.rentup.ui.common.dialog.EditFamilyMemberDialog
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.ui.common.dialog.AddFamilyMemberDialog
+import ai.sach.libraryup.ui.common.dialog.EditFamilyMemberDialog
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*

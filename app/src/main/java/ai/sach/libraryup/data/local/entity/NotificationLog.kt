@@ -1,4 +1,4 @@
-package ai.sach.rentup.data.local.entity
+package ai.sach.libraryup.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -14,7 +14,7 @@ import androidx.room.Index
  * (for OVERDUE).
  *
  * @param cycleKey  The due date's year-month, e.g. "2026-09". A new month is a new cycle.
- * @param kind      [ai.sach.rentup.ui.screens.settingsScreen.notifications.ReminderKind] name.
+ * @param kind      [ai.sach.libraryup.ui.screens.settingsScreen.notifications.ReminderKind] name.
  * @param lastSentOn ISO local date the reminder was last posted.
  * @param sendCount How many times this reminder has been posted in this cycle.
  */

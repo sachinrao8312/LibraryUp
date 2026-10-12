@@ -1,7 +1,7 @@
-package ai.sach.rentup.service
+package ai.sach.libraryup.service
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationHelper
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationHelper
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -46,7 +46,7 @@ class RentUpFirebaseMessagingService : FirebaseMessagingService() {
     private fun handleTenantSubmission(tenantId: String?, formId: String?, systemWillDisplay: Boolean) {
         Log.d(TAG, "Tenant submission received: tenantId=$tenantId, formId=$formId")
 
-        val preferences = (application as? RentUpApplication)?.notificationPreferences
+        val preferences = (application as? LibraryUpApplication)?.notificationPreferences
         val alreadySeen = formId != null && preferences?.isOnboardingNotificationSeen(formId) == true
 
         val announcementsEnabled = preferences?.areTenantUpdatesEnabled() ?: true
@@ -73,7 +73,7 @@ class RentUpFirebaseMessagingService : FirebaseMessagingService() {
 
     private fun showTenantSubmissionNotification(formId: String?) {
         try {
-            val notificationHelper = (application as? RentUpApplication)?.notificationHelper
+            val notificationHelper = (application as? LibraryUpApplication)?.notificationHelper
                 ?: NotificationHelper(applicationContext)
 
             notificationHelper.showNewTenantNotification(count = 1, formId = formId)

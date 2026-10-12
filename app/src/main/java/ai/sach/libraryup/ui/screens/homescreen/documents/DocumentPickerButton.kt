@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.common.document
+package ai.sach.libraryup.ui.common.document
 
 import android.content.Context
 import android.net.Uri

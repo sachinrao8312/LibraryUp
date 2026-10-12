@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.screens.settingsScreen.composable
+package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
-import ai.sach.rentup.ui.screens.authentication.BiometricAuthManager
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.screens.authentication.BiometricAuthManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -97,7 +97,7 @@ fun SecurityScreen(
 
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = "Security",
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },

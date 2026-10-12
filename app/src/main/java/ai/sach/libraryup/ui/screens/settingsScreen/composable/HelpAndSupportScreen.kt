@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.screens.settingsScreen.composable
+package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
-import ai.sach.rentup.ui.theme.RentUpTheme
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.theme.LibraryUpTheme
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -98,7 +98,7 @@ fun HelpAndSupportScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = "Help & Support",
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },
@@ -564,7 +564,7 @@ data class FAQ(
 fun HelpAndSupportScreenPreview() {
     // It's a good practice to wrap previews in your app's theme
     // to ensure styling (colors, fonts, etc.) is applied correctly.
-    RentUpTheme {
+    LibraryUpTheme {
         HelpAndSupportScreen(navController = rememberNavController())
     }
 }

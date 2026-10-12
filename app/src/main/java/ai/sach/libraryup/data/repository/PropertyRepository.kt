@@ -1,7 +1,7 @@
-package ai.sach.rentup.data.repository
+package ai.sach.libraryup.data.repository
 
-import ai.sach.rentup.data.local.dao.PropertyDao
-import ai.sach.rentup.data.local.entity.Property
+import ai.sach.libraryup.data.local.dao.PropertyDao
+import ai.sach.libraryup.data.local.entity.Property
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

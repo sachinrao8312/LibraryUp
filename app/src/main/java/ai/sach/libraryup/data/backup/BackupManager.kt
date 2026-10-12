@@ -1,14 +1,14 @@
-package ai.sach.rentup.data.backup
+package ai.sach.libraryup.data.backup
 
-import ai.sach.rentup.BuildConfig
-import ai.sach.rentup.data.local.RentUpDatabase
-import ai.sach.rentup.data.local.entity.PaymentHistory
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantDocument
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
-import ai.sach.rentup.data.local.entity.TenantPropertyCrossRef
-import ai.sach.rentup.data.repository.TenantRepository
+import ai.sach.libraryup.BuildConfig
+import ai.sach.libraryup.data.local.LibraryUpDatabase
+import ai.sach.libraryup.data.local.entity.PaymentHistory
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantDocument
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.local.entity.TenantPropertyCrossRef
+import ai.sach.libraryup.data.repository.TenantRepository
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -80,7 +80,7 @@ data class BackupSummary(
  */
 class BackupManager(
     private val context: Context,
-    private val database: RentUpDatabase,
+    private val database: LibraryUpDatabase,
     private val tenantRepository: TenantRepository
 ) {
     companion object {

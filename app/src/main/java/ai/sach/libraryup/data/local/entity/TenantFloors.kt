@@ -1,4 +1,4 @@
-package ai.sach.rentup.data.local.entity
+package ai.sach.libraryup.data.local.entity
 
 /**
  * [Tenant.floor] holds one entry per property, comma-separated and matched by position to

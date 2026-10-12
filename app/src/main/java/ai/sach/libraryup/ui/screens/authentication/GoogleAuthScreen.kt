@@ -1,9 +1,9 @@
-package ai.sach.rentup.ui.screens.authentication
+package ai.sach.libraryup.ui.screens.authentication
 
-import ai.sach.rentup.R
-import ai.sach.rentup.ui.common.responsiveness.Dimensions
-import ai.sach.rentup.ui.common.responsiveness.LocalDimensions
-import ai.sach.rentup.ui.theme.RentUpColors
+import ai.sach.libraryup.R
+import ai.sach.libraryup.ui.common.responsiveness.Dimensions
+import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
+import ai.sach.libraryup.ui.theme.AppColors
 import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -232,9 +232,9 @@ private fun ModernAppBranding(
                     .background(
                         Brush.radialGradient(
                             colors = listOf(
-                                RentUpColors.PrimaryGreen.copy(alpha = 0.6f),
-                                RentUpColors.PrimaryGreen.copy(alpha = 0.4f),
-                                RentUpColors.PrimaryGreen.copy(alpha = 0.2f)
+                                AppColors.PrimaryGreen.copy(alpha = 0.6f),
+                                AppColors.PrimaryGreen.copy(alpha = 0.4f),
+                                AppColors.PrimaryGreen.copy(alpha = 0.2f)
                             )
                         )
                     )
@@ -248,15 +248,15 @@ private fun ModernAppBranding(
                     .background(
                         Brush.linearGradient(
                             colors = listOf(
-                                RentUpColors.PrimaryGreen,
-                                RentUpColors.PrimaryGreen.copy(alpha = 0.8f)
+                                AppColors.PrimaryGreen,
+                                AppColors.PrimaryGreen.copy(alpha = 0.8f)
                             )
                         )
                     )
                     .shadow(
                         elevation = 12.dp,
                         shape = CircleShape,
-                        spotColor = RentUpColors.PrimaryGreen.copy(alpha = 0.3f)
+                        spotColor = AppColors.PrimaryGreen.copy(alpha = 0.3f)
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -276,8 +276,8 @@ private fun ModernAppBranding(
                         .background(
                             Brush.linearGradient(
                                 colors = listOf(
-                                    RentUpColors.PrimaryGreen,
-                                    RentUpColors.PrimaryGreen.copy(alpha = 0.8f)
+                                    AppColors.PrimaryGreen,
+                                    AppColors.PrimaryGreen.copy(alpha = 0.8f)
                                 )
                             )
                         ),
@@ -302,7 +302,7 @@ private fun ModernAppBranding(
                 fontSize = if (isSmallScreen) 32.sp else 40.sp
             ),
             fontWeight = FontWeight.Bold,
-            color = RentUpColors.PrimaryGreen
+            color = AppColors.PrimaryGreen
         )
         
         // Tagline with better spacing
@@ -334,7 +334,7 @@ private fun ModernAuthenticationCard(
             .shadow(
                 elevation = 20.dp,
                 shape = RoundedCornerShape(28.dp),
-                spotColor = RentUpColors.PrimaryGreen.copy(alpha = 0.15f)
+                spotColor = AppColors.PrimaryGreen.copy(alpha = 0.15f)
             ),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
@@ -408,7 +408,7 @@ private fun ModernGoogleSignInButton(
             .fillMaxWidth()
             .height(if (isSmallScreen) 52.dp else 56.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = RentUpColors.PrimaryGreen,
+            containerColor = AppColors.PrimaryGreen,
             contentColor = Color.White
         ),
         shape = RoundedCornerShape(16.dp),
@@ -459,7 +459,7 @@ private fun ModernErrorMessage(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = RentUpColors.Error.copy(alpha = 0.1f)
+            containerColor = AppColors.Error.copy(alpha = 0.1f)
         ),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -474,14 +474,14 @@ private fun ModernErrorMessage(
                 imageVector = Icons.Default.Security,
                 contentDescription = "Error",
                 modifier = Modifier.size(20.dp),
-                tint = RentUpColors.Error
+                tint = AppColors.Error
             )
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = if (isSmallScreen) 14.sp else 16.sp
                 ),
-                color = RentUpColors.Error,
+                color = AppColors.Error,
                 textAlign = TextAlign.Start
             )
         }
@@ -507,12 +507,12 @@ private fun ModernAppFooter(
             SecurityBadge(
                 icon = Icons.Default.Verified,
                 text = "Secure",
-                color = RentUpColors.PrimaryGreen
+                color = AppColors.PrimaryGreen
             )
             SecurityBadge(
                 icon = Icons.Default.Security,
                 text = "Private",
-                color = RentUpColors.Info
+                color = AppColors.Info
             )
         }
         
@@ -564,7 +564,7 @@ private fun handleGoogleSignInResult(
 ) {
     try {
         // Check if this is our dummy intent with an error
-        val isDummy = result.data?.action == "ai.sach.rentup.DUMMY_GOOGLE_SIGN_IN"
+        val isDummy = result.data?.action == "ai.sach.libraryup.DUMMY_GOOGLE_SIGN_IN"
         if (isDummy) {
             // Handle Google Play Services errors gracefully
             return

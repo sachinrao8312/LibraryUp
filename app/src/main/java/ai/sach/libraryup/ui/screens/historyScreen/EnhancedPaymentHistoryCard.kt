@@ -1,12 +1,12 @@
-package ai.sach.rentup.ui.screens.historyScreen
+package ai.sach.libraryup.ui.screens.historyScreen
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.ui.common.responsiveness.LocalAccessibilityScaling
-import ai.sach.rentup.ui.screens.homescreen.TenantAvatar
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.formatCurrencyString
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.formatWithCurrency
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.getCurrencySymbol
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.ui.common.responsiveness.LocalAccessibilityScaling
+import ai.sach.libraryup.ui.screens.homescreen.TenantAvatar
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.formatCurrencyString
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.formatWithCurrency
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.getCurrencySymbol
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -102,7 +102,7 @@ fun EnhancedPaymentHistoryCard(
         payment.date // Fallback to original format if parsing fails
     }
     val appPreferencesRepository = remember {
-        (context.applicationContext as RentUpApplication).appPreferencesRepository
+        (context.applicationContext as LibraryUpApplication).appPreferencesRepository
     }
     val currencyCode by appPreferencesRepository.currency.collectAsState(initial = AppPreferencesRepository.DEFAULT_CURRENCY)
     val currencySymbol = getCurrencySymbol(currencyCode)
@@ -270,7 +270,7 @@ private fun PaymentCardExpandedContent(
     secondaryTextColor: Color,
     subtitleFontSize: TextUnit,
     smallTextFontSize: TextUnit,
-    fontScaling: ai.sach.rentup.ui.common.responsiveness.AccessibilityScaling,
+    fontScaling: ai.sach.libraryup.ui.common.responsiveness.AccessibilityScaling,
     context: android.content.Context,
     currencySymbol: String
 ) {
@@ -328,7 +328,7 @@ private fun PaymentDetailsSection(
     secondaryTextColor: Color,
     subtitleFontSize: TextUnit,
     smallTextFontSize: TextUnit,
-    fontScaling: ai.sach.rentup.ui.common.responsiveness.AccessibilityScaling
+    fontScaling: ai.sach.libraryup.ui.common.responsiveness.AccessibilityScaling
 ) {
     // If font is very large, stack the payment details vertically
     if (fontScaling.fontScale > 1.2f) {
@@ -409,7 +409,7 @@ private fun PaymentRemarkSection(
     secondaryTextColor: Color,
     subtitleFontSize: TextUnit,
     smallTextFontSize: TextUnit,
-    fontScaling: ai.sach.rentup.ui.common.responsiveness.AccessibilityScaling
+    fontScaling: ai.sach.libraryup.ui.common.responsiveness.AccessibilityScaling
 ) {
     HorizontalDivider(
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -463,7 +463,7 @@ private fun PaymentActionButtons(
     formattedDate: String,
     isDarkTheme: Boolean,
     subtitleFontSize: TextUnit,
-    fontScaling: ai.sach.rentup.ui.common.responsiveness.AccessibilityScaling,
+    fontScaling: ai.sach.libraryup.ui.common.responsiveness.AccessibilityScaling,
     context: android.content.Context,
     currencySymbol: String
 ) {

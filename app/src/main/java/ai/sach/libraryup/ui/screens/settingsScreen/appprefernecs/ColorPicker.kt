@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.settingsScreen.appprefernecs
+package ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

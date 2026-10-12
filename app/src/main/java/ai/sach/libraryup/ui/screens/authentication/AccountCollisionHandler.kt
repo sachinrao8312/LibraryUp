@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.authentication
+package ai.sach.libraryup.ui.screens.authentication
 
 import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount

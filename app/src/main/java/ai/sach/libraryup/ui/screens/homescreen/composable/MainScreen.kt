@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.screens.homescreen.composable
+package ai.sach.libraryup.ui.screens.homescreen.composable
 
-import ai.sach.rentup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Column
@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import android.util.Log
-import ai.sach.rentup.BuildConfig
+import ai.sach.libraryup.BuildConfig
 
 fun shareOnboardingLink(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_SEND).apply {

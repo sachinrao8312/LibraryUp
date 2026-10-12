@@ -1,9 +1,9 @@
-package ai.sach.rentup.ui.screens.homescreen.composable
+package ai.sach.libraryup.ui.screens.homescreen.composable
 
 
-import ai.sach.rentup.ui.common.responsiveness.rememberDimensions
-import ai.sach.rentup.ui.screens.homescreen.TenantFilterOption
-import ai.sach.rentup.ui.screens.homescreen.TenantSortOption
+import ai.sach.libraryup.ui.common.responsiveness.rememberDimensions
+import ai.sach.libraryup.ui.screens.homescreen.TenantFilterOption
+import ai.sach.libraryup.ui.screens.homescreen.TenantSortOption
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme

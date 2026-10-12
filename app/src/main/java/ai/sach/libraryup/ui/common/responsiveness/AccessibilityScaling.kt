@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.common.responsiveness
+package ai.sach.libraryup.ui.common.responsiveness
 
 import android.content.Context
 import android.content.res.Configuration

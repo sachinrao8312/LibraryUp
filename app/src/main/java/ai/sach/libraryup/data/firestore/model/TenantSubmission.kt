@@ -1,4 +1,4 @@
-package ai.sach.rentup.data.firestore.model
+package ai.sach.libraryup.data.firestore.model
 
 /**
  * A tenant onboarding submission from Firestore, normalised.

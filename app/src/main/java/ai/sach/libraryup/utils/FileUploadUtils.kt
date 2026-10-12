@@ -1,7 +1,7 @@
-package ai.sach.rentup.utils
+package ai.sach.libraryup.utils
 
-import ai.sach.rentup.data.api.FileCategory
-import ai.sach.rentup.data.api.FileUpload
+import ai.sach.libraryup.data.api.FileCategory
+import ai.sach.libraryup.data.api.FileUpload
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns

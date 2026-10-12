@@ -1,6 +1,6 @@
-package ai.sach.rentup.data.local.dao
+package ai.sach.libraryup.data.local.dao
 
-import ai.sach.rentup.data.local.entity.Property
+import ai.sach.libraryup.data.local.entity.Property
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

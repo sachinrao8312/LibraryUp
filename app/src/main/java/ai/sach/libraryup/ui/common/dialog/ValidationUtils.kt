@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.common.dialog
+package ai.sach.libraryup.ui.common.dialog
 
 import android.util.Log
 import java.time.LocalDate

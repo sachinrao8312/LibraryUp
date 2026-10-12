@@ -1,8 +1,8 @@
-package ai.sach.rentup.ui.common.composables
+package ai.sach.libraryup.ui.common.composables
 
-import ai.sach.rentup.ui.common.responsiveness.Dimensions
-import ai.sach.rentup.ui.common.responsiveness.rememberDimensions
-import ai.sach.rentup.ui.theme.RentUpColors
+import ai.sach.libraryup.ui.common.responsiveness.Dimensions
+import ai.sach.libraryup.ui.common.responsiveness.rememberDimensions
+import ai.sach.libraryup.ui.theme.AppColors
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -130,7 +130,7 @@ fun ExpandableFAB(
         FloatingActionButton(
             onClick = { expanded = !expanded },
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = RentUpColors.White,
+            contentColor = AppColors.White,
             modifier = Modifier
                 .size(fabSize)
                 .semantics {
@@ -164,7 +164,7 @@ private fun ExpandedFABItem(
     ExtendedFloatingActionButton(
         onClick = onClick,
         containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = RentUpColors.White,
+        contentColor = AppColors.White,
         modifier = Modifier.semantics {
             contentDescription = text // Accessibility description
         },

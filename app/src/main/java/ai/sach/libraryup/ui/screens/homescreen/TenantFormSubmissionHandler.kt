@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.screens.homescreen
+package ai.sach.libraryup.ui.screens.homescreen
 
-import ai.sach.rentup.data.repository.TenantRepository
+import ai.sach.libraryup.data.repository.TenantRepository
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -16,7 +16,7 @@ import kotlinx.coroutines.cancel
  * Imports tenant form submissions from Firestore on demand.
  *
  * Push-triggered imports are handled by
- * [ai.sach.rentup.service.TenantSubmissionSyncWorker], the single consumer of a
+ * [ai.sach.libraryup.service.TenantSubmissionSyncWorker], the single consumer of a
  * submission push; this class covers the manual and on-resume refreshes.
  */
 class TenantFormSubmissionHandler @Inject constructor(

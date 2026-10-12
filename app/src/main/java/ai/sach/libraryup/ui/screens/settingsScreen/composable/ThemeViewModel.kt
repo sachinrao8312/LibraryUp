@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.screens.settingsScreen.composable
+package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.rentup.ui.screens.settingsScreen.ThemePreferencesRepository
+import ai.sach.libraryup.ui.screens.settingsScreen.ThemePreferencesRepository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope

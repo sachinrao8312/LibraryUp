@@ -1,8 +1,8 @@
-package ai.sach.rentup.notifications
+package ai.sach.libraryup.notifications
 
-import ai.sach.rentup.ui.navigation.AppRoutes
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationIntent
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.ReminderKind
+import ai.sach.libraryup.ui.navigation.AppRoutes
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationIntent
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.ReminderKind
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

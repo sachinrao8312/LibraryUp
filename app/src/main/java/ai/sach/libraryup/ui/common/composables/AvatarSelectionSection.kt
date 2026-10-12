@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.common.composables
+package ai.sach.libraryup.ui.common.composables
 
-import ai.sach.rentup.utils.ImageUtils
+import ai.sach.libraryup.utils.ImageUtils
 import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

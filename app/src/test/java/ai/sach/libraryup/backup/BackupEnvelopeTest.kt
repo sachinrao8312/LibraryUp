@@ -1,13 +1,13 @@
-package ai.sach.rentup.backup
+package ai.sach.libraryup.backup
 
-import ai.sach.rentup.data.backup.BackupEnvelope
-import ai.sach.rentup.data.local.entity.EmergencyContact
-import ai.sach.rentup.data.local.entity.PaymentHistory
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantDocument
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
-import ai.sach.rentup.data.local.entity.TenantPropertyCrossRef
+import ai.sach.libraryup.data.backup.BackupEnvelope
+import ai.sach.libraryup.data.local.entity.EmergencyContact
+import ai.sach.libraryup.data.local.entity.PaymentHistory
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantDocument
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.local.entity.TenantPropertyCrossRef
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import org.junit.Assert.assertEquals
@@ -98,7 +98,7 @@ class BackupEnvelopeTest {
         original.entrySet().reversed().forEachIndexed { index, (_, value) -> renamed.add(('a' + index).toString(), value) }
 
         val restored = gson.fromJson(
-            ai.sach.rentup.data.backup.BackupEnvelopeKeys.normalize(renamed),
+            ai.sach.libraryup.data.backup.BackupEnvelopeKeys.normalize(renamed),
             BackupEnvelope::class.java
         )
 

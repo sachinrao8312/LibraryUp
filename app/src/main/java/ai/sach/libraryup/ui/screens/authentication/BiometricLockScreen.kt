@@ -1,5 +1,5 @@
-package ai.sach.rentup.ui.screens.authentication
-import ai.sach.rentup.ui.theme.RentUpColors
+package ai.sach.libraryup.ui.screens.authentication
+import ai.sach.libraryup.ui.theme.AppColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -148,7 +148,7 @@ fun BiometricLockScreen(
                 text = title,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = RentUpColors.PrimaryGreen
+                color = AppColors.PrimaryGreen
             )
 
             Spacer(modifier = Modifier.height(48.dp))
@@ -162,7 +162,7 @@ fun BiometricLockScreen(
                         .clip(CircleShape)
                         .background(
                             color = if (state.value.errorMessage == null)
-                                RentUpColors.PrimaryGreen.copy(alpha = 0.1f)
+                                AppColors.PrimaryGreen.copy(alpha = 0.1f)
                             else
                                 MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
                         )
@@ -173,7 +173,7 @@ fun BiometricLockScreen(
                         imageVector = Icons.Default.Fingerprint,
                         contentDescription = "Fingerprint",
                         tint = if (state.value.errorMessage == null)
-                            RentUpColors.PrimaryGreen
+                            AppColors.PrimaryGreen
                         else
                             MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(64.dp)
@@ -189,7 +189,7 @@ fun BiometricLockScreen(
                         ) {
                             // Circular progress indicator around the icon
                             CircularLoadingIndicator(
-                                color = RentUpColors.PrimaryGreen
+                                color = AppColors.PrimaryGreen
                             )
                         }
                     }
@@ -234,7 +234,7 @@ fun BiometricLockScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .padding(vertical = 8.dp),
-                    color = RentUpColors.PrimaryGreen
+                    color = AppColors.PrimaryGreen
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -277,7 +277,7 @@ fun BiometricLockScreen(
                         .height(56.dp),
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = RentUpColors.PrimaryGreen
+                        containerColor = AppColors.PrimaryGreen
                     )
                 ) {
                     Row(
@@ -309,7 +309,7 @@ fun BiometricLockScreen(
                 ) {
                     Text(
                         text = "Skip for Now",
-                        color = RentUpColors.PrimaryGreen,
+                        color = AppColors.PrimaryGreen,
                         fontSize = 16.sp
                     )
                 }
@@ -323,7 +323,7 @@ fun BiometricLockScreen(
  */
 @Composable
 fun CircularLoadingIndicator(
-    color: Color = RentUpColors.PrimaryGreen
+    color: Color = AppColors.PrimaryGreen
 ) {
     Box(
         modifier = Modifier

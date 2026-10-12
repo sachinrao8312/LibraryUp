@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.theme
+package ai.sach.libraryup.ui.theme
 
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -110,7 +110,7 @@ private fun createLightColorScheme(primaryColor: Color): ColorScheme {
  * @param content The content to be styled with this theme
  */
 @Composable
-fun RentUpTheme(
+fun LibraryUpTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
@@ -136,7 +136,7 @@ fun RentUpTheme(
     val primaryColor = try {
         Color(android.graphics.Color.parseColor(primaryColorHex))
     } catch (e: Exception) {
-        RentUpColors.PrimaryGreen
+        AppColors.PrimaryGreen
     }
 
     // Dynamic color is available on Android 12+
@@ -172,7 +172,7 @@ fun RentUpTheme(
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = RentUpTypography, // Use our enhanced typography
+            typography = AppTypography, // Use our enhanced typography
             shapes = Shapes, // Use our custom shapes
             content = content
         )

@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.common.dialog
+package ai.sach.libraryup.ui.common.dialog
 
-import ai.sach.rentup.data.local.entity.TenantDocument
-import ai.sach.rentup.ui.common.document.DocumentPickerButton
+import ai.sach.libraryup.data.local.entity.TenantDocument
+import ai.sach.libraryup.ui.common.document.DocumentPickerButton
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

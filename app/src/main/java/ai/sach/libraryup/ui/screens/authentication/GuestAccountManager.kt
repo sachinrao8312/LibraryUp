@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.authentication
+package ai.sach.libraryup.ui.screens.authentication
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -10,8 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ai.sach.rentup.ui.viewmodel.PropertyViewModel
-import ai.sach.rentup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.ui.viewmodel.PropertyViewModel
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit

@@ -1,15 +1,15 @@
-package ai.sach.rentup.data.viewmodel
+package ai.sach.libraryup.data.viewmodel
 
-import ai.sach.rentup.data.api.GenerateLinkRequest
-import ai.sach.rentup.data.api.GenerateLinkResponse
-import ai.sach.rentup.data.api.OnboardingApiProvider
-import ai.sach.rentup.data.local.entity.EmergencyContact
-import ai.sach.rentup.data.local.entity.PaymentHistory
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantDocument
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
-import ai.sach.rentup.data.repository.PropertyRepository
-import ai.sach.rentup.data.repository.TenantRepository
+import ai.sach.libraryup.data.api.GenerateLinkRequest
+import ai.sach.libraryup.data.api.GenerateLinkResponse
+import ai.sach.libraryup.data.api.OnboardingApiProvider
+import ai.sach.libraryup.data.local.entity.EmergencyContact
+import ai.sach.libraryup.data.local.entity.PaymentHistory
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantDocument
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.repository.PropertyRepository
+import ai.sach.libraryup.data.repository.TenantRepository
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -51,8 +51,8 @@ class TenantViewModel(
     val allProperties = propertyRepository.allProperties.asLiveData()
 
     // Create a UI model for payment history - moved before init to ensure proper initialization
-    private val _allPaymentsWithTenantInfo = MutableStateFlow<List<ai.sach.rentup.ui.screens.historyScreen.PaymentHistoryItem>>(emptyList())
-    val allPaymentsWithTenantInfo: StateFlow<List<ai.sach.rentup.ui.screens.historyScreen.PaymentHistoryItem>> = _allPaymentsWithTenantInfo
+    private val _allPaymentsWithTenantInfo = MutableStateFlow<List<ai.sach.libraryup.ui.screens.historyScreen.PaymentHistoryItem>>(emptyList())
+    val allPaymentsWithTenantInfo: StateFlow<List<ai.sach.libraryup.ui.screens.historyScreen.PaymentHistoryItem>> = _allPaymentsWithTenantInfo
 
     // Loading state for payment data
     private val _isPaymentDataLoading = MutableStateFlow(false)
@@ -269,7 +269,7 @@ class TenantViewModel(
         }
     }
 
-    fun deleteLocalDocument(document: ai.sach.rentup.data.local.entity.TenantDocument) = viewModelScope.launch(Dispatchers.IO) {
+    fun deleteLocalDocument(document: ai.sach.libraryup.data.local.entity.TenantDocument) = viewModelScope.launch(Dispatchers.IO) {
         tenantRepository.deleteTenantDocument(document)
         withContext(Dispatchers.Main) {
             refreshTenantData()
@@ -416,7 +416,7 @@ class TenantViewModel(
     /**
      * Get all properties for a specific tenant using junction table
      */
-    fun getPropertiesForTenant(tenantId: Long): LiveData<List<ai.sach.rentup.data.local.entity.Property>> = 
+    fun getPropertiesForTenant(tenantId: Long): LiveData<List<ai.sach.libraryup.data.local.entity.Property>> = 
         tenantRepository.getPropertiesForTenant(tenantId).asLiveData()
     
     /**
@@ -511,7 +511,7 @@ class TenantViewModel(
         try {
             _isPaymentDataLoading.value = true
             android.util.Log.d("TenantViewModel", "Initializing payment data with pageSize=$pageSize")
-            val items = mutableListOf<ai.sach.rentup.ui.screens.historyScreen.PaymentHistoryItem>()
+            val items = mutableListOf<ai.sach.libraryup.ui.screens.historyScreen.PaymentHistoryItem>()
 
             // Use a one-time collection instead of continuous collection
             val tenantsWithProperty = tenantRepository.allTenantsWithProperty.first()
@@ -537,7 +537,7 @@ class TenantViewModel(
                             val payments = tenantRepository.getPaymentHistoryForTenant(tenantWithMultipleProperties.tenant.id).first()
 
                             payments.take(pageSize).map { payment ->
-                                ai.sach.rentup.ui.screens.historyScreen.PaymentHistoryItem(
+                                ai.sach.libraryup.ui.screens.historyScreen.PaymentHistoryItem(
                                     id = payment.id,
                                     tenantName = tenantWithMultipleProperties.tenant.name,
                                     propertyName = firstPropertyName,
@@ -747,7 +747,7 @@ class TenantViewModel(
                 }
                 val familyMembersData = safeCastToListOfMaps(data["familyMembers"])
                 familyMembersData.forEach { memberData ->
-                    val familyMember = ai.sach.rentup.data.local.entity.TenantFamilyInfo(
+                    val familyMember = ai.sach.libraryup.data.local.entity.TenantFamilyInfo(
                         id = 0,
                         tenantId = tenantId,
                         name = memberData["name"] as? String ?: "",
@@ -769,7 +769,7 @@ class TenantViewModel(
                     // Avoid duplicate by phone or name
                     if (mobileNumber.trim() !in existingEmergencyPhones && name.trim() !in existingEmergencyNames) {
                         android.util.Log.d("TenantViewModel", "Mapping emergency contact: name=$name, relationship=$relationship, mobileNumber=$mobileNumber, address=$address")
-                        val familyInfo = ai.sach.rentup.data.local.entity.TenantFamilyInfo(
+                        val familyInfo = ai.sach.libraryup.data.local.entity.TenantFamilyInfo(
                             id = 0,
                             tenantId = tenantId,
                             name = name,
@@ -787,7 +787,7 @@ class TenantViewModel(
                     val fileName = fileData["originalName"] as? String ?: ""
                     val fileUrl = fileData["url"] as? String ?: ""
                     if (fileUrl.isNotEmpty()) {
-                        val document = ai.sach.rentup.data.local.entity.TenantDocument(
+                        val document = ai.sach.libraryup.data.local.entity.TenantDocument(
                             id = 0,
                             tenantId = tenantId,
                             documentType = getDocumentTypeFromFileName(fileName),

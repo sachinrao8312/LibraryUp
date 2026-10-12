@@ -1,17 +1,17 @@
-package ai.sach.rentup.di
+package ai.sach.libraryup.di
 
-import ai.sach.rentup.BuildConfig
-import ai.sach.rentup.data.firestore.repository.FirestoreRepository
-import ai.sach.rentup.data.local.RentUpDatabase
+import ai.sach.libraryup.BuildConfig
+import ai.sach.libraryup.data.firestore.repository.FirestoreRepository
+import ai.sach.libraryup.data.local.LibraryUpDatabase
 
-import ai.sach.rentup.data.repository.PropertyRepository
-import ai.sach.rentup.data.repository.TenantRepository
-import ai.sach.rentup.ui.screens.authentication.AuthRepository
-import ai.sach.rentup.ui.screens.authentication.BiometricAuthManager
-import ai.sach.rentup.ui.screens.homescreen.TenantFormSubmissionHandler
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationHelper
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationPreferencesManager
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.ReminderScheduler
+import ai.sach.libraryup.data.repository.PropertyRepository
+import ai.sach.libraryup.data.repository.TenantRepository
+import ai.sach.libraryup.ui.screens.authentication.AuthRepository
+import ai.sach.libraryup.ui.screens.authentication.BiometricAuthManager
+import ai.sach.libraryup.ui.screens.homescreen.TenantFormSubmissionHandler
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationHelper
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationPreferencesManager
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.ReminderScheduler
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -49,8 +49,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRentUpDatabase(@ApplicationContext context: Context): RentUpDatabase {
-        return RentUpDatabase.getDatabase(context)
+    fun provideLibraryUpDatabase(@ApplicationContext context: Context): LibraryUpDatabase {
+        return LibraryUpDatabase.getDatabase(context)
     }
 
     @Provides
@@ -64,14 +64,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePropertyRepository(database: RentUpDatabase): PropertyRepository {
+    fun providePropertyRepository(database: LibraryUpDatabase): PropertyRepository {
         return PropertyRepository(database.propertyDao())
     }
 
     @Provides
     @Singleton
     fun provideTenantRepository(
-        database: RentUpDatabase,
+        database: LibraryUpDatabase,
         propertyRepository: PropertyRepository,
         firestoreRepository: FirestoreRepository,
         notificationHelper: NotificationHelper,

@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.viewmodel
+package ai.sach.libraryup.ui.viewmodel
 
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.repository.PropertyRepository
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.repository.PropertyRepository
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

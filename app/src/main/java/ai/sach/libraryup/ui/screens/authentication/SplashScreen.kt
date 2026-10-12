@@ -1,8 +1,8 @@
-package ai.sach.rentup.ui.screens.authentication
+package ai.sach.libraryup.ui.screens.authentication
 
-import ai.sach.rentup.BuildConfig
-import ai.sach.rentup.R
-import ai.sach.rentup.ui.theme.RentUpColors
+import ai.sach.libraryup.BuildConfig
+import ai.sach.libraryup.R
+import ai.sach.libraryup.ui.theme.AppColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -135,9 +135,9 @@ fun SplashScreen(
                         .background(
                             Brush.radialGradient(
                                 colors = listOf(
-                                    RentUpColors.PrimaryGreen.copy(alpha = 0.3f),
-                                    RentUpColors.PrimaryGreen.copy(alpha = 0.1f),
-                                    RentUpColors.PrimaryGreen.copy(alpha = 0.05f)
+                                    AppColors.PrimaryGreen.copy(alpha = 0.3f),
+                                    AppColors.PrimaryGreen.copy(alpha = 0.1f),
+                                    AppColors.PrimaryGreen.copy(alpha = 0.05f)
                                 )
                             )
                         )
@@ -167,15 +167,15 @@ fun SplashScreen(
                         .background(
                             Brush.linearGradient(
                                 colors = listOf(
-                                    RentUpColors.PrimaryGreen,
-                                    RentUpColors.PrimaryGreen.copy(alpha = 0.8f)
+                                    AppColors.PrimaryGreen,
+                                    AppColors.PrimaryGreen.copy(alpha = 0.8f)
                                 )
                             )
                         )
                         .shadow(
                             elevation = 12.dp,
                             shape = CircleShape,
-                            spotColor = RentUpColors.PrimaryGreen.copy(alpha = 0.3f)
+                            spotColor = AppColors.PrimaryGreen.copy(alpha = 0.3f)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -205,7 +205,7 @@ fun SplashScreen(
                     text = "RentUp",
                     fontSize = 40.sp, // Increased by 25% from 32sp
                     fontWeight = FontWeight.Bold,
-                    color = RentUpColors.PrimaryGreen,
+                    color = AppColors.PrimaryGreen,
                     style = MaterialTheme.typography.headlineLarge
                 )
             }

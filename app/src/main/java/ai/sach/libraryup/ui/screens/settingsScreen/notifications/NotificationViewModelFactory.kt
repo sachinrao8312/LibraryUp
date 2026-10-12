@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.screens.settingsScreen.notifications
+package ai.sach.libraryup.ui.screens.settingsScreen.notifications
 
-import ai.sach.rentup.data.repository.PropertyRepository
-import ai.sach.rentup.data.repository.TenantRepository
+import ai.sach.libraryup.data.repository.PropertyRepository
+import ai.sach.libraryup.data.repository.TenantRepository
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

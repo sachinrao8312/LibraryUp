@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.homescreen.documents
+package ai.sach.libraryup.ui.screens.homescreen.documents
 
 import android.content.ActivityNotFoundException
 import android.content.Context

@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.common.composables
+package ai.sach.libraryup.ui.common.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

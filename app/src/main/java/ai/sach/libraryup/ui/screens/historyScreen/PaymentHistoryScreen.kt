@@ -1,15 +1,15 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ai.sach.rentup.ui.screens.historyScreen
+package ai.sach.libraryup.ui.screens.historyScreen
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.data.viewmodel.TenantViewModelFactory
-import ai.sach.rentup.ui.common.composables.RentUpSearchBarWithDebounce
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.formatWithCurrency
-import ai.sach.rentup.ui.theme.RentUpColors
-import ai.sach.rentup.ui.screens.settingsScreen.composable.SettingsNavRoutes
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.data.viewmodel.TenantViewModelFactory
+import ai.sach.libraryup.ui.common.composables.AppSearchBarWithDebounce
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.formatWithCurrency
+import ai.sach.libraryup.ui.theme.AppColors
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -188,8 +188,8 @@ fun PaymentHistoryScreen(navController: NavController? = null) {
     val context = LocalContext.current
     val viewModel: TenantViewModel = viewModel(
         factory = TenantViewModelFactory(
-            (context.applicationContext as RentUpApplication).tenantRepository,
-            (context.applicationContext as RentUpApplication).propertyRepository
+            (context.applicationContext as LibraryUpApplication).tenantRepository,
+            (context.applicationContext as LibraryUpApplication).propertyRepository
         )
     )
     LaunchedEffect(Unit) {
@@ -199,7 +199,7 @@ fun PaymentHistoryScreen(navController: NavController? = null) {
     val isPaymentDataLoading by viewModel.isPaymentDataLoading.collectAsState()
     val tenants by viewModel.allTenants.observeAsState(emptyList())
     val isDarkTheme = isSystemInDarkTheme()
-    val backgroundColor = if (isDarkTheme) Color(0xFF121212) else RentUpColors.BackgroundGray
+    val backgroundColor = if (isDarkTheme) Color(0xFF121212) else AppColors.BackgroundGray
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     // Centralized UI state - optimized to prevent unnecessary recompositions
@@ -242,7 +242,7 @@ fun PaymentHistoryScreen(navController: NavController? = null) {
     )
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = "Payment History",
                 showDefaultMenu = true,
                 onNavigateToBackup = { navController?.navigate(SettingsNavRoutes.BACKUP) }
@@ -257,7 +257,7 @@ fun PaymentHistoryScreen(navController: NavController? = null) {
                 .background(backgroundColor)
                 .padding(horizontal = 16.dp)
         ) {
-            RentUpSearchBarWithDebounce(
+            AppSearchBarWithDebounce(
                 query = uiState.searchQuery,
                 onQueryChange = { uiState = uiState.copy(searchQuery = it) },
                 onDebouncedQueryChange = { uiState = uiState.copy(debouncedQuery = it) },

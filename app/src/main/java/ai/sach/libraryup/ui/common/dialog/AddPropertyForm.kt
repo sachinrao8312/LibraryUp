@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.common.dialog
+package ai.sach.libraryup.ui.common.dialog
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +45,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.rememberModalBottomSheetState
-import ai.sach.rentup.ui.common.dialog.PropertyFormFields
+import ai.sach.libraryup.ui.common.dialog.PropertyFormFields
 
 private const val TAG = "AddPropertyForm"
 

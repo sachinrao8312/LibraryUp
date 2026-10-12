@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.settingsScreen.notifications
+package ai.sach.libraryup.ui.screens.settingsScreen.notifications
 
 import android.content.Context
 import androidx.work.ExistingPeriodicWorkPolicy

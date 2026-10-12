@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.common.responsiveness
+package ai.sach.libraryup.ui.common.responsiveness
 
-import ai.sach.rentup.ui.common.composables.WindowSizeClass
-import ai.sach.rentup.ui.common.composables.rememberWindowSizeClass
+import ai.sach.libraryup.ui.common.composables.WindowSizeClass
+import ai.sach.libraryup.ui.common.composables.rememberWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable

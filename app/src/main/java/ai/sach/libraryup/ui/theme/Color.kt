@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.theme
+package ai.sach.libraryup.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
  * RentUp color constants used throughout the application.
  * Provides consistent access to brand colors and their variants.
  */
-object RentUpColors {
+object AppColors {
     // Primary brand colors
     val PrimaryGreen = Color(0xFF0F9B4B)
     val PrimaryGreenLight = Color(0xFFD0F5E0)

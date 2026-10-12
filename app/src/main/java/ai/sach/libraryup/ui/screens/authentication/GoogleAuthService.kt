@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.authentication
+package ai.sach.libraryup.ui.screens.authentication
 
 import android.accounts.AccountManager.KEY_ACCOUNT_NAME
 import android.content.Context
@@ -31,7 +31,7 @@ import java.security.MessageDigest
 import android.app.Activity
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager.GET_SIGNATURES
-import ai.sach.rentup.BuildConfig
+import ai.sach.libraryup.BuildConfig
 
 /**
  * Centralized service for Google authentication that can be used by both
@@ -163,7 +163,7 @@ class GoogleAuthService(private val context: Context) {
         if (isGoogleSignInDisabled) {
             Log.w(TAG, "Google Sign-In is disabled due to previous errors")
             return Intent().apply { 
-                action = "ai.sach.rentup.DUMMY_GOOGLE_SIGN_IN"
+                action = "ai.sach.libraryup.DUMMY_GOOGLE_SIGN_IN"
                 putExtra("ERROR_TYPE", "GOOGLE_SIGNIN_DISABLED")
                 putExtra("ERROR_MESSAGE", "Google Sign-In has been disabled due to previous errors")
             }
@@ -181,7 +181,7 @@ class GoogleAuthService(private val context: Context) {
                 isGoogleSignInDisabled = true
                 // Return dummy intent with detailed error
                 return Intent().apply { 
-                    action = "ai.sach.rentup.DUMMY_GOOGLE_SIGN_IN"
+                    action = "ai.sach.libraryup.DUMMY_GOOGLE_SIGN_IN"
                     putExtra("ERROR_TYPE", "PLAY_SERVICES_UNAVAILABLE")
                     putExtra("ERROR_MESSAGE", errorMessage)
                 }
@@ -214,7 +214,7 @@ class GoogleAuthService(private val context: Context) {
                         
                         // Return dummy intent that will be handled gracefully
                         Intent().apply { 
-                            action = "ai.sach.rentup.DUMMY_GOOGLE_SIGN_IN"
+                            action = "ai.sach.libraryup.DUMMY_GOOGLE_SIGN_IN"
                             putExtra("ERROR_TYPE", "INTENT_CREATION_ERROR")
                             putExtra("ERROR_MESSAGE", e.message ?: "Unknown error")
                         }
@@ -236,7 +236,7 @@ class GoogleAuthService(private val context: Context) {
             
             // Return dummy intent as last resort
             Intent().apply { 
-                action = "ai.sach.rentup.DUMMY_GOOGLE_SIGN_IN"
+                action = "ai.sach.libraryup.DUMMY_GOOGLE_SIGN_IN"
                 putExtra("ERROR_TYPE", "CRITICAL_ERROR")
                 putExtra("ERROR_MESSAGE", e.message ?: "Unknown error")
             }
@@ -543,7 +543,7 @@ class GoogleAuthService(private val context: Context) {
         
         // Return a dummy intent with the specific error information
         return Intent().apply {
-            action = "ai.sach.rentup.DUMMY_GOOGLE_SIGN_IN"
+            action = "ai.sach.libraryup.DUMMY_GOOGLE_SIGN_IN"
             putExtra("ERROR_TYPE", errorType)
             putExtra("ERROR_MESSAGE", "Google Play Services error: $errorMessage")
         }

@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.settingsScreen.appprefernecs
+package ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs
 
 import android.content.Context
 import androidx.datastore.core.DataStore

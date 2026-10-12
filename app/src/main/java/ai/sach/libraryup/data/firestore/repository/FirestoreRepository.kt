@@ -1,4 +1,4 @@
-package ai.sach.rentup.data.firestore.repository
+package ai.sach.libraryup.data.firestore.repository
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth

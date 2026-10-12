@@ -1,10 +1,10 @@
-package ai.sach.rentup.backup
+package ai.sach.libraryup.backup
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
- * The RFC 4180 quoting rule [ai.sach.rentup.data.backup.BackupManager]'s CSV export uses.
+ * The RFC 4180 quoting rule [ai.sach.libraryup.data.backup.BackupManager]'s CSV export uses.
  *
  * `BackupManager.csvField` is private and the export method it feeds needs a live
  * Context/Uri/Room database, so this pins the escaping rule itself - reproduced verbatim

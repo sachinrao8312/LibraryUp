@@ -1,6 +1,6 @@
-package ai.sach.rentup.data.backup.drive
+package ai.sach.libraryup.data.backup.drive
 
-import ai.sach.rentup.RentUpApplication
+import ai.sach.libraryup.LibraryUpApplication
 import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
@@ -18,7 +18,7 @@ class DriveBackupWorker(
     }
 
     override suspend fun doWork(): Result {
-        val app = applicationContext as? RentUpApplication ?: return Result.success()
+        val app = applicationContext as? LibraryUpApplication ?: return Result.success()
         val outcome = app.driveBackupManager.runScheduledBackup()
         Log.d(TAG, "Scheduled Drive backup: $outcome")
         // Retry only what a later attempt could fix; a missing consent needs the user.

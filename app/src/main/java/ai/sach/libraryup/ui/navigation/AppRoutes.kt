@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.navigation
+package ai.sach.libraryup.ui.navigation
 
 /**
  * Navigation route strings, kept free of Compose types so non-UI code - notification

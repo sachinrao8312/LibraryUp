@@ -1,8 +1,8 @@
-package ai.sach.rentup.ui.common.composables
+package ai.sach.libraryup.ui.common.composables
 
-import ai.sach.rentup.data.local.entity.TenantWithMultipleProperties
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.ui.screens.historyScreen.PaymentHistoryItem
+import ai.sach.libraryup.data.local.entity.TenantWithMultipleProperties
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.ui.screens.historyScreen.PaymentHistoryItem
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -73,7 +73,7 @@ import kotlinx.coroutines.delay
  * @param isDarkTheme Flag indicating if dark theme is active
  */
 @Composable
-fun RentUpSearchBar(
+fun AppSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     placeholder: String = "Search...",
@@ -382,11 +382,11 @@ fun filterPaymentHistory(query: String, payments: List<PaymentHistoryItem>): Lis
 }
 
 /**
- * A composable that demonstrates how to use the RentUpSearchBar with a debounce
+ * A composable that demonstrates how to use the AppSearchBar with a debounce
  * effect to avoid excessive data filtering during rapid typing.
  */
 @Composable
-fun RentUpSearchBarWithDebounce(
+fun AppSearchBarWithDebounce(
     query: String,
     onQueryChange: (String) -> Unit,
     onDebouncedQueryChange: (String) -> Unit,
@@ -407,7 +407,7 @@ fun RentUpSearchBarWithDebounce(
         }
     }
 
-    RentUpSearchBar(
+    AppSearchBar(
         query = query,
         onQueryChange = onQueryChange,
         placeholder = placeholder,

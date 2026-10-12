@@ -1,6 +1,6 @@
-package ai.sach.rentup.backup
+package ai.sach.libraryup.backup
 
-import ai.sach.rentup.data.backup.BackupEnvelopeKeys
+import ai.sach.libraryup.data.backup.BackupEnvelopeKeys
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.junit.Assert.assertEquals

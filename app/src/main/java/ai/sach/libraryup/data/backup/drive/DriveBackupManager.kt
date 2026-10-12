@@ -1,7 +1,7 @@
-package ai.sach.rentup.data.backup.drive
+package ai.sach.libraryup.data.backup.drive
 
-import ai.sach.rentup.data.backup.BackupManager
-import ai.sach.rentup.data.backup.BackupSummary
+import ai.sach.libraryup.data.backup.BackupManager
+import ai.sach.libraryup.data.backup.BackupSummary
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent

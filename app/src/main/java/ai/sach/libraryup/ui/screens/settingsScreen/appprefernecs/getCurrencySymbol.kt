@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.screens.settingsScreen.appprefernecs
+package ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs
 
-import ai.sach.rentup.RentUpApplication
+import ai.sach.libraryup.LibraryUpApplication
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,7 +44,7 @@ fun formatWithCurrency(amount: String?): String {
 
     val context = LocalContext.current
     val appPreferencesRepository = remember {
-        (context.applicationContext as RentUpApplication).appPreferencesRepository
+        (context.applicationContext as LibraryUpApplication).appPreferencesRepository
     }
     val currencyCode by appPreferencesRepository.currency.collectAsState(initial = "USD")
     val currencySymbol = getCurrencySymbol(currencyCode)

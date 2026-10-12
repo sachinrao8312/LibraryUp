@@ -9,15 +9,15 @@ plugins {
 }
 
 android {
-    namespace = "ai.sach.rentup"
+    namespace = "ai.sach.libraryup"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "ai.sach.rentup"
+        applicationId = "ai.sach.libraryup"
         minSdk = 24
         targetSdk = 35
-        versionCode = 6
-        versionName = "1.0"
+        versionCode = 1
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -57,6 +57,8 @@ android {
     }
     
     compileOptions {
+        // java.time on API 24-25 (the domain module uses it throughout).
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -94,6 +96,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
+
     // Firebase - using the Bill of Materials (BoM)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx) {

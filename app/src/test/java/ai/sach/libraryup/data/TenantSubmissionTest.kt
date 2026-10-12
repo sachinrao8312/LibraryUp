@@ -1,6 +1,6 @@
-package ai.sach.rentup.data
+package ai.sach.libraryup.data
 
-import ai.sach.rentup.data.firestore.model.TenantSubmission
+import ai.sach.libraryup.data.firestore.model.TenantSubmission
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue

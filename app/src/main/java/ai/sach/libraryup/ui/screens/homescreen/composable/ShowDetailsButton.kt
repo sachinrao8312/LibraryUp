@@ -1,9 +1,9 @@
 // ShowDetailsButton.kt
 
-package ai.sach.rentup.ui.screens.homescreen.composable
+package ai.sach.libraryup.ui.screens.homescreen.composable
 
-import ai.sach.rentup.ui.common.responsiveness.LocalAccessibilityScaling
-import ai.sach.rentup.ui.common.responsiveness.rememberDimensions
+import ai.sach.libraryup.ui.common.responsiveness.LocalAccessibilityScaling
+import ai.sach.libraryup.ui.common.responsiveness.rememberDimensions
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

@@ -1,9 +1,9 @@
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.ui.common.responsiveness.LocalAccessibilityScaling
-import ai.sach.rentup.ui.common.responsiveness.rememberDimensions
-import ai.sach.rentup.ui.screens.settingsScreen.composable.notifyPaymentCollected
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.ui.common.responsiveness.LocalAccessibilityScaling
+import ai.sach.libraryup.ui.common.responsiveness.rememberDimensions
+import ai.sach.libraryup.ui.screens.settingsScreen.composable.notifyPaymentCollected
 import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -94,7 +94,7 @@ fun RentalAmountButtons(
 
     var showPaymentDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val application = context.applicationContext as? RentUpApplication
+    val application = context.applicationContext as? LibraryUpApplication
 
     // Button colors
     val primaryButtonColors = ButtonDefaults.buttonColors(

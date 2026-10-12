@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.common.dialog
+package ai.sach.libraryup.ui.common.dialog
 
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.KeyboardType
-import ai.sach.rentup.ui.common.composables.ResponsiveMultiplePhoneNumbersSection
+import ai.sach.libraryup.ui.common.composables.ResponsiveMultiplePhoneNumbersSection
 
 // EditFamilyMemberDialog.kt
 @Composable

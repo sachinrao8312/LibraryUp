@@ -1,4 +1,4 @@
-package ai.sach.rentup.utils
+package ai.sach.libraryup.utils
 
 import android.content.ContentResolver
 import android.content.Context

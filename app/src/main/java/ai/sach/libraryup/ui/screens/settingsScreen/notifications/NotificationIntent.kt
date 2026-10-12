@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.screens.settingsScreen.notifications
+package ai.sach.libraryup.ui.screens.settingsScreen.notifications
 
-import ai.sach.rentup.ui.navigation.AppRoutes
+import ai.sach.libraryup.ui.navigation.AppRoutes
 
 /**
  * The contract between a notification and the screen it opens.
@@ -38,7 +38,7 @@ object NotificationIntent {
      *
      * The home screen has no separate "due today" chip - a tenant due today already falls
      * under its "Due Soon" bucket (anything due within its fixed lookahead window) - so
-     * [ai.sach.rentup.ui.screens.settingsScreen.notifications.ReminderKind.DUE_TODAY] and
+     * [ai.sach.libraryup.ui.screens.settingsScreen.notifications.ReminderKind.DUE_TODAY] and
      * `DUE_SOON` both resolve to [FILTER_DUE_SOON] here.
      */
     const val FILTER_OVERDUE = "OVERDUE"

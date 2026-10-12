@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.theme
+package ai.sach.libraryup.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes

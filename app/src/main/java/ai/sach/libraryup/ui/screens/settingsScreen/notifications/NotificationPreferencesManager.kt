@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.screens.settingsScreen.notifications
+package ai.sach.libraryup.ui.screens.settingsScreen.notifications
 
-import ai.sach.rentup.ui.screens.authentication.EncryptedPrefsUtils
+import ai.sach.libraryup.ui.screens.authentication.EncryptedPrefsUtils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log

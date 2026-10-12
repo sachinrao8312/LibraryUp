@@ -1,6 +1,6 @@
-package ai.sach.rentup.ui.screens.settingsScreen.appprefernecs
+package ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs
 
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -105,7 +105,7 @@ fun AppPreferencesScreen(
 
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = "App Preferences",
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },

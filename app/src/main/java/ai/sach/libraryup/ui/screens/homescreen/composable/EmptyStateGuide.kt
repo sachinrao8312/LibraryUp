@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.screens.homescreen.composable
+package ai.sach.libraryup.ui.screens.homescreen.composable
 
 
-import ai.sach.rentup.ui.theme.RentUpColors
+import ai.sach.libraryup.ui.theme.AppColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.sp
             .fillMaxWidth()
             .padding(16.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = RentUpColors.PrimaryGreen.copy(alpha = 0.05f)
+            containerColor = AppColors.PrimaryGreen.copy(alpha = 0.05f)
         )
     ) {
         Column(
@@ -62,7 +62,7 @@ import androidx.compose.ui.unit.sp
         ) {
             // Icon based on state
             val (icon, iconColor) = if (hasProperties) {
-                Icons.Default.PersonAdd to RentUpColors.PrimaryGreen
+                Icons.Default.PersonAdd to AppColors.PrimaryGreen
             } else {
                 Icons.Default.TipsAndUpdates to Color(0xFFFF9800)
             }
@@ -131,7 +131,7 @@ import androidx.compose.ui.unit.sp
                     onClick = onAddTenantClick,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = RentUpColors.PrimaryGreen
+                        containerColor = AppColors.PrimaryGreen
                     )
                 ) {
                     Icon(Icons.Default.PersonAdd, contentDescription = null)
@@ -143,7 +143,7 @@ import androidx.compose.ui.unit.sp
                     onClick = onAddPropertyClick,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = RentUpColors.PrimaryGreen
+                        containerColor = AppColors.PrimaryGreen
                     )
                 ) {
                     Icon(Icons.Default.Apartment, contentDescription = null)
@@ -174,7 +174,7 @@ private fun StepItem(
             modifier = Modifier
                 .size(32.dp)
                 .background(
-                    color = RentUpColors.PrimaryGreen,
+                    color = AppColors.PrimaryGreen,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -193,7 +193,7 @@ private fun StepItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = RentUpColors.PrimaryGreen,
+            tint = AppColors.PrimaryGreen,
             modifier = Modifier.size(24.dp)
         )
         

@@ -1,4 +1,4 @@
-package ai.sach.rentup.service
+package ai.sach.libraryup.service
 
 import android.content.Context
 import androidx.work.Constraints

@@ -1,8 +1,8 @@
-package ai.sach.rentup.data.local.dao
+package ai.sach.libraryup.data.local.dao
 
-import ai.sach.rentup.data.local.entity.TenantPropertyCrossRef
-import ai.sach.rentup.data.local.entity.TenantWithMultipleProperties
-import ai.sach.rentup.data.local.entity.TenantPropertyInfo
+import ai.sach.libraryup.data.local.entity.TenantPropertyCrossRef
+import ai.sach.libraryup.data.local.entity.TenantWithMultipleProperties
+import ai.sach.libraryup.data.local.entity.TenantPropertyInfo
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -84,7 +84,7 @@ interface TenantPropertyDao {
         INNER JOIN tenant_property_cross_ref tpc ON p.id = tpc.propertyId
         WHERE tpc.tenantId = :tenantId AND tpc.isActive = 1
     """)
-    fun getPropertiesForTenant(tenantId: Long): Flow<List<ai.sach.rentup.data.local.entity.Property>>
+    fun getPropertiesForTenant(tenantId: Long): Flow<List<ai.sach.libraryup.data.local.entity.Property>>
     
     // Get tenants for a specific property
     @Query("""
@@ -93,7 +93,7 @@ interface TenantPropertyDao {
         INNER JOIN tenant_property_cross_ref tpc ON t.id = tpc.tenantId
         WHERE tpc.propertyId = :propertyId AND tpc.isActive = 1
     """)
-    fun getTenantsForProperty(propertyId: String): Flow<List<ai.sach.rentup.data.local.entity.Tenant>>
+    fun getTenantsForProperty(propertyId: String): Flow<List<ai.sach.libraryup.data.local.entity.Tenant>>
     
     // Check if a tenant-property relationship exists
     @Query("SELECT COUNT(*) FROM tenant_property_cross_ref WHERE tenantId = :tenantId AND propertyId = :propertyId")

@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.screens.settingsScreen.notifications
+package ai.sach.libraryup.ui.screens.settingsScreen.notifications
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit

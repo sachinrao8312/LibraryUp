@@ -1,7 +1,7 @@
-package ai.sach.rentup.ui.screens.authentication
+package ai.sach.libraryup.ui.screens.authentication
 
 // Explicit imports for AuthViewModel and related classes
-import ai.sach.rentup.ui.common.responsiveness.LocalDimensions
+import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -458,14 +458,14 @@ fun CheckConversionPrompts(
     onPromptRequired: (ConversionPromptType, String) -> Unit
 ) {
     val guestManager = rememberGuestAccountManager()
-    val application = LocalContext.current.applicationContext as ai.sach.rentup.RentUpApplication
+    val application = LocalContext.current.applicationContext as ai.sach.libraryup.LibraryUpApplication
     
     // Get data counts for smart triggers
-    val propertyViewModel: ai.sach.rentup.ui.viewmodel.PropertyViewModel = viewModel(
-        factory = ai.sach.rentup.ui.viewmodel.PropertyViewModelFactory(application.propertyRepository)
+    val propertyViewModel: ai.sach.libraryup.ui.viewmodel.PropertyViewModel = viewModel(
+        factory = ai.sach.libraryup.ui.viewmodel.PropertyViewModelFactory(application.propertyRepository)
     )
-    val tenantViewModel: ai.sach.rentup.data.viewmodel.TenantViewModel = viewModel(
-        factory = ai.sach.rentup.data.viewmodel.TenantViewModelFactory(
+    val tenantViewModel: ai.sach.libraryup.data.viewmodel.TenantViewModel = viewModel(
+        factory = ai.sach.libraryup.data.viewmodel.TenantViewModelFactory(
             application.tenantRepository,
             application.propertyRepository
         )
@@ -504,7 +504,7 @@ fun SmartConversionIntegration(
     val context = LocalContext.current
     
     // Create AuthViewModel with proper factory
-    val application = context.applicationContext as ai.sach.rentup.RentUpApplication
+    val application = context.applicationContext as ai.sach.libraryup.LibraryUpApplication
     val authRepository = remember { AuthRepository(context) }
     val authViewModel: AuthViewModel = viewModel(
         factory = AuthViewModelFactory(
@@ -526,7 +526,7 @@ fun SmartConversionIntegration(
     ) { result ->
         try {
             // Check if this is our dummy intent with an error
-            val isDummy = result.data?.action == "ai.sach.rentup.DUMMY_GOOGLE_SIGN_IN"
+            val isDummy = result.data?.action == "ai.sach.libraryup.DUMMY_GOOGLE_SIGN_IN"
             if (isDummy) {
                 val errorType = result.data?.getStringExtra("ERROR_TYPE") ?: "UNKNOWN_ERROR"
                 val errorMessage = result.data?.getStringExtra("ERROR_MESSAGE")
@@ -617,7 +617,7 @@ fun SmartConversionIntegration(
                     val signInIntent = authViewModel.getGoogleSignInIntent()
                     if (signInIntent != null) {
                         // Check if this is a dummy intent (error case)
-                        if (signInIntent.action == "ai.sach.rentup.DUMMY_GOOGLE_SIGN_IN") {
+                        if (signInIntent.action == "ai.sach.libraryup.DUMMY_GOOGLE_SIGN_IN") {
                             val errorType = signInIntent.getStringExtra("ERROR_TYPE") ?: "UNKNOWN_ERROR"
                             val errorMessage = signInIntent.getStringExtra("ERROR_MESSAGE")
                             Log.w("ConversionPrompts", "Received dummy intent before launch: $errorType - $errorMessage")

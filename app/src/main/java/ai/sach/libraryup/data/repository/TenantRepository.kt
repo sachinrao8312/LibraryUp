@@ -1,27 +1,27 @@
-package ai.sach.rentup.data.repository
+package ai.sach.libraryup.data.repository
 
-import ai.sach.rentup.data.firestore.model.TenantSubmission
-import ai.sach.rentup.data.firestore.repository.FirestoreRepository
+import ai.sach.libraryup.data.firestore.model.TenantSubmission
+import ai.sach.libraryup.data.firestore.repository.FirestoreRepository
 import com.google.firebase.auth.FirebaseAuth
-import ai.sach.rentup.data.local.dao.PaymentHistoryDao
-import ai.sach.rentup.data.local.dao.TenantDao
-import ai.sach.rentup.data.local.RentUpDatabase
-import ai.sach.rentup.data.local.dao.TenantDocumentDao
-import ai.sach.rentup.data.local.dao.TenantFamilyInfoDao
-import ai.sach.rentup.data.local.dao.TenantPropertyDao
-import ai.sach.rentup.data.local.entity.EmergencyContact
-import ai.sach.rentup.data.local.entity.PaymentHistory
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantDocument
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
-import ai.sach.rentup.data.local.entity.TenantPropertyCrossRef
-import ai.sach.rentup.data.local.entity.TenantWithFullProperty
-import ai.sach.rentup.data.local.entity.TenantWithMultipleProperties
-import ai.sach.rentup.utils.InputValidator
-import ai.sach.rentup.ui.screens.homescreen.documents.downloadFileToLocalStorage
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationHelper
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.NotificationPreferencesManager
-import ai.sach.rentup.ui.screens.settingsScreen.notifications.ReminderScheduler
+import ai.sach.libraryup.data.local.dao.PaymentHistoryDao
+import ai.sach.libraryup.data.local.dao.TenantDao
+import ai.sach.libraryup.data.local.LibraryUpDatabase
+import ai.sach.libraryup.data.local.dao.TenantDocumentDao
+import ai.sach.libraryup.data.local.dao.TenantFamilyInfoDao
+import ai.sach.libraryup.data.local.dao.TenantPropertyDao
+import ai.sach.libraryup.data.local.entity.EmergencyContact
+import ai.sach.libraryup.data.local.entity.PaymentHistory
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantDocument
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.local.entity.TenantPropertyCrossRef
+import ai.sach.libraryup.data.local.entity.TenantWithFullProperty
+import ai.sach.libraryup.data.local.entity.TenantWithMultipleProperties
+import ai.sach.libraryup.utils.InputValidator
+import ai.sach.libraryup.ui.screens.homescreen.documents.downloadFileToLocalStorage
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationHelper
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.NotificationPreferencesManager
+import ai.sach.libraryup.ui.screens.settingsScreen.notifications.ReminderScheduler
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -44,7 +44,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class TenantRepository @Inject constructor(
-    private val database: RentUpDatabase,
+    private val database: LibraryUpDatabase,
     private val tenantDao: TenantDao,
     private val tenantFamilyInfoDao: TenantFamilyInfoDao,
     private val tenantDocumentDao: TenantDocumentDao,
@@ -173,7 +173,7 @@ class TenantRepository @Inject constructor(
      * Makes sure the daily reminder sweep is armed (or stops it when reminders are off).
      *
      * This deliberately schedules nothing per tenant and sends nothing: deciding what is
-     * owed is [ai.sach.rentup.ui.screens.settingsScreen.notifications.DailyReminderWorker]'s
+     * owed is [ai.sach.libraryup.ui.screens.settingsScreen.notifications.DailyReminderWorker]'s
      * job, once a day, against live rows. Data writes only need to guarantee the sweep
      * exists, so this is cheap and idempotent no matter how often it is called.
      */
@@ -1008,7 +1008,7 @@ class TenantRepository @Inject constructor(
                     // Try to create a placeholder property if PropertyRepository is available
                     val placeholderCreated = try {
                         propertyRepository?.let { repo ->
-                            val placeholderProperty = ai.sach.rentup.data.local.entity.Property(
+                            val placeholderProperty = ai.sach.libraryup.data.local.entity.Property(
                                 id = trimmedPropertyId,
                                 name = "Property $trimmedPropertyId",
                                 address = "Address not available",
@@ -1287,7 +1287,7 @@ class TenantRepository @Inject constructor(
     /**
      * Get all properties for a specific tenant using the junction table
      */
-    fun getPropertiesForTenant(tenantId: Long): Flow<List<ai.sach.rentup.data.local.entity.Property>> {
+    fun getPropertiesForTenant(tenantId: Long): Flow<List<ai.sach.libraryup.data.local.entity.Property>> {
         return tenantPropertyDao.getPropertiesForTenant(tenantId)
     }
     

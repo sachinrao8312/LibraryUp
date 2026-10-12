@@ -1,20 +1,20 @@
-package ai.sach.rentup.ui.common.dialog
+package ai.sach.libraryup.ui.common.dialog
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantFloors
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.data.viewmodel.TenantViewModelFactory
-import ai.sach.rentup.ui.common.composables.processSelectedImage
-import ai.sach.rentup.ui.common.responsiveness.LocalAccessibilityScaling
-import ai.sach.rentup.ui.common.responsiveness.LocalDimensions
-import ai.sach.rentup.ui.screens.homescreen.composable.shareOnboardingLinkGeneric
-import ai.sach.rentup.ui.screens.homescreen.composable.shareOnboardingLinkWhatsApp
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.getCurrencySymbol
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.PhoneNumberFormatter
-import ai.sach.rentup.ui.viewmodel.PropertyViewModel
-import ai.sach.rentup.ui.viewmodel.PropertyViewModelFactory
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantFloors
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.data.viewmodel.TenantViewModelFactory
+import ai.sach.libraryup.ui.common.composables.processSelectedImage
+import ai.sach.libraryup.ui.common.responsiveness.LocalAccessibilityScaling
+import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
+import ai.sach.libraryup.ui.screens.homescreen.composable.shareOnboardingLinkGeneric
+import ai.sach.libraryup.ui.screens.homescreen.composable.shareOnboardingLinkWhatsApp
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.getCurrencySymbol
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.PhoneNumberFormatter
+import ai.sach.libraryup.ui.viewmodel.PropertyViewModel
+import ai.sach.libraryup.ui.viewmodel.PropertyViewModelFactory
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -87,13 +87,13 @@ fun AddTenantDialog(
     onAddPropertyRequest: () -> Unit,
     tenantViewModel: TenantViewModel = viewModel(
         factory = TenantViewModelFactory(
-            (LocalContext.current.applicationContext as RentUpApplication).tenantRepository,
-            (LocalContext.current.applicationContext as RentUpApplication).propertyRepository
+            (LocalContext.current.applicationContext as LibraryUpApplication).tenantRepository,
+            (LocalContext.current.applicationContext as LibraryUpApplication).propertyRepository
         )
     ),
     propertyViewModel: PropertyViewModel = viewModel(
         factory = PropertyViewModelFactory(
-            (LocalContext.current.applicationContext as RentUpApplication).propertyRepository
+            (LocalContext.current.applicationContext as LibraryUpApplication).propertyRepository
         )
     )
 ) {
@@ -170,10 +170,10 @@ fun AddTenantDialog(
     }
 
     val appPreferencesRepository = remember {
-        (context.applicationContext as RentUpApplication).appPreferencesRepository
+        (context.applicationContext as LibraryUpApplication).appPreferencesRepository
     }
     val authRepository = remember {
-        (context.applicationContext as RentUpApplication).authRepository
+        (context.applicationContext as LibraryUpApplication).authRepository
     }
     val currencyCode by appPreferencesRepository.currency.collectAsState(initial = "INR")
     val currencySymbol = getCurrencySymbol(currencyCode)

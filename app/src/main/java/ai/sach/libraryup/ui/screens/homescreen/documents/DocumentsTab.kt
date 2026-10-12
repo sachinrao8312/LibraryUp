@@ -1,9 +1,9 @@
-package ai.sach.rentup.ui.screens.homescreen.documents
+package ai.sach.libraryup.ui.screens.homescreen.documents
 
 
-import ai.sach.rentup.data.local.entity.TenantDocument
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.ui.common.dialog.AddDocumentDialog
+import ai.sach.libraryup.data.local.entity.TenantDocument
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.ui.common.dialog.AddDocumentDialog
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

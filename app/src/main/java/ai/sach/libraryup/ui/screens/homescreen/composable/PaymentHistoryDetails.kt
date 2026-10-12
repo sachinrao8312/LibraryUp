@@ -1,7 +1,7 @@
 
-package ai.sach.rentup.ui.screens.homescreen.composable
+package ai.sach.libraryup.ui.screens.homescreen.composable
 
-import ai.sach.rentup.data.local.entity.PaymentHistory
+import ai.sach.libraryup.data.local.entity.PaymentHistory
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically

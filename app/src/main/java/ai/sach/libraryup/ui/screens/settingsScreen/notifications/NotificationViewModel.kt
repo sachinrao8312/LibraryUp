@@ -1,9 +1,9 @@
-package ai.sach.rentup.ui.screens.settingsScreen.notifications
+package ai.sach.libraryup.ui.screens.settingsScreen.notifications
 
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.repository.PropertyRepository
-import ai.sach.rentup.data.repository.TenantRepository
-import ai.sach.rentup.service.FcmTokenSyncWorker
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.repository.PropertyRepository
+import ai.sach.libraryup.data.repository.TenantRepository
+import ai.sach.libraryup.service.FcmTokenSyncWorker
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel

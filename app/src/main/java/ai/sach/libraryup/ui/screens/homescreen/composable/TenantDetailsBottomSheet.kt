@@ -1,17 +1,17 @@
-package ai.sach.rentup.ui.screens.homescreen.composable
+package ai.sach.libraryup.ui.screens.homescreen.composable
 
-import ai.sach.rentup.data.local.entity.Tenant
-import ai.sach.rentup.data.local.entity.TenantFloors
-import ai.sach.rentup.data.local.entity.TenantFamilyInfo
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.ui.common.dialog.AddFamilyMemberDialog
-import ai.sach.rentup.ui.common.dialog.EditFamilyMemberDialog
-import ai.sach.rentup.ui.common.dialog.EditTenantDialog
-import ai.sach.rentup.ui.screens.homescreen.TenantAvatar
-import ai.sach.rentup.ui.screens.homescreen.documents.DocumentsTab
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.formatWithCurrency
-import ai.sach.rentup.BuildConfig
+import ai.sach.libraryup.data.local.entity.Tenant
+import ai.sach.libraryup.data.local.entity.TenantFloors
+import ai.sach.libraryup.data.local.entity.TenantFamilyInfo
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.ui.common.dialog.AddFamilyMemberDialog
+import ai.sach.libraryup.ui.common.dialog.EditFamilyMemberDialog
+import ai.sach.libraryup.ui.common.dialog.EditTenantDialog
+import ai.sach.libraryup.ui.screens.homescreen.TenantAvatar
+import ai.sach.libraryup.ui.screens.homescreen.documents.DocumentsTab
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.formatWithCurrency
+import ai.sach.libraryup.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import android.content.Context
@@ -180,7 +180,7 @@ fun TenantDetailBottomSheet(
     }
 
 //    val appPreferencesRepository = remember {
-//        (context.applicationContext as RentUpApplication).appPreferencesRepository
+//        (context.applicationContext as LibraryUpApplication).appPreferencesRepository
 //    }
 //    val currencyCode by appPreferencesRepository.currency.collectAsState(initial = AppPreferencesRepository.DEFAULT_CURRENCY)
 //    val currencySymbol = getCurrencySymbol(currencyCode)

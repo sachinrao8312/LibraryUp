@@ -1,9 +1,9 @@
-package ai.sach.rentup.ui.common.composables
+package ai.sach.libraryup.ui.common.composables
 
-import ai.sach.rentup.ui.common.responsiveness.LocalAccessibilityScaling
-import ai.sach.rentup.ui.navigation.NavigationItems
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
-import ai.sach.rentup.ui.theme.RentUpColors
+import ai.sach.libraryup.ui.common.responsiveness.LocalAccessibilityScaling
+import ai.sach.libraryup.ui.navigation.NavigationItems
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
+import ai.sach.libraryup.ui.theme.AppColors
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apartment

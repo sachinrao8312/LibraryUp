@@ -1,13 +1,13 @@
-package ai.sach.rentup.ui.screens.properties.composables
+package ai.sach.libraryup.ui.screens.properties.composables
 
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.viewmodel.TenantViewModel
-import ai.sach.rentup.data.viewmodel.TenantViewModelFactory
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.formatWithCurrency
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.getCurrencySymbol
-import ai.sach.rentup.ui.theme.RentUpColors
-import ai.sach.rentup.ui.viewmodel.PropertyViewModel
-import ai.sach.rentup.ui.viewmodel.PropertyViewModelFactory
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.viewmodel.TenantViewModel
+import ai.sach.libraryup.data.viewmodel.TenantViewModelFactory
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.formatWithCurrency
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.getCurrencySymbol
+import ai.sach.libraryup.ui.theme.AppColors
+import ai.sach.libraryup.ui.viewmodel.PropertyViewModel
+import ai.sach.libraryup.ui.viewmodel.PropertyViewModelFactory
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -68,7 +68,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ai.sach.rentup.ui.common.dialog.PropertyFormFields
+import ai.sach.libraryup.ui.common.dialog.PropertyFormFields
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -93,7 +93,7 @@ fun PropertyDetailsScreen(
 ) {
     // Get the application context
     val context = LocalContext.current
-    val application = context.applicationContext as RentUpApplication
+    val application = context.applicationContext as LibraryUpApplication
 
     // Check if dark theme is enabled
     val isDarkTheme = isSystemInDarkTheme()
@@ -184,7 +184,7 @@ fun PropertyDetailsScreen(
 
 
     val appPreferencesRepository = remember {
-        (context.applicationContext as RentUpApplication).appPreferencesRepository
+        (context.applicationContext as LibraryUpApplication).appPreferencesRepository
     }
     val currencyCode by appPreferencesRepository.currency.collectAsState(initial = "INR")
     val currencySymbol = getCurrencySymbol(currencyCode)
@@ -420,7 +420,7 @@ fun PropertyDetailsScreen(
                 // Tab layout for different sections
                 TabRow(
                     selectedTabIndex = selectedTabIndex,
-                    containerColor = if (isDarkTheme) Color(0xFF1F2937) else RentUpColors.White,
+                    containerColor = if (isDarkTheme) Color(0xFF1F2937) else AppColors.White,
                     contentColor = MaterialTheme.colorScheme.primary
                 ) {
                     // Tenants tab
@@ -467,7 +467,7 @@ fun PropertyDetailsScreen(
 
 @Composable
 fun TenantsTab(
-    propertyTenants: List<ai.sach.rentup.data.local.entity.TenantWithMultipleProperties>,
+    propertyTenants: List<ai.sach.libraryup.data.local.entity.TenantWithMultipleProperties>,
     propertyId: String,
     isDarkTheme: Boolean,
     textColor: Color,
@@ -577,8 +577,8 @@ fun TenantsTab(
                         modifier = Modifier.weight(2f)
                     )
                     Text(
-                        text = ai.sach.rentup.data.local.entity.TenantFloors.display(
-                            ai.sach.rentup.data.local.entity.TenantFloors.entryFor(tenant, propertyId)
+                        text = ai.sach.libraryup.data.local.entity.TenantFloors.display(
+                            ai.sach.libraryup.data.local.entity.TenantFloors.entryFor(tenant, propertyId)
                         ),
                         fontSize = 14.sp,
                         color = textColor,
@@ -637,7 +637,7 @@ fun TenantsTab(
 }
 
 // Calculate total due rent for the property
-private fun calculateDueRent(tenants: List<ai.sach.rentup.data.local.entity.TenantWithMultipleProperties>): Int {
+private fun calculateDueRent(tenants: List<ai.sach.libraryup.data.local.entity.TenantWithMultipleProperties>): Int {
     return tenants
         .filter { !it.tenant.isPaid }
         .sumOf { tenantWithMultipleProperties ->

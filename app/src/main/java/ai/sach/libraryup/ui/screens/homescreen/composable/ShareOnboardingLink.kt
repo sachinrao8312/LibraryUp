@@ -1,10 +1,10 @@
-package ai.sach.rentup.ui.screens.homescreen.composable
+package ai.sach.libraryup.ui.screens.homescreen.composable
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.SupportedCountries
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.SupportedCountries
 
 /**
  * Share onboarding link via any available sharing method

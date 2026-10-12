@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.theme
+package ai.sach.libraryup.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
  * Enhanced RentUp typography styles following Material 3 guidelines.
  * Defines consistent text styles used throughout the application with improved readability.
  */
-val RentUpTypography = Typography(
+val AppTypography = Typography(
     // Display styles - Large, prominent text for headlines
     displayLarge = TextStyle(
         fontWeight = FontWeight.Bold,

@@ -1,4 +1,4 @@
-package ai.sach.rentup.ui.common.composables
+package ai.sach.libraryup.ui.common.composables
 
 import android.content.Intent
 import android.net.Uri
@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.sp
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RentUpTopAppBar(
+fun AppTopAppBar(
     title: String = "RentUp",
     showBackButton: Boolean = false,
     onBackPressed: () -> Unit = {},

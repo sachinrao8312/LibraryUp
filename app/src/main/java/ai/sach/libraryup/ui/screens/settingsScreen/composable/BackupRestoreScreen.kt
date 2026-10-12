@@ -1,14 +1,14 @@
-package ai.sach.rentup.ui.screens.settingsScreen.composable
+package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.rentup.BuildConfig
-import ai.sach.rentup.RentUpApplication
-import ai.sach.rentup.data.backup.BackupManager
-import ai.sach.rentup.data.backup.BackupSummary
-import ai.sach.rentup.data.backup.drive.DriveAccess
-import ai.sach.rentup.data.backup.drive.DriveBackupStatus
-import ai.sach.rentup.data.backup.drive.DriveFile
-import ai.sach.rentup.data.backup.drive.NothingToBackUpException
-import ai.sach.rentup.ui.common.composables.RentUpTopAppBar
+import ai.sach.libraryup.BuildConfig
+import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.data.backup.BackupManager
+import ai.sach.libraryup.data.backup.BackupSummary
+import ai.sach.libraryup.data.backup.drive.DriveAccess
+import ai.sach.libraryup.data.backup.drive.DriveBackupStatus
+import ai.sach.libraryup.data.backup.drive.DriveFile
+import ai.sach.libraryup.data.backup.drive.NothingToBackUpException
+import ai.sach.libraryup.ui.common.composables.AppTopAppBar
 import android.app.Activity
 import android.net.Uri
 import android.text.format.Formatter
@@ -93,7 +93,7 @@ private class PendingDriveRestore(val token: String, val backup: DriveFile)
 @Composable
 fun BackupRestoreScreen(navController: NavController) {
     val context = LocalContext.current
-    val application = context.applicationContext as RentUpApplication
+    val application = context.applicationContext as LibraryUpApplication
     val drive = application.driveBackupManager
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
@@ -320,7 +320,7 @@ fun BackupRestoreScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            RentUpTopAppBar(
+            AppTopAppBar(
                 title = "Backup & Restore",
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },

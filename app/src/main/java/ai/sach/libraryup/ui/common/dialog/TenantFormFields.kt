@@ -1,10 +1,10 @@
-package ai.sach.rentup.ui.common.dialog
+package ai.sach.libraryup.ui.common.dialog
 
-import ai.sach.rentup.data.local.entity.Property
-import ai.sach.rentup.ui.common.composables.AvatarSelectionSection
-import ai.sach.rentup.ui.common.responsiveness.LocalAccessibilityScaling
-import ai.sach.rentup.ui.common.responsiveness.LocalDimensions
-import ai.sach.rentup.ui.screens.settingsScreen.appprefernecs.PhoneNumberFormatter
+import ai.sach.libraryup.data.local.entity.Property
+import ai.sach.libraryup.ui.common.composables.AvatarSelectionSection
+import ai.sach.libraryup.ui.common.responsiveness.LocalAccessibilityScaling
+import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
+import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.PhoneNumberFormatter
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
