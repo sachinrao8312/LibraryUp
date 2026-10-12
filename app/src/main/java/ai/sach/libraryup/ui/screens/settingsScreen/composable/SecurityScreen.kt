@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.common.composables.AppTopAppBar
 import ai.sach.libraryup.ui.screens.authentication.BiometricAuthManager
 import android.os.Build
@@ -51,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -98,7 +100,7 @@ fun SecurityScreen(
     Scaffold(
         topBar = {
             AppTopAppBar(
-                title = "Security",
+                title = stringResource(R.string.settings_security),
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },
                 showDefaultMenu = true,
@@ -127,7 +129,7 @@ fun SecurityScreen(
                 )
 
                 Text(
-                    text = "Account Security",
+                    text = stringResource(R.string.security_account),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     modifier = Modifier.padding(start = 16.dp)
@@ -136,7 +138,7 @@ fun SecurityScreen(
 
             // Authentication Options Section
             SecuritySection(
-                title = "Authentication",
+                title = stringResource(R.string.security_authentication),
                 items = listOf(
 //                    SecurityItem(
 //                        icon = Icons.Default.Password,
@@ -203,16 +205,16 @@ fun SecurityScreen(
     if (showBiometricTestDialog) {
         AlertDialog(
             onDismissRequest = { showBiometricTestDialog = false },
-            title = { Text("Test Biometric Authentication") },
+            title = { Text(stringResource(R.string.security_test_title)) },
             text = {
-                Text("This will test if your biometric authentication is working properly. Tap 'Start Test' to continue.")
+                Text(stringResource(R.string.security_test_text))
             },
             confirmButton = {
                 Button(onClick = {
                     showBiometricTestDialog = false // Close this dialog
                     showBiometricPrompt = true // Show biometric prompt instead
                 }) {
-                    Text("Start Test")
+                    Text(stringResource(R.string.security_start_test))
                 }
             },
             dismissButton = {
@@ -223,7 +225,7 @@ fun SecurityScreen(
                         contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             },
             properties = DialogProperties(dismissOnClickOutside = true, dismissOnBackPress = true)
@@ -254,16 +256,13 @@ fun SecurityScreen(
     if (showBiometricInfo) {
         AlertDialog(
             onDismissRequest = { showBiometricInfo = false },
-            title = { Text("Biometric Authentication") },
+            title = { Text(stringResource(R.string.security_biometric)) },
             text = {
-                Text(
-                    "Biometric authentication uses your device's fingerprint sensor or facial recognition to securely access the app without entering a password.\n\n" +
-                            "Your biometric data never leaves your device and is protected by your device's security system."
-                )
+                Text(stringResource(R.string.security_biometric_info_text))
             },
             confirmButton = {
                 Button(onClick = { showBiometricInfo = false }) {
-                    Text("Got it")
+                    Text(stringResource(R.string.action_got_it))
                 }
             }
         )
@@ -273,12 +272,9 @@ fun SecurityScreen(
     if (showDeleteDataDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDataDialog = false },
-            title = { Text("Delete All Data?") },
+            title = { Text(stringResource(R.string.security_delete_title)) },
             text = {
-                Text(
-                    "This will permanently delete all your data including students, payments, attendance and settings. This action cannot be undone.\n\n" +
-                            "Are you sure you want to continue?"
-                )
+                Text(stringResource(R.string.security_delete_text))
             },
             confirmButton = {
                 Button(
@@ -290,12 +286,12 @@ fun SecurityScreen(
                         containerColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Delete All Data")
+                    Text(stringResource(R.string.security_delete_confirm))
                 }
             },
             dismissButton = {
                 Button(onClick = { showDeleteDataDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -428,7 +424,7 @@ private fun BiometricSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Biometric Authentication",
+                text = stringResource(R.string.security_biometric),
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
                 modifier = Modifier.weight(1f)
@@ -437,7 +433,7 @@ private fun BiometricSection(
             IconButton(onClick = onInfoClick) {
                 Icon(
                     imageVector = Icons.Default.Info,
-                    contentDescription = "Biometric Info",
+                    contentDescription = stringResource(R.string.security_biometric_info),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -481,12 +477,12 @@ private fun BiometricSection(
                             .padding(horizontal = 16.dp)
                     ) {
                         Text(
-                            text = "Fingerprint Login",
+                            text = stringResource(R.string.security_fingerprint_login),
                             fontWeight = FontWeight.Medium
                         )
 
                         Text(
-                            text = "Use fingerprint for quicker access",
+                            text = stringResource(R.string.security_fingerprint_desc),
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
@@ -530,7 +526,7 @@ private fun BiometricSection(
                         }
 
                         Text(
-                            text = "Test Fingerprint",
+                            text = stringResource(R.string.security_test_fingerprint),
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier
                                 .weight(1f)

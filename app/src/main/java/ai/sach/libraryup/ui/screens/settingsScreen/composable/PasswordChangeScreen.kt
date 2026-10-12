@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.common.composables.AppTopAppBar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -64,11 +66,20 @@ fun PasswordChangeScreen(navController: NavController) {
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
     
     var passwordChangeSuccess by remember { mutableStateOf(false) }
+
+    // Validation messages (looked up here; the button's onClick is not composable)
+    val errorCurrentRequired = stringResource(R.string.password_error_current_required)
+    val errorIncorrect = stringResource(R.string.password_error_incorrect)
+    val errorMinLength = stringResource(R.string.password_error_min_length)
+    val errorUppercase = stringResource(R.string.password_error_uppercase)
+    val errorNumber = stringResource(R.string.password_error_number)
+    val errorSpecial = stringResource(R.string.password_error_special)
+    val errorMismatch = stringResource(R.string.error_passwords_dont_match)
     
     Scaffold(
         topBar = {
             AppTopAppBar(
-                title = "Change Password",
+                title = stringResource(R.string.password_change_title),
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },
                 showDefaultMenu = true,
@@ -110,16 +121,13 @@ fun PasswordChangeScreen(navController: NavController) {
                             .padding(start = 16.dp)
                     ) {
                         Text(
-                            text = "Password Requirements",
+                            text = stringResource(R.string.password_requirements),
                             fontWeight = FontWeight.Medium,
                             fontSize = 16.sp
                         )
                         
                         Text(
-                            text = "• At least 8 characters\n" +
-                                   "• At least one uppercase letter\n" +
-                                   "• At least one number\n" +
-                                   "• At least one special character",
+                            text = stringResource(R.string.password_requirements_list),
                             color = Color.Gray,
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
@@ -152,7 +160,7 @@ fun PasswordChangeScreen(navController: NavController) {
                         )
                         
                         Text(
-                            text = "Password changed successfully!",
+                            text = stringResource(R.string.password_changed),
                             color = Color(0xFF388E3C),
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.padding(start = 16.dp)
@@ -168,7 +176,7 @@ fun PasswordChangeScreen(navController: NavController) {
                     currentPassword = it
                     currentPasswordError = null
                 },
-                label = { Text("Current Password") },
+                label = { Text(stringResource(R.string.password_current)) },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = if (currentPasswordVisible) 
                     VisualTransformation.None 
@@ -183,9 +191,9 @@ fun PasswordChangeScreen(navController: NavController) {
                             else 
                                 Icons.Default.Visibility,
                             contentDescription = if (currentPasswordVisible) 
-                                "Hide password" 
+                                stringResource(R.string.password_hide)
                             else 
-                                "Show password"
+                                stringResource(R.string.password_show)
                         )
                     }
                 },
@@ -202,7 +210,7 @@ fun PasswordChangeScreen(navController: NavController) {
                     newPassword = it
                     newPasswordError = null
                 },
-                label = { Text("New Password") },
+                label = { Text(stringResource(R.string.password_new)) },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = if (newPasswordVisible) 
                     VisualTransformation.None 
@@ -217,9 +225,9 @@ fun PasswordChangeScreen(navController: NavController) {
                             else 
                                 Icons.Default.Visibility,
                             contentDescription = if (newPasswordVisible) 
-                                "Hide password" 
+                                stringResource(R.string.password_hide)
                             else 
-                                "Show password"
+                                stringResource(R.string.password_show)
                         )
                     }
                 },
@@ -236,7 +244,7 @@ fun PasswordChangeScreen(navController: NavController) {
                     confirmPassword = it
                     confirmPasswordError = null
                 },
-                label = { Text("Confirm New Password") },
+                label = { Text(stringResource(R.string.password_confirm_new)) },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = if (confirmPasswordVisible) 
                     VisualTransformation.None 
@@ -251,9 +259,9 @@ fun PasswordChangeScreen(navController: NavController) {
                             else 
                                 Icons.Default.Visibility,
                             contentDescription = if (confirmPasswordVisible) 
-                                "Hide password" 
+                                stringResource(R.string.password_hide)
                             else 
-                                "Show password"
+                                stringResource(R.string.password_show)
                         )
                     }
                 },
@@ -275,35 +283,35 @@ fun PasswordChangeScreen(navController: NavController) {
                     
                     // Validate current password
                     if (currentPassword.isEmpty()) {
-                        currentPasswordError = "Current password is required"
+                        currentPasswordError = errorCurrentRequired
                         isValid = false
                     } else {
                         // In a real app, verify against stored password
                         // For demo, we'll pretend it's "password123"
                         if (currentPassword != "password123") {
-                            currentPasswordError = "Incorrect password"
+                            currentPasswordError = errorIncorrect
                             isValid = false
                         }
                     }
                     
                     // Validate new password
                     if (newPassword.length < 8) {
-                        newPasswordError = "Password must be at least 8 characters"
+                        newPasswordError = errorMinLength
                         isValid = false
                     } else if (!newPassword.any { it.isUpperCase() }) {
-                        newPasswordError = "Password must contain at least one uppercase letter"
+                        newPasswordError = errorUppercase
                         isValid = false
                     } else if (!newPassword.any { it.isDigit() }) {
-                        newPasswordError = "Password must contain at least one number"
+                        newPasswordError = errorNumber
                         isValid = false
                     } else if (!newPassword.any { !it.isLetterOrDigit() }) {
-                        newPasswordError = "Password must contain at least one special character"
+                        newPasswordError = errorSpecial
                         isValid = false
                     }
                     
                     // Validate password confirmation
                     if (newPassword != confirmPassword) {
-                        confirmPasswordError = "Passwords don't match"
+                        confirmPasswordError = errorMismatch
                         isValid = false
                     }
                     
@@ -325,7 +333,7 @@ fun PasswordChangeScreen(navController: NavController) {
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text("Change Password", fontSize = 16.sp)
+                Text(stringResource(R.string.password_change_title), fontSize = 16.sp)
             }
         }
     }

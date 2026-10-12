@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.authentication
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -153,7 +155,7 @@ fun FeedbackMessageCard(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Dismiss",
+                            contentDescription = stringResource(R.string.action_close),
                             modifier = Modifier.size(dimensions.iconSizeSmall),
                             tint = contentColor.copy(alpha = 0.7f)
                         )
@@ -271,7 +273,7 @@ fun WelcomeMessage(
             ) {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Welcome",
+                    contentDescription = stringResource(R.string.cd_welcome),
                     modifier = Modifier.size(dimensions.iconSizeLarge),
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -281,7 +283,7 @@ fun WelcomeMessage(
                     verticalArrangement = Arrangement.spacedBy(dimensions.spacingTiny)
                 ) {
                     Text(
-                        text = "Welcome, $userName!",
+                        text = stringResource(R.string.feedback_welcome_name, userName),
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontSize = dimensions.fontSizeLarge
                         ),
@@ -290,7 +292,7 @@ fun WelcomeMessage(
                     )
                     
                     Text(
-                        text = "You're all set to manage your rentals",
+                        text = stringResource(R.string.feedback_welcome_text),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontSize = dimensions.fontSizeMedium
                         ),
@@ -302,7 +304,7 @@ fun WelcomeMessage(
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Dismiss",
+                            contentDescription = stringResource(R.string.action_close),
                             modifier = Modifier.size(dimensions.iconSizeSmall),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                         )
@@ -351,7 +353,7 @@ fun OperationStatusIndicator(
                 hasError -> {
                     Icon(
                         imageVector = Icons.Default.Error,
-                        contentDescription = "Error",
+                        contentDescription = stringResource(R.string.cd_error),
                         modifier = Modifier.size(dimensions.iconSizeSmall),
                         tint = MaterialTheme.colorScheme.error
                     )
@@ -359,7 +361,7 @@ fun OperationStatusIndicator(
                 isCompleted -> {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "Completed",
+                        contentDescription = stringResource(R.string.cd_completed),
                         modifier = Modifier.size(dimensions.iconSizeSmall),
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -374,7 +376,7 @@ fun OperationStatusIndicator(
                 else -> {
                     Icon(
                         imageVector = Icons.Default.Info,
-                        contentDescription = "Pending",
+                        contentDescription = stringResource(R.string.cd_pending),
                         modifier = Modifier.size(dimensions.iconSizeSmall),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )

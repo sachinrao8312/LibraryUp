@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.authentication
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.common.responsiveness.Dimensions
 import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
 import androidx.compose.animation.core.LinearEasing
@@ -38,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,7 +49,7 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun AuthLoadingIndicator(
-    message: String = "Loading...",
+    message: String = stringResource(R.string.label_loading),
     progress: Float? = null,
     isVisible: Boolean = true,
     modifier: Modifier = Modifier
@@ -144,7 +146,7 @@ fun ConversionProgressIndicator(
                     progress.isFailed -> {
                         Icon(
                             imageVector = Icons.Default.Error,
-                            contentDescription = "Failed",
+                            contentDescription = stringResource(R.string.cd_failed),
                             modifier = Modifier.size(dimensions.iconSizeMedium),
                             tint = MaterialTheme.colorScheme.error
                         )
@@ -152,7 +154,7 @@ fun ConversionProgressIndicator(
                     progress.isComplete -> {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "Complete",
+                            contentDescription = stringResource(R.string.cd_completed),
                             modifier = Modifier.size(dimensions.iconSizeMedium),
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -171,7 +173,7 @@ fun ConversionProgressIndicator(
                         
                         Icon(
                             imageVector = Icons.Default.Sync,
-                            contentDescription = "In Progress",
+                            contentDescription = stringResource(R.string.cd_in_progress),
                             modifier = Modifier
                                 .size(dimensions.iconSizeMedium)
                                 .rotate(rotation),
@@ -235,7 +237,7 @@ fun ConversionProgressIndicator(
  */
 @Composable
 fun InlineLoadingIndicator(
-    message: String = "Loading...",
+    message: String = stringResource(R.string.label_loading),
     modifier: Modifier = Modifier
 ) {
     val dimensions = LocalDimensions.current
@@ -293,7 +295,7 @@ fun SuccessFeedback(
         ) {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
-                contentDescription = "Success",
+                contentDescription = stringResource(R.string.cd_success),
                 modifier = Modifier.size(dimensions.iconSizeMedium),
                 tint = MaterialTheme.colorScheme.primary
             )
@@ -317,7 +319,7 @@ fun SuccessFeedback(
 fun TimeoutIndicator(
     remainingSeconds: Int,
     totalSeconds: Int,
-    message: String = "Please wait",
+    message: String = stringResource(R.string.label_please_wait),
     modifier: Modifier = Modifier
 ) {
     val dimensions = LocalDimensions.current
@@ -350,7 +352,7 @@ fun TimeoutIndicator(
                 )
                 
                 Text(
-                    text = "${remainingSeconds}s",
+                    text = stringResource(R.string.label_seconds_left, remainingSeconds),
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontSize = dimensions.fontSizeMedium
                     ),
@@ -400,7 +402,7 @@ fun MultiStepProgressIndicator(
             verticalArrangement = Arrangement.spacedBy(dimensions.spacingSmall)
         ) {
             Text(
-                text = "Progress",
+                text = stringResource(R.string.label_progress),
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontSize = dimensions.fontSizeMedium
                 ),
@@ -451,7 +453,7 @@ private fun StepItem(
             if (isCompleted) {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Completed",
+                    contentDescription = stringResource(R.string.cd_completed),
                     modifier = Modifier.size(dimensions.iconSizeSmall * 0.7f),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )

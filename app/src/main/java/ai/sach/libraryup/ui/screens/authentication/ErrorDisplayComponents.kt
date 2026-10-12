@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.authentication
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.common.responsiveness.Dimensions
 import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -80,7 +82,7 @@ fun EnhancedErrorMessage(
             ) {
                 Icon(
                     imageVector = icon,
-                    contentDescription = "Error",
+                    contentDescription = stringResource(R.string.cd_error),
                     modifier = Modifier.size(dimensions.iconSizeMedium),
                     tint = iconColor
                 )
@@ -135,7 +137,7 @@ fun EnhancedErrorMessage(
                             onClick = { showDetails = !showDetails }
                         ) {
                             Text(
-                                text = if (showDetails) "Hide Details" else "Show Details",
+                                text = stringResource(if (showDetails) R.string.error_hide_details else R.string.error_show_details),
                                 style = MaterialTheme.typography.labelSmall
                             )
                         }
@@ -147,7 +149,7 @@ fun EnhancedErrorMessage(
                             onClick = onDismiss
                         ) {
                             Text(
-                                text = "Dismiss",
+                                text = stringResource(R.string.action_close),
                                 style = MaterialTheme.typography.labelSmall
                             )
                         }
@@ -168,7 +170,7 @@ fun EnhancedErrorMessage(
                         modifier = Modifier.padding(dimensions.paddingSmall)
                     ) {
                         Text(
-                            text = "Technical Details:",
+                            text = stringResource(R.string.error_technical_details),
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontSize = dimensions.fontSizeSmall
                             ),
@@ -186,7 +188,7 @@ fun EnhancedErrorMessage(
                         
                         if (errorResponse.errorCode != null) {
                             Text(
-                                text = "Error Code: ${errorResponse.errorCode}",
+                                text = stringResource(R.string.error_code, errorResponse.errorCode.orEmpty()),
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontSize = dimensions.fontSizeSmall
                                 ),
@@ -226,7 +228,7 @@ fun SimpleErrorMessage(
         ) {
             Icon(
                 imageVector = Icons.Default.Error,
-                contentDescription = "Error",
+                contentDescription = stringResource(R.string.cd_error),
                 modifier = Modifier.size(dimensions.iconSizeSmall),
                 tint = MaterialTheme.colorScheme.onErrorContainer
             )
@@ -267,7 +269,7 @@ fun RecoveryActionsList(
             verticalArrangement = Arrangement.spacedBy(dimensions.spacingSmall)
         ) {
             Text(
-                text = "Suggested Actions:",
+                text = stringResource(R.string.error_suggested_actions),
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontSize = dimensions.fontSizeMedium
                 ),

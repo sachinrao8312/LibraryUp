@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.theme.AppColors
 import android.content.Context
 import androidx.compose.foundation.background
@@ -38,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -74,6 +76,12 @@ fun PinLockScreen(
     
     // Context for saving preferences
     val context = LocalContext.current
+
+    // Validation messages (looked up here; the Save button's onClick is not composable)
+    val errorCurrentRequired = stringResource(R.string.pin_error_current_required)
+    val errorIncorrect = stringResource(R.string.pin_error_incorrect)
+    val errorTooShort = stringResource(R.string.pin_error_too_short)
+    val errorMismatch = stringResource(R.string.pin_error_mismatch)
     val pinPrefs = remember { 
         context.getSharedPreferences("pin_prefs", Context.MODE_PRIVATE)
     }
@@ -86,12 +94,12 @@ fun PinLockScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (isPinAlreadySet) "Change PIN" else "Set PIN") },
+                title = { Text(stringResource(if (isPinAlreadySet) R.string.pin_change_title else R.string.pin_set_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 }
@@ -114,7 +122,7 @@ fun PinLockScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "PIN",
+                    text = stringResource(R.string.pin_badge),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -125,17 +133,17 @@ fun PinLockScreen(
             
             // Instruction text
             Text(
-                text = if (isPinAlreadySet) 
-                    "Change your PIN code" 
-                else 
-                    "Create a PIN to protect your app",
+                text = if (isPinAlreadySet)
+                    stringResource(R.string.pin_change_text)
+                else
+                    stringResource(R.string.pin_create_text),
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Medium
             )
             
             Text(
-                text = "Your PIN must be 4-6 digits",
+                text = stringResource(R.string.pin_rule),
                 color = Color.Gray,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
@@ -152,7 +160,7 @@ fun PinLockScreen(
                             currentPinError = null
                         }
                     },
-                    label = { Text("Current PIN") },
+                    label = { Text(stringResource(R.string.pin_current)) },
                     visualTransformation = if (isCurrentPinVisible) 
                         VisualTransformation.None 
                     else 
@@ -166,9 +174,9 @@ fun PinLockScreen(
                                 else 
                                     Icons.Default.Visibility,
                                 contentDescription = if (isCurrentPinVisible) 
-                                    "Hide PIN" 
+                                    stringResource(R.string.pin_hide)
                                 else 
-                                    "Show PIN"
+                                    stringResource(R.string.pin_show)
                             )
                         }
                     },
@@ -189,7 +197,7 @@ fun PinLockScreen(
                         newPinError = null
                     }
                 },
-                label = { Text("New PIN") },
+                label = { Text(stringResource(R.string.pin_new)) },
                 visualTransformation = if (isNewPinVisible) 
                     VisualTransformation.None 
                 else 
@@ -203,9 +211,9 @@ fun PinLockScreen(
                             else 
                                 Icons.Default.Visibility,
                             contentDescription = if (isNewPinVisible) 
-                                "Hide PIN" 
+                                stringResource(R.string.pin_hide)
                             else 
-                                "Show PIN"
+                                stringResource(R.string.pin_show)
                         )
                     }
                 },
@@ -225,7 +233,7 @@ fun PinLockScreen(
                         confirmPinError = null
                     }
                 },
-                label = { Text("Confirm PIN") },
+                label = { Text(stringResource(R.string.pin_confirm)) },
                 visualTransformation = if (isConfirmPinVisible) 
                     VisualTransformation.None 
                 else 
@@ -239,9 +247,9 @@ fun PinLockScreen(
                             else 
                                 Icons.Default.Visibility,
                             contentDescription = if (isConfirmPinVisible) 
-                                "Hide PIN" 
+                                stringResource(R.string.pin_hide)
                             else 
-                                "Show PIN"
+                                stringResource(R.string.pin_show)
                         )
                     }
                 },
@@ -261,23 +269,23 @@ fun PinLockScreen(
                     // Validate current PIN if changing
                     if (isPinAlreadySet) {
                         if (currentPin.length < 4) {
-                            currentPinError = "Current PIN is required"
+                            currentPinError = errorCurrentRequired
                             isValid = false
                         } else if (storedPinHash != hashPin(currentPin)) {
-                            currentPinError = "Incorrect PIN"
+                            currentPinError = errorIncorrect
                             isValid = false
                         }
                     }
                     
                     // Validate new PIN
                     if (newPin.length < 4) {
-                        newPinError = "PIN must be at least 4 digits"
+                        newPinError = errorTooShort
                         isValid = false
                     }
                     
                     // Validate confirmation
                     if (newPin != confirmPin) {
-                        confirmPinError = "PINs don't match"
+                        confirmPinError = errorMismatch
                         isValid = false
                     }
                     
@@ -300,7 +308,7 @@ fun PinLockScreen(
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                Text("Save PIN", fontSize = 16.sp)
+                Text(stringResource(R.string.pin_save), fontSize = 16.sp)
             }
             
             // Remove PIN button (only if changing)
@@ -320,7 +328,7 @@ fun PinLockScreen(
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
                     Text(
-                        text = "Remove PIN Protection",
+                        text = stringResource(R.string.pin_remove),
                         color = MaterialTheme.colorScheme.error
                     )
                 }

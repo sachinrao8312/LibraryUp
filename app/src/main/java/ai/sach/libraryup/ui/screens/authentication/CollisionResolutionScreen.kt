@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.authentication
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.common.responsiveness.Dimensions
 import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -78,7 +80,7 @@ fun CollisionResolutionScreen(
         
         // Resolution Strategies
         Text(
-            text = "Resolution Options",
+            text = stringResource(R.string.collision_options),
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontSize = dimensions.fontSizeLarge
             ),
@@ -107,7 +109,7 @@ fun CollisionResolutionScreen(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(dimensions.radiusMedium)
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.action_cancel))
             }
             
             Button(
@@ -118,7 +120,7 @@ fun CollisionResolutionScreen(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(dimensions.radiusMedium)
             ) {
-                Text("Continue")
+                Text(stringResource(R.string.action_continue))
             }
         }
     }
@@ -157,7 +159,7 @@ private fun CollisionAnalysisHeader(
                     AccountCollisionHandler.RiskLevel.MEDIUM -> Icons.Default.Warning
                     AccountCollisionHandler.RiskLevel.LOW -> Icons.Default.Info
                 },
-                contentDescription = "Risk Level",
+                contentDescription = stringResource(R.string.collision_risk_level),
                 modifier = Modifier.size(dimensions.iconSizeLarge * 1.5f),
                 tint = when (analysis.riskLevel) {
                     AccountCollisionHandler.RiskLevel.HIGH -> MaterialTheme.colorScheme.error
@@ -169,10 +171,10 @@ private fun CollisionAnalysisHeader(
             // Title
             Text(
                 text = when (analysis.collisionType) {
-                    AuthRepository.ConflictType.BOTH_HAVE_DATA -> "Account Conflict Detected"
-                    AuthRepository.ConflictType.GOOGLE_ACCOUNT_EXISTS -> "Existing Account Found"
-                    AuthRepository.ConflictType.GUEST_DATA_EXISTS -> "Guest Data Present"
-                    null -> "Account Analysis"
+                    AuthRepository.ConflictType.BOTH_HAVE_DATA -> stringResource(R.string.collision_title_conflict)
+                    AuthRepository.ConflictType.GOOGLE_ACCOUNT_EXISTS -> stringResource(R.string.collision_title_existing)
+                    AuthRepository.ConflictType.GUEST_DATA_EXISTS -> stringResource(R.string.collision_title_guest)
+                    null -> stringResource(R.string.collision_title_check)
                 },
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontSize = dimensions.fontSizeXLarge
@@ -189,7 +191,7 @@ private fun CollisionAnalysisHeader(
             // Email if available
             if (analysis.googleAccountEmail != null) {
                 Text(
-                    text = "Google Account: ${analysis.googleAccountEmail}",
+                    text = stringResource(R.string.collision_google_account, analysis.googleAccountEmail.orEmpty()),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = dimensions.fontSizeMedium
                     ),
@@ -203,7 +205,16 @@ private fun CollisionAnalysisHeader(
             
             // Risk level indicator
             Text(
-                text = "Risk Level: ${analysis.riskLevel.name}",
+                text = stringResource(
+                    R.string.collision_risk,
+                    stringResource(
+                        when (analysis.riskLevel) {
+                            AccountCollisionHandler.RiskLevel.HIGH -> R.string.risk_high
+                            AccountCollisionHandler.RiskLevel.MEDIUM -> R.string.risk_medium
+                            AccountCollisionHandler.RiskLevel.LOW -> R.string.risk_low
+                        }
+                    )
+                ),
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontSize = dimensions.fontSizeSmall
                 ),
@@ -246,13 +257,13 @@ private fun DataImpactCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.Security,
-                    contentDescription = "Data Impact",
+                    contentDescription = stringResource(R.string.collision_data_impact),
                     modifier = Modifier.size(dimensions.iconSizeMedium),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 
                 Text(
-                    text = "Data Impact Assessment",
+                    text = stringResource(R.string.collision_data_impact),
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontSize = dimensions.fontSizeMedium
                     ),
@@ -274,13 +285,13 @@ private fun DataImpactCard(
                 verticalArrangement = Arrangement.spacedBy(dimensions.spacingTiny)
             ) {
                 DataStatusIndicator(
-                    label = "Guest Data",
+                    label = stringResource(R.string.collision_guest_data),
                     atRisk = dataImpact.guestDataAtRisk,
                     dimensions = dimensions
                 )
                 
                 DataStatusIndicator(
-                    label = "Google Account Data",
+                    label = stringResource(R.string.collision_google_account_data),
                     atRisk = dataImpact.googleDataAtRisk,
                     dimensions = dimensions
                 )
@@ -296,7 +307,7 @@ private fun DataImpactCard(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Data merging is possible",
+                            text = stringResource(R.string.collision_can_merge),
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = dimensions.fontSizeSmall
                             ),
@@ -328,7 +339,7 @@ private fun DataStatusIndicator(
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "$label: ${if (atRisk) "At Risk" else "Safe"}",
+            text = if (atRisk) stringResource(R.string.collision_at_risk, label) else stringResource(R.string.collision_safe, label),
             style = MaterialTheme.typography.bodySmall.copy(
                 fontSize = dimensions.fontSizeSmall
             ),
@@ -401,14 +412,14 @@ private fun ResolutionStrategyCard(
                 horizontalArrangement = Arrangement.spacedBy(dimensions.spacingMedium)
             ) {
                 DataPreservationIndicator(
-                    label = "Guest Data",
+                    label = stringResource(R.string.collision_guest_data),
                     preserved = strategy.preservesGuestData,
                     dimensions = dimensions,
                     isSelected = isSelected
                 )
                 
                 DataPreservationIndicator(
-                    label = "Google Data",
+                    label = stringResource(R.string.collision_google_data),
                     preserved = strategy.preservesGoogleData,
                     dimensions = dimensions,
                     isSelected = isSelected
@@ -458,12 +469,13 @@ private fun DataPreservationIndicator(
 /**
  * Get user-friendly title for strategy type
  */
+@Composable
 private fun getStrategyTitle(strategyType: AccountCollisionHandler.StrategyType): String {
     return when (strategyType) {
-        AccountCollisionHandler.StrategyType.AUTO_CONVERT -> "Convert Guest Account"
-        AccountCollisionHandler.StrategyType.AUTO_SIGN_IN -> "Use Existing Account"
-        AccountCollisionHandler.StrategyType.MERGE_DATA -> "Merge Account Data"
-        AccountCollisionHandler.StrategyType.USER_CHOICE -> "Choose Resolution"
-        AccountCollisionHandler.StrategyType.CREATE_NEW -> "Create New Account"
+        AccountCollisionHandler.StrategyType.AUTO_CONVERT -> stringResource(R.string.strategy_convert)
+        AccountCollisionHandler.StrategyType.AUTO_SIGN_IN -> stringResource(R.string.strategy_use_existing)
+        AccountCollisionHandler.StrategyType.MERGE_DATA -> stringResource(R.string.strategy_merge)
+        AccountCollisionHandler.StrategyType.USER_CHOICE -> stringResource(R.string.strategy_choose)
+        AccountCollisionHandler.StrategyType.CREATE_NEW -> stringResource(R.string.conflict_create_new)
     }
 }

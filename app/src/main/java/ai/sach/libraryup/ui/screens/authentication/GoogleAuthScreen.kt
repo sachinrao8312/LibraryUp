@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -126,7 +127,7 @@ fun GoogleAuthScreen(
                 .padding(top = 8.dp, end = 8.dp)
         ) {
             Text(
-                text = "Skip",
+                text = stringResource(R.string.action_skip),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -286,7 +287,7 @@ private fun ModernAppBranding(
                     // Use the original logo with 2x zoom to crop out rectangular edges
                     Image(
                         painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = "LibraryUp Logo",
+                        contentDescription = stringResource(R.string.app_logo_content_description),
                         modifier = Modifier
                             .size(if (isSmallScreen) 125.dp else 156.dp)
                             .padding(0.dp)
@@ -297,7 +298,7 @@ private fun ModernAppBranding(
         
         // App name with modern typography
         Text(
-            text = "LibraryUp",
+            text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontSize = if (isSmallScreen) 32.sp else 40.sp
             ),
@@ -307,7 +308,7 @@ private fun ModernAppBranding(
         
         // Tagline with better spacing
         Text(
-            text = "Your complete rental management solution",
+            text = stringResource(R.string.welcome_subtitle),
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontSize = if (isSmallScreen) 16.sp else 18.sp
             ),
@@ -356,7 +357,7 @@ private fun ModernAuthenticationCard(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Welcome Back",
+                    text = stringResource(R.string.auth_welcome_back),
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontSize = if (isSmallScreen) 24.sp else 28.sp
                     ),
@@ -365,7 +366,7 @@ private fun ModernAuthenticationCard(
                 )
                 
                 Text(
-                    text = "Choose how you'd like to get started",
+                    text = stringResource(R.string.auth_choose_start),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = if (isSmallScreen) 16.sp else 18.sp
                     ),
@@ -431,13 +432,13 @@ private fun ModernGoogleSignInButton(
                 // Google Logo with proper tint and size
                 Image(
                     painter = painterResource(id = R.drawable.ic_google),
-                    contentDescription = "Google Logo",
+                    contentDescription = stringResource(R.string.auth_google_logo),
                     modifier = Modifier.size(24.dp),
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.White)
                 )
                 
                 Text(
-                    text = "Continue with Google",
+                    text = stringResource(R.string.sign_in_with_google),
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontSize = if (isSmallScreen) 16.sp else 18.sp
                     ),
@@ -472,7 +473,7 @@ private fun ModernErrorMessage(
         ) {
             Icon(
                 imageVector = Icons.Default.Security,
-                contentDescription = "Error",
+                contentDescription = stringResource(R.string.cd_error),
                 modifier = Modifier.size(20.dp),
                 tint = AppColors.Error
             )
@@ -506,18 +507,18 @@ private fun ModernAppFooter(
         ) {
             SecurityBadge(
                 icon = Icons.Default.Verified,
-                text = "Secure",
+                text = stringResource(R.string.auth_badge_secure),
                 color = AppColors.PrimaryGreen
             )
             SecurityBadge(
                 icon = Icons.Default.Security,
-                text = "Private",
+                text = stringResource(R.string.auth_badge_private),
                 color = AppColors.Info
             )
         }
         
         Text(
-            text = "Your data is protected with enterprise-grade security",
+            text = stringResource(R.string.auth_footer),
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             textAlign = TextAlign.Center,

@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.common.composables.AppTopAppBar
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -55,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -105,7 +107,7 @@ fun AppPreferencesScreen(
     Scaffold(
         topBar = {
             AppTopAppBar(
-                title = "App Preferences",
+                title = stringResource(R.string.settings_app_preferences),
                 showBackButton = true,
                 onBackPressed = { navController.popBackStack() },
                 showDefaultMenu = true,
@@ -121,7 +123,7 @@ fun AppPreferencesScreen(
         ) {
             // Header text
             Text(
-                text = "Customize how the app looks and behaves",
+                text = stringResource(R.string.prefs_subtitle),
                 modifier = Modifier.padding(16.dp),
                 color = secondaryTextColor,
                 fontSize = 16.sp
@@ -137,7 +139,7 @@ fun AppPreferencesScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "Theme Color",
+                        text = stringResource(R.string.prefs_theme_color),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = textColor
@@ -173,7 +175,7 @@ fun AppPreferencesScreen(
 
                         Icon(
                             imageVector = Icons.Default.ChevronRight,
-                            contentDescription = "Select Color",
+                            contentDescription = stringResource(R.string.prefs_select_color),
                             tint = secondaryTextColor
                         )
                     }
@@ -190,7 +192,7 @@ fun AppPreferencesScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "Country & Currency",
+                        text = stringResource(R.string.prefs_country_currency),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = textColor
@@ -236,7 +238,7 @@ fun AppPreferencesScreen(
 
                             Icon(
                                 imageVector = Icons.Default.ChevronRight,
-                                contentDescription = "Select Currency",
+                                contentDescription = stringResource(R.string.prefs_select_currency),
                                 tint = secondaryTextColor
                             )
                         }
@@ -245,7 +247,7 @@ fun AppPreferencesScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Changes currency symbol throughout the app",
+                        text = stringResource(R.string.prefs_currency_hint),
                         color = secondaryTextColor,
                         fontSize = 14.sp
                     )
@@ -359,7 +361,7 @@ fun ColorPickerDialog(
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back to Colors",
+                                    contentDescription = stringResource(R.string.prefs_back_to_colors),
                                     tint = Color.White,
                                     modifier = Modifier.size(24.dp)
                                 )
@@ -404,7 +406,7 @@ fun ColorPickerDialog(
                                     if (isSelected) {
                                         Icon(
                                             imageVector = Icons.Default.Check,
-                                            contentDescription = "Selected",
+                                            contentDescription = stringResource(R.string.cd_selected),
                                             tint = Color.White,
                                             modifier = Modifier.size(20.dp)
                                         )
@@ -425,7 +427,7 @@ fun ColorPickerDialog(
                     TextButton(
                         onClick = { onDismiss() }
                     ) {
-                        Text("Cancel", color = Color.White)
+                        Text(stringResource(R.string.action_cancel), color = Color.White)
                     }
 
                     TextButton(
@@ -434,7 +436,7 @@ fun ColorPickerDialog(
                             onDismiss()
                         }
                     ) {
-                        Text("Done", color = Color.White)
+                        Text(stringResource(R.string.action_done), color = Color.White)
                     }
                 }
             }
@@ -543,7 +545,7 @@ fun CurrencyPickerDialog(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Select Currency",
+                    text = stringResource(R.string.prefs_select_currency),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
@@ -595,7 +597,7 @@ fun CurrencyPickerDialog(
                             if (isSelected) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
-                                    contentDescription = "Selected",
+                                    contentDescription = stringResource(R.string.cd_selected),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -741,31 +743,36 @@ fun getFlagEmoji(countryCode: String): String? {
 /**
  * Helper function to get a country name from a country code.
  */
+@Composable
 fun getCountryName(countryCode: String): String {
-    return when (countryCode) {
-        "IN" -> "India"
-        "US" -> "United States"
-        "GB" -> "United Kingdom"
-        "EU" -> "European Union"
-        "JP" -> "Japan"
-        "CA" -> "Canada"
-        "AU" -> "Australia"
-        else -> "Unknown"
-    }
+    return stringResource(
+        when (countryCode) {
+            "IN" -> R.string.country_in
+            "US" -> R.string.country_us
+            "GB" -> R.string.country_gb
+            "EU" -> R.string.country_eu
+            "JP" -> R.string.country_jp
+            "CA" -> R.string.country_ca
+            "AU" -> R.string.country_au
+            else -> R.string.country_unknown
+        }
+    )
 }
 
 /**
  * Helper function to get a currency name from a currency code.
  */
+@Composable
 fun getCurrencyName(currencyCode: String): String {
-    return when (currencyCode) {
-        "INR" -> "Indian Rupee"
-        "USD" -> "US Dollar"
-        "GBP" -> "British Pound"
-        "EUR" -> "Euro"
-        "JPY" -> "Japanese Yen"
-        "CAD" -> "Canadian Dollar"
-        "AUD" -> "Australian Dollar"
-        else -> ""
+    val res = when (currencyCode) {
+        "INR" -> R.string.currency_inr
+        "USD" -> R.string.currency_usd
+        "GBP" -> R.string.currency_gbp
+        "EUR" -> R.string.currency_eur
+        "JPY" -> R.string.currency_jpy
+        "CAD" -> R.string.currency_cad
+        "AUD" -> R.string.currency_aud
+        else -> null
     }
+    return if (res != null) stringResource(res) else ""
 }

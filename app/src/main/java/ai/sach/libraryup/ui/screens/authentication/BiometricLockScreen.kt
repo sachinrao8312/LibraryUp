@@ -1,4 +1,5 @@
 package ai.sach.libraryup.ui.screens.authentication
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.theme.AppColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -69,9 +71,12 @@ fun BiometricLockScreen(
     showSkipOption: Boolean = false,
     showPinOption: Boolean = true,
     onUsePinInstead: (() -> Unit)? = null,
-    title: String = "LibraryUp"
+    title: String = stringResource(R.string.app_name)
 ) {
     val context = LocalContext.current
+    val promptTitle = stringResource(R.string.lock_prompt_title)
+    val promptSubtitle = stringResource(R.string.lock_prompt_subtitle)
+    val notAvailableMessage = stringResource(R.string.lock_not_available)
     val authManager = biometricAuthManager ?: remember { BiometricAuthManager(context) }
 
     data class BiometricState(
@@ -95,8 +100,8 @@ fun BiometricLockScreen(
                 state.value = state.value.copy(isAuthenticating = true, showLoadingAnimation = true)
                 authManager.showBiometricPrompt(
                     activity = activity,
-                    title = "Verify your identity",
-                    subtitle = "Use your fingerprint to unlock LibraryUp",
+                    title = promptTitle,
+                    subtitle = promptSubtitle,
                     onSuccess = {
                         state.value = state.value.copy(isAuthenticating = false, showLoadingAnimation = false)
                         onAuthenticationSuccess()
@@ -119,7 +124,7 @@ fun BiometricLockScreen(
                     }
                 )
             } else if (!isAvailable) {
-                state.value = state.value.copy(errorMessage = "Biometric authentication is not available on this device", showPinOption = true)
+                state.value = state.value.copy(errorMessage = notAvailableMessage, showPinOption = true)
             } else if (!isEnabled) {
                 onSkipAuthentication()
             }
@@ -171,7 +176,7 @@ fun BiometricLockScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Fingerprint,
-                        contentDescription = "Fingerprint",
+                        contentDescription = stringResource(R.string.lock_fingerprint),
                         tint = if (state.value.errorMessage == null)
                             AppColors.PrimaryGreen
                         else
@@ -201,9 +206,9 @@ fun BiometricLockScreen(
             // Instruction text
             Text(
                 text = if (state.value.errorMessage == null)
-                    "Touch the fingerprint sensor to unlock"
+                    stringResource(R.string.lock_touch_sensor)
                 else
-                    "Authentication failed. Try again or use another method.",
+                    stringResource(R.string.lock_failed),
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Medium,
@@ -259,7 +264,7 @@ fun BiometricLockScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Use PIN Instead",
+                            text = stringResource(R.string.lock_use_pin),
                             fontSize = 16.sp
                         )
                     }
@@ -290,7 +295,7 @@ fun BiometricLockScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Try Again",
+                            text = stringResource(R.string.action_try_again),
                             fontSize = 16.sp
                         )
                     }
@@ -308,7 +313,7 @@ fun BiometricLockScreen(
                         .padding(vertical = 8.dp)
                 ) {
                     Text(
-                        text = "Skip for Now",
+                        text = stringResource(R.string.lock_skip_for_now),
                         color = AppColors.PrimaryGreen,
                         fontSize = 16.sp
                     )

@@ -2,6 +2,7 @@ package ai.sach.libraryup.ui.screens.settingsScreen
 
 import ai.sach.libraryup.LibraryUpApplication
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.common.composables.AppTopAppBar
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.ThemeViewModel
@@ -53,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -100,7 +102,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             AppTopAppBar(
-                title = "Settings",
+                title = stringResource(R.string.settings_title),
                 showDefaultMenu = true
                 // No backup action here: the Backup & Restore row below goes to the
                 // same place, and two ways to the same screen is just clutter.
@@ -127,8 +129,8 @@ fun SettingsScreen(
         if (uiState.showLogoutDialog) {
             AlertDialog(
                 onDismissRequest = { uiState = uiState.copy(showLogoutDialog = false) },
-                title = { Text("Sign Out") },
-                text = { Text("Are you sure you want to sign out of LibraryUp?") },
+                title = { Text(stringResource(R.string.action_sign_out)) },
+                text = { Text(stringResource(R.string.settings_sign_out_confirm)) },
                 confirmButton = {
                     Button(
                         onClick = {
@@ -138,7 +140,7 @@ fun SettingsScreen(
                             } catch (e: Exception) {
                                 logError("SettingsScreen", "Error during logout: ${e.message}", e)
                                 coroutineScope.launch {
-                                    snackbarHostState.showSnackbar("Error during logout: ${e.message}")
+                                    snackbarHostState.showSnackbar(context.getString(R.string.settings_sign_out_error, e.message ?: ""))
                                 }
                             }
                         },
@@ -146,12 +148,12 @@ fun SettingsScreen(
                             containerColor = MaterialTheme.colorScheme.error
                         )
                     ) {
-                        Text("Sign Out")
+                        Text(stringResource(R.string.action_sign_out))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { uiState = uiState.copy(showLogoutDialog = false) }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
             )
@@ -168,24 +170,24 @@ fun SettingsMenuList(navController: NavController) {
     SettingsMenuItem(
         icon = Icons.Outlined.Person,
         iconTint = Color(0xFF2196F3),
-        title = "Account",
-        subtitle = "Personal information, email",
+        title = stringResource(R.string.settings_account),
+        subtitle = stringResource(R.string.settings_account_desc),
         onClick = { navController.navigate(SettingsNavRoutes.ACCOUNT) }
     )
 
     SettingsMenuItem(
         icon = Icons.Outlined.Security,
         iconTint = Color(0xFF4CAF50),
-        title = "Security",
-        subtitle = "Password, two-factor authentication",
+        title = stringResource(R.string.settings_security),
+        subtitle = stringResource(R.string.settings_security_desc),
         onClick = { navController.navigate(SettingsNavRoutes.SECURITY) }
     )
 
     SettingsMenuItem(
         icon = Icons.Outlined.Notifications,
         iconTint = Color(0xFFFFC107),
-        title = "Notifications",
-        subtitle = "Rent reminders, payment alerts",
+        title = stringResource(R.string.title_notifications),
+        subtitle = stringResource(R.string.settings_notifications_desc),
         onClick = { navController.navigate(SettingsNavRoutes.NOTIFICATIONS) }
     )
 }
@@ -196,24 +198,24 @@ fun AdditionalSettingsMenuList(navController: NavController) {
     SettingsMenuItem(
         icon = Icons.Outlined.Palette,
         iconTint = Color(0xFF673AB7),
-        title = "App Preferences",
-        subtitle = "Customize colors, currency, and features",
+        title = stringResource(R.string.settings_app_preferences),
+        subtitle = stringResource(R.string.settings_app_preferences_desc),
         onClick = { navController.navigate(SettingsNavRoutes.APP_PREFERENCES) }
     )
 
     SettingsMenuItem(
         icon = Icons.AutoMirrored.Outlined.Help,
         iconTint = Color(0xFF4CAF50),
-        title = "Help & Support",
-        subtitle = "FAQs, contact support",
+        title = stringResource(R.string.settings_help),
+        subtitle = stringResource(R.string.settings_help_desc),
         onClick = { navController.navigate(SettingsNavRoutes.HELP) }
     )
 
     SettingsMenuItem(
         icon = Icons.Outlined.Backup,
         iconTint = Color(0xFF9C27B0),
-        title = "Backup & Restore",
-        subtitle = "Backup file or Google Drive",
+        title = stringResource(R.string.title_backup),
+        subtitle = stringResource(R.string.settings_backup_desc),
         onClick = { navController.navigate(SettingsNavRoutes.BACKUP) }
     )
 }
@@ -225,8 +227,8 @@ fun AccountActionsList(onLogoutClick: () -> Unit) {
     SettingsMenuItem(
         icon = Icons.AutoMirrored.Filled.Logout,
         iconTint = MaterialTheme.colorScheme.error,
-        title = "Sign Out",
-        subtitle = "Sign out of your account",
+        title = stringResource(R.string.action_sign_out),
+        subtitle = stringResource(R.string.settings_sign_out_desc),
         onClick = onLogoutClick,
         isDestructive = true
     )
@@ -285,7 +287,7 @@ fun SettingsMenuItem(
 
         Icon(
             imageVector = Icons.Filled.ChevronRight,
-            contentDescription = "Navigate",
+            contentDescription = stringResource(R.string.cd_open),
             tint = if (isDestructive) MaterialTheme.colorScheme.error.copy(alpha = 0.7f) else Color.Gray
         )
     }
@@ -316,14 +318,14 @@ fun AppInfoSection() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "LibraryUp v ${getVersionName()}",
+            text = stringResource(R.string.settings_version, getVersionName().orEmpty()),
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
             color = Color.Gray
         )
 
         Text(
-            text = "© ${Year.now().value} LibraryUp. All rights reserved.",
+            text = stringResource(R.string.settings_copyright, Year.now().value),
             fontSize = 12.sp,
             color = Color.Gray,
             modifier = Modifier.padding(top = 4.dp)

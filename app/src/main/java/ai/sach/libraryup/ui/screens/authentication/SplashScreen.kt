@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -182,7 +183,7 @@ fun SplashScreen(
                     // Use the original logo with 2x zoom to crop out rectangular edges
                     Image(
                         painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = "LibraryUp Logo",
+                        contentDescription = stringResource(R.string.app_logo_content_description),
                         modifier = Modifier
                             .size(187.dp)
                             .padding(0.dp)
@@ -202,7 +203,7 @@ fun SplashScreen(
                         )
             ) {
                 Text(
-                    text = "LibraryUp",
+                    text = stringResource(R.string.app_name),
                     fontSize = 40.sp, // Increased by 25% from 32sp
                     fontWeight = FontWeight.Bold,
                     color = AppColors.PrimaryGreen,
@@ -222,7 +223,7 @@ fun SplashScreen(
                         )
             ) {
                 Text(
-                    text = "Simplify Rent Management",
+                    text = stringResource(R.string.splash_tagline),
                     fontSize = 20.sp, // Increased by 25% from 16sp
                     fontWeight = FontWeight.Medium,
                     maxLines = 2,
@@ -240,7 +241,7 @@ fun SplashScreen(
                 enter = fadeIn(animationSpec = tween(1000))
             ) {
                 Text(
-                    text = "Version ${BuildConfig.VERSION_NAME}",
+                    text = stringResource(R.string.label_version, BuildConfig.VERSION_NAME),
                     fontSize = 15.sp, // Increased by 25% from 12sp
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                     modifier = Modifier.padding(top = 60.dp) // Increased padding by 25%

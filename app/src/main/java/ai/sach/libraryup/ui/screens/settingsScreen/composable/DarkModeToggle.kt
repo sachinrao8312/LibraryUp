@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.theme.AppColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,7 +52,7 @@ fun DarkModeToggle(themeViewModel: ThemeViewModel) {
         ) {
             Icon(
                 imageVector = Icons.Outlined.DarkMode,
-                contentDescription = "Dark Mode",
+                contentDescription = stringResource(R.string.settings_dark_mode),
                 tint = Color(0xFF673AB7)
             )
         }
@@ -62,14 +64,14 @@ fun DarkModeToggle(themeViewModel: ThemeViewModel) {
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = "Dark Mode",
+                text = stringResource(R.string.settings_dark_mode),
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
                 color = textColor
             )
 
             Text(
-                text = "Toggle between light and dark theme",
+                text = stringResource(R.string.settings_dark_mode_desc),
                 color = descriptionColor,
                 fontSize = 14.sp
             )

@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.authentication
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.common.responsiveness.Dimensions
 import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -79,14 +81,14 @@ fun AccountExistsDialog(
                 // Icon
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Account Exists",
+                    contentDescription = stringResource(R.string.conflict_account_exists_title),
                     modifier = Modifier.size(dimensions.iconSizeLarge * 1.5f),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 
                 // Title
                 Text(
-                    text = "Account Already Exists",
+                    text = stringResource(R.string.conflict_account_exists_title),
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontSize = dimensions.fontSizeLarge
                     ),
@@ -97,7 +99,7 @@ fun AccountExistsDialog(
                 
                 // Message
                 Text(
-                    text = "An account with $email already exists. Would you like to sign in with your existing account or create a new one?",
+                    text = stringResource(R.string.conflict_account_exists_text, email),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = dimensions.fontSizeMedium
                     ),
@@ -122,7 +124,7 @@ fun AccountExistsDialog(
                         shape = RoundedCornerShape(dimensions.radiusMedium)
                     ) {
                         Text(
-                            text = "Sign In with Existing Account",
+                            text = stringResource(R.string.conflict_sign_in_existing),
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -134,7 +136,7 @@ fun AccountExistsDialog(
                         shape = RoundedCornerShape(dimensions.radiusMedium)
                     ) {
                         Text(
-                            text = "Create New Account",
+                            text = stringResource(R.string.conflict_create_new),
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -145,7 +147,7 @@ fun AccountExistsDialog(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Cancel",
+                            text = stringResource(R.string.action_cancel),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
@@ -171,18 +173,18 @@ fun MergeDataDialog(
     
     val (title, message, icon) = when (conflictType) {
         AuthRepository.ConflictType.BOTH_HAVE_DATA -> Triple(
-            "Data Conflict Detected",
-            "Both your guest account and Google account have data. How would you like to proceed?",
+            stringResource(R.string.conflict_both_data_title),
+            stringResource(R.string.conflict_both_data_text),
             Icons.Default.Merge
         )
         AuthRepository.ConflictType.GUEST_DATA_EXISTS -> Triple(
-            "Preserve Guest Data",
-            "Your guest account has valuable data. Would you like to keep this data or start fresh?",
+            stringResource(R.string.conflict_guest_data_title),
+            stringResource(R.string.conflict_guest_data_text),
             Icons.Default.Info
         )
         AuthRepository.ConflictType.GOOGLE_ACCOUNT_EXISTS -> Triple(
-            "Google Account Found",
-            "A Google account with this email already exists. Choose how to proceed.",
+            stringResource(R.string.conflict_google_exists_title),
+            stringResource(R.string.conflict_google_exists_text),
             Icons.Default.AccountCircle
         )
     }
@@ -273,7 +275,7 @@ fun MergeDataDialog(
                                 modifier = Modifier.size(dimensions.iconSizeSmall)
                             )
                             Text(
-                                text = "Merge Data",
+                                text = stringResource(R.string.conflict_merge_data),
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
@@ -286,7 +288,7 @@ fun MergeDataDialog(
                         shape = RoundedCornerShape(dimensions.radiusMedium)
                     ) {
                         Text(
-                            text = "Start Fresh",
+                            text = stringResource(R.string.conflict_start_fresh),
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -297,7 +299,7 @@ fun MergeDataDialog(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Cancel",
+                            text = stringResource(R.string.action_cancel),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
@@ -347,14 +349,14 @@ fun CreateNewDialog(
                 // Icon
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Create New Account",
+                    contentDescription = stringResource(R.string.conflict_create_new),
                     modifier = Modifier.size(dimensions.iconSizeLarge * 1.5f),
                     tint = MaterialTheme.colorScheme.tertiary
                 )
                 
                 // Title
                 Text(
-                    text = "Create New Account",
+                    text = stringResource(R.string.conflict_create_new),
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontSize = dimensions.fontSizeLarge
                     ),
@@ -365,7 +367,7 @@ fun CreateNewDialog(
                 
                 // Message
                 Text(
-                    text = "This will create a completely new account. Any existing guest data will be lost. Are you sure you want to continue?",
+                    text = stringResource(R.string.conflict_create_new_text),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = dimensions.fontSizeMedium
                     ),
@@ -390,7 +392,7 @@ fun CreateNewDialog(
                         shape = RoundedCornerShape(dimensions.radiusMedium)
                     ) {
                         Text(
-                            text = "Yes, Create New Account",
+                            text = stringResource(R.string.conflict_create_new_confirm),
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -402,7 +404,7 @@ fun CreateNewDialog(
                         shape = RoundedCornerShape(dimensions.radiusMedium)
                     ) {
                         Text(
-                            text = "Cancel",
+                            text = stringResource(R.string.action_cancel),
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -469,7 +471,7 @@ private fun DataMergeBenefits(
             verticalArrangement = Arrangement.spacedBy(dimensions.spacingTiny)
         ) {
             Text(
-                text = "Merging will:",
+                text = stringResource(R.string.conflict_merge_will),
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontSize = dimensions.fontSizeSmall
                 ),
@@ -478,10 +480,10 @@ private fun DataMergeBenefits(
             )
             
             val benefits = listOf(
-                "Preserve all your guest data",
-                "Combine with Google account features",
-                "Enable cross-device synchronization",
-                "Maintain data integrity"
+                stringResource(R.string.conflict_merge_benefit_keep),
+                stringResource(R.string.conflict_merge_benefit_google),
+                stringResource(R.string.conflict_merge_benefit_backup),
+                stringResource(R.string.conflict_merge_benefit_safe)
             )
             
             benefits.forEach { benefit ->
