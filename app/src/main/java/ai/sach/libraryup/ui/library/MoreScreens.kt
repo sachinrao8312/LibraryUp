@@ -31,7 +31,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudUpload
@@ -40,7 +39,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Wallet
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
@@ -89,7 +88,7 @@ fun MoreScreen(
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         MoreItem(Icons.Default.Campaign, R.string.title_reminders, R.string.more_reminders_desc, onReminders)
         MoreItem(Icons.Default.EventAvailable, R.string.title_attendance, R.string.more_attendance_desc, onAttendance)
-        MoreItem(Icons.Default.Wallet, R.string.title_expenses, R.string.more_expenses_desc, onExpenses)
+        MoreItem(Icons.Default.AccountBalanceWallet, R.string.title_expenses, R.string.more_expenses_desc, onExpenses)
         HorizontalDivider()
         MoreItem(Icons.Default.LocalLibrary, R.string.title_library_settings, R.string.more_library_desc, onLibrarySettings)
         MoreItem(Icons.Default.ImportExport, R.string.title_data, R.string.more_data_desc, onData)

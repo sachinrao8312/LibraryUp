@@ -125,7 +125,7 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
         val shifts = setup.shifts.associateBy { it.id }
         val overviews = students.map { s ->
             val m = activeByStudent[s.id]
-            val paid = m?.let { paidByMembership[it.id] } ?: 0
+            val paid = m?.let { paidByMembership[it.id] } ?: 0L
             val status = if (m == null || s.status == StudentStatus.LEFT) null else {
                 DueCalculator.status(
                     PeriodSnapshot(m.startDate, m.dueDate, m.fee, m.discount, m.lateFee, paid, s.status == StudentStatus.FROZEN),
