@@ -95,6 +95,10 @@ interface LibraryDao {
     @Update
     suspend fun updateStudent(student: Student)
 
+    /** Cascades to the student's memberships, payments and attendance. */
+    @Query("DELETE FROM students WHERE id = :id")
+    suspend fun deleteStudent(id: Long)
+
     /* ---------- Memberships ---------- */
 
     @Query("SELECT * FROM memberships ORDER BY startDate DESC")
@@ -151,6 +155,9 @@ interface LibraryDao {
 
     @Upsert
     suspend fun upsertAttendance(attendance: Attendance)
+
+    @Query("DELETE FROM attendance WHERE id = :id")
+    suspend fun deleteAttendance(id: Long)
 
     /* ---------- Expenses ---------- */
 

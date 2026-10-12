@@ -275,4 +275,21 @@
     <string name="unit_days">दिन</string>
     <string name="unit_months">महीने</string>
     <string name="attendance_present">हाज़िर %1$d / %2$d</string>
+    <string name="error_seat_label_taken">इस ब्लॉक में यह नंबर पहले से किसी और सीट का है।</string>
+    <string name="label_add_late_fee">लेट फीस %1$s जोड़ें</string>
+    <string name="title_edit_payment">भुगतान %1$s बदलें</string>
+    <string name="action_delete_student">छात्र हटाएँ</string>
+    <string name="confirm_delete_student_title">छात्र को हमेशा के लिए हटाएँ?</string>
+    <string name="confirm_delete_student_text">%1$s और उनके सभी भुगतान व हाज़िरी हट जाएँगे। गतिविधि लॉग में इसका रिकॉर्ड रहेगा। इतिहास रखना हो तो \'छोड़ दिया\' इस्तेमाल करें।</string>
+    <string name="action_undo">वापस लें</string>
+    <string name="reminders_holiday">छुट्टी की सूचना</string>
+    <string name="field_holiday_date">छुट्टी की तारीख़</string>
+    <string name="section_late_fee">अपने-आप लेट फीस</string>
+    <string name="late_fee_hint">बकाया फीस लेते समय सुझाई जाएगी। बंद करने के लिए प्रति दिन खाली छोड़ें।</string>
+    <string name="field_late_fee_per_day">प्रति दिन ₹</string>
+    <string name="field_late_fee_max">अधिकतम ₹ (वैकल्पिक)</string>
+    <string name="section_templates">संदेश टेम्पलेट</string>
+    <string name="templates_hint">बिल्ट-इन संदेश के लिए खाली छोड़ें। आप {name}, {amount}, {due_date}, {valid_till}, {seat}, {shift}, {library}, {upi_link} इस्तेमाल कर सकते हैं।</string>
+    <string name="template_holiday">छुट्टी की सूचना</string>
+    <string name="label_any_shift">कोई भी शिफ़्ट</string>
 </resources>

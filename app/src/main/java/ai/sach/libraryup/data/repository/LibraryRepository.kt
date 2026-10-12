@@ -24,6 +24,7 @@ import ai.sach.libraryup.domain.DueStatus
 import ai.sach.libraryup.domain.PeriodSnapshot
 import ai.sach.libraryup.domain.ReceiptNumber
 import ai.sach.libraryup.domain.SeatBooking
+import ai.sach.libraryup.domain.SeatLabels
 import ai.sach.libraryup.domain.SeatRules
 import ai.sach.libraryup.domain.StudentImportRow
 import androidx.annotation.StringRes
@@ -76,6 +77,14 @@ data class LibraryState(
 
     val overdueMembershipIds: Set<Long>
         get() = students.filter { it.status == DueStatus.OVERDUE }.mapNotNull { it.membership?.id }.toSet()
+
+    /** Late fee the library's automatic rule suggests for [s] today (0 when paid up or the rule is off). */
+    fun suggestedLateFee(s: StudentOverview): Long {
+        val p = profile ?: return 0
+        val m = s.membership ?: return 0
+        if (s.balance <= 0 || s.student.status != StudentStatus.ACTIVE) return 0
+        return maxOf(m.lateFee, p.lateFeeRule.suggested(m.startDate, today, p.graceDays))
+    }
 
     companion object {
         val EMPTY = LibraryState(null, emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), LocalDate.now())
@@ -169,7 +178,11 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
 
     suspend fun saveShift(shift: Shift) { dao.upsertShift(shift) }
     suspend fun savePlan(plan: Plan) { dao.upsertPlan(plan) }
-    suspend fun saveSeat(seat: Seat) { dao.upsertSeat(seat) }
+    suspend fun saveSeat(seat: Seat) {
+        val others = dao.getSeats().filter { it.id != seat.id }.map { it.block to it.label }
+        if (SeatLabels.isTaken(seat.block, seat.label, others)) throw UserError(R.string.error_seat_label_taken)
+        dao.upsertSeat(seat)
+    }
 
     /** Adds [count] seats to [block], numbered after the highest numeric label so far. */
     suspend fun addSeats(block: String, count: Int) = database.withTransaction {
@@ -292,6 +305,20 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
         log(ActivityLog.STUDENT, s.id, ActivityLog.EDIT, "Unfroze ${s.name} on $on")
     }
 
+    /**
+     * Removes a student and, through the foreign keys, their memberships, payments and
+     * attendance. The activity log keeps a record of what was deleted.
+     */
+    suspend fun deleteStudent(studentId: Long) = database.withTransaction {
+        val s = dao.getStudent(studentId) ?: return@withTransaction
+        val paid = dao.getPayments().filter { it.studentId == studentId && !it.deleted }
+        dao.deleteStudent(studentId)
+        log(
+            ActivityLog.STUDENT, studentId, ActivityLog.DELETE,
+            "Deleted ${s.name} (${s.phone}) with ${paid.size} payments totalling ₹${paid.sumOf { it.amount }}"
+        )
+    }
+
     /** Student leaves: the seat is released today; history stays. */
     suspend fun markLeft(studentId: Long, on: LocalDate) = database.withTransaction {
         val s = dao.getStudent(studentId) ?: return@withTransaction
@@ -314,11 +341,39 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
 
     /* ======================= Payments ======================= */
 
-    suspend fun collectPayment(studentId: Long, amount: Long, mode: PaymentMode, paidOn: LocalDate, note: String): Payment =
+    /**
+     * @param lateFee when not null, replaces the period's late fee first (the owner
+     *   accepted the automatic late-fee suggestion, or typed their own).
+     */
+    suspend fun collectPayment(
+        studentId: Long,
+        amount: Long,
+        mode: PaymentMode,
+        paidOn: LocalDate,
+        note: String,
+        lateFee: Long? = null
+    ): Payment =
         database.withTransaction {
             if (amount <= 0) throw UserError(R.string.error_amount_positive)
-            val m = dao.getActiveMembership(studentId) ?: throw UserError(R.string.error_no_membership)
+            var m = dao.getActiveMembership(studentId) ?: throw UserError(R.string.error_no_membership)
+            if (lateFee != null && lateFee != m.lateFee) {
+                log(ActivityLog.MEMBERSHIP, m.id, ActivityLog.EDIT, "Late fee ₹${m.lateFee} → ₹$lateFee")
+                m = m.copy(lateFee = lateFee.coerceAtLeast(0))
+                dao.updateMembership(m)
+            }
             insertPayment(studentId, m.id, amount, mode, paidOn, note)
+        }
+
+    /** Corrects a payment's amount, mode, date or note; the receipt number stays. */
+    suspend fun updatePayment(paymentId: Long, amount: Long, mode: PaymentMode, paidOn: LocalDate, note: String) =
+        database.withTransaction {
+            if (amount <= 0) throw UserError(R.string.error_amount_positive)
+            val p = dao.getPayment(paymentId) ?: return@withTransaction
+            dao.updatePayment(p.copy(amount = amount, mode = mode, paidOn = paidOn, note = note))
+            log(
+                ActivityLog.PAYMENT, p.id, ActivityLog.EDIT,
+                "Receipt ${p.receiptNo}: ₹${p.amount} ${p.mode} ${p.paidOn} → ₹$amount $mode $paidOn"
+            )
         }
 
     /** Must run inside a transaction: takes the next receipt number. */
@@ -354,11 +409,10 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
         dao.upsertAttendance(a.copy(outMinute = nowMinute()))
     }
 
-    suspend fun clearAttendance(studentId: Long, date: LocalDate) {
+    /** Undoes the last tap: clears the Out time if set, otherwise removes the In. */
+    suspend fun undoAttendance(studentId: Long, date: LocalDate) {
         val a = dao.findAttendance(studentId, date) ?: return
-        // Undo a wrong tap: keep the row but drop the out time, or remove the in time by
-        // re-marking. Rows are cheap; a full delete is not needed for v0.1.
-        dao.upsertAttendance(a.copy(outMinute = null))
+        if (a.outMinute != null) dao.upsertAttendance(a.copy(outMinute = null)) else dao.deleteAttendance(a.id)
     }
 
     private fun later(a: LocalDate, b: LocalDate): LocalDate = if (a.isAfter(b)) a else b

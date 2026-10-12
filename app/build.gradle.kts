@@ -95,6 +95,11 @@ android {
     }
 }
 
+ksp {
+    // Exported Room schemas are what migration tests run against. Commit app/schemas/.
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
     implementation(project(":domain"))
 

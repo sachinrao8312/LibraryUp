@@ -262,7 +262,7 @@ See `TASKS.md` for the live task list. v0.1 (PR #1) covers the P0 list above.
 - `./gradlew :domain:test` runs the business-rule tests (no Android needed).
 - `./gradlew :app:assembleDebug :app:testDebugUnitTest` builds the app; CI runs both on every PR.
 - Strings: every user-facing string in `res/values/*.xml` and `res/values-hi/strings.xml`
-  (library screens are generated as `strings_library.xml`; edit both languages together).
+  (library screens: edit `tools/strings_gen.py`, then run `python3 tools/strings_gen.py app/src/main/res`).
 - Schema changes need a Room `Migration`; never destructive migration once real owners exist.
 
 ## Open decisions

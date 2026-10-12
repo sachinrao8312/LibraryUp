@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Share
@@ -35,6 +36,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -60,7 +62,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import java.time.LocalDate
 
-private enum class StudentDialog { NONE, COLLECT, RENEW, CHANGE_SEAT, LATE_FEE, MESSAGE, LEFT, FREEZE }
+private enum class StudentDialog { NONE, COLLECT, RENEW, CHANGE_SEAT, LATE_FEE, MESSAGE, LEFT, FREEZE, DELETE }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -81,12 +83,16 @@ fun StudentDetailScreen(
     val profile = state.profile
     var dialog by rememberSaveable { mutableStateOf(StudentDialog.NONE) }
     var showDeleted by rememberSaveable { mutableStateOf(false) }
+    var editPayment by remember { mutableStateOf<Payment?>(null) }
     val attendance by remember(studentId) { vm.repository.attendanceFor(studentId) }.collectAsState(initial = emptyList())
     val payments = state.payments.filter { it.studentId == studentId && (showDeleted || !it.deleted) }
 
     Column(Modifier.fillMaxSize()) {
         LibraryTopBar(s.student.name, onBack = onBack) {
             IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit)) }
+            IconButton(onClick = { dialog = StudentDialog.DELETE }) {
+                Icon(Icons.Default.DeleteForever, contentDescription = stringResource(R.string.action_delete_student))
+            }
         }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -145,6 +151,7 @@ fun StudentDetailScreen(
             payments.forEach { p ->
                 PaymentRow(
                     p,
+                    onEdit = { editPayment = p },
                     onShare = { shareReceiptPdf(context, profile, s, p) },
                     onToggleDeleted = { vm.run(if (p.deleted) R.string.msg_payment_restored else R.string.msg_payment_deleted) { setPaymentDeleted(p.id, !p.deleted) } }
                 )
@@ -164,12 +171,32 @@ fun StudentDetailScreen(
         }
     }
 
+    editPayment?.let { p ->
+        EditPaymentDialog(p, onDismiss = { editPayment = null }) { amount, mode, date, note ->
+            editPayment = null
+            vm.run(R.string.msg_saved) { updatePayment(p.id, amount, mode, date, note) }
+        }
+    }
+
     when (dialog) {
         StudentDialog.NONE -> Unit
-        StudentDialog.COLLECT -> CollectFeeDialog(s, onDismiss = { dialog = StudentDialog.NONE }) { amount, mode, date, note ->
+        StudentDialog.COLLECT -> CollectFeeDialog(s, state.suggestedLateFee(s), onDismiss = { dialog = StudentDialog.NONE }) { amount, mode, date, note, lateFee ->
             dialog = StudentDialog.NONE
-            vm.collect({ collectPayment(studentId, amount, mode, date, note) }) { p -> shareReceiptPdf(context, profile, s.copy(paid = s.paid + p.amount), p) }
+            vm.collect({ collectPayment(studentId, amount, mode, date, note, lateFee) }) { p ->
+                val updated = s.copy(
+                    membership = s.membership?.let { m -> if (lateFee != null) m.copy(lateFee = lateFee) else m },
+                    paid = s.paid + p.amount
+                )
+                shareReceiptPdf(context, profile, updated, p)
+            }
         }
+        StudentDialog.DELETE -> ConfirmDialog(
+            stringResource(R.string.confirm_delete_student_title),
+            stringResource(R.string.confirm_delete_student_text, s.student.name),
+            stringResource(R.string.action_delete),
+            onConfirm = { vm.run(R.string.msg_deleted, onDone = onBack) { deleteStudent(studentId) } },
+            onDismiss = { dialog = StudentDialog.NONE }
+        )
         StudentDialog.RENEW -> RenewDialog(state, s, onDismiss = { dialog = StudentDialog.NONE }) { plan, fee, discount, pay ->
             dialog = StudentDialog.NONE
             vm.run(R.string.msg_renewed) { renew(studentId, plan, fee, discount, pay) }
@@ -230,7 +257,7 @@ private fun MembershipCard(s: StudentOverview) {
 }
 
 @Composable
-private fun PaymentRow(p: Payment, onShare: () -> Unit, onToggleDeleted: () -> Unit) {
+private fun PaymentRow(p: Payment, onEdit: () -> Unit, onShare: () -> Unit, onToggleDeleted: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
             Text(
@@ -241,6 +268,7 @@ private fun PaymentRow(p: Payment, onShare: () -> Unit, onToggleDeleted: () -> U
             Text("${p.receiptNo} · ${p.paidOn.pretty()}" + if (p.deleted) " · ${stringResource(R.string.label_deleted)}" else "",
                 style = MaterialTheme.typography.bodySmall)
         }
+        if (!p.deleted) IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit)) }
         if (!p.deleted) IconButton(onClick = onShare) { Icon(Icons.Default.Share, contentDescription = stringResource(R.string.action_share_receipt)) }
         IconButton(onClick = onToggleDeleted) {
             Icon(if (p.deleted) Icons.Default.Restore else Icons.Default.Delete,
@@ -252,8 +280,17 @@ private fun PaymentRow(p: Payment, onShare: () -> Unit, onToggleDeleted: () -> U
 /* ---------------------------------------------------------------- dialogs */
 
 @Composable
-fun CollectFeeDialog(s: StudentOverview, onDismiss: () -> Unit, onSave: (Long, PaymentMode, LocalDate, String) -> Unit) {
-    var amount by rememberSaveable { mutableStateOf(s.balance.takeIf { it > 0 }?.toString() ?: "") }
+fun CollectFeeDialog(
+    s: StudentOverview,
+    suggestedLateFee: Long,
+    onDismiss: () -> Unit,
+    onSave: (amount: Long, mode: PaymentMode, date: LocalDate, note: String, lateFee: Long?) -> Unit
+) {
+    val currentLateFee = s.membership?.lateFee ?: 0L
+    val extra = (suggestedLateFee - currentLateFee).coerceAtLeast(0)
+    var addLateFee by rememberSaveable { mutableStateOf(extra > 0) }
+    val balance = s.balance + if (addLateFee) extra else 0L
+    var amount by rememberSaveable(addLateFee) { mutableStateOf(balance.takeIf { it > 0 }?.toString() ?: "") }
     var mode by rememberSaveable { mutableStateOf(PaymentMode.CASH) }
     var dateEpoch by rememberSaveable { mutableStateOf(LocalDate.now().toEpochDay()) }
     var note by rememberSaveable { mutableStateOf("") }
@@ -262,7 +299,13 @@ fun CollectFeeDialog(s: StudentOverview, onDismiss: () -> Unit, onSave: (Long, P
         title = { Text(stringResource(R.string.action_collect_fee)) },
         text = {
             Column {
-                Text(stringResource(R.string.label_balance, rupees(s.balance)), style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.label_balance, rupees(balance)), style = MaterialTheme.typography.bodySmall)
+                if (extra > 0) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(checked = addLateFee, onCheckedChange = { addLateFee = it })
+                        Text(stringResource(R.string.label_add_late_fee, rupees(extra)), style = MaterialTheme.typography.bodySmall)
+                    }
+                }
                 AmountInput(amount, { amount = it }, stringResource(R.string.field_amount_received))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     PaymentMode.values().forEach { m -> FilterChip(selected = mode == m, onClick = { mode = m }, label = { Text(stringResource(m.label())) }) }
@@ -272,8 +315,40 @@ fun CollectFeeDialog(s: StudentOverview, onDismiss: () -> Unit, onSave: (Long, P
             }
         },
         confirmButton = {
-            Button(onClick = { onSave(amount.toAmount(), mode, LocalDate.ofEpochDay(dateEpoch), note.trim()) }, enabled = amount.toAmount() > 0) {
-                Text(stringResource(R.string.action_save_receipt))
+            Button(
+                onClick = {
+                    onSave(amount.toAmount(), mode, LocalDate.ofEpochDay(dateEpoch), note.trim(), if (addLateFee && extra > 0) suggestedLateFee else null)
+                },
+                enabled = amount.toAmount() > 0
+            ) { Text(stringResource(R.string.action_save_receipt)) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+    )
+}
+
+/** Fixes a payment entered wrongly. The receipt number does not change. */
+@Composable
+private fun EditPaymentDialog(p: Payment, onDismiss: () -> Unit, onSave: (Long, PaymentMode, LocalDate, String) -> Unit) {
+    var amount by rememberSaveable { mutableStateOf(p.amount.toString()) }
+    var mode by rememberSaveable { mutableStateOf(p.mode) }
+    var dateEpoch by rememberSaveable { mutableStateOf(p.paidOn.toEpochDay()) }
+    var note by rememberSaveable { mutableStateOf(p.note) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.title_edit_payment, p.receiptNo)) },
+        text = {
+            Column {
+                AmountInput(amount, { amount = it }, stringResource(R.string.field_amount))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PaymentMode.values().forEach { m -> FilterChip(selected = mode == m, onClick = { mode = m }, label = { Text(stringResource(m.label())) }) }
+                }
+                DateField(stringResource(R.string.field_date), LocalDate.ofEpochDay(dateEpoch), { dateEpoch = it.toEpochDay() })
+                TextInput(note, { note = it }, stringResource(R.string.field_note))
+            }
+        },
+        confirmButton = {
+            Button(enabled = amount.toAmount() > 0, onClick = { onSave(amount.toAmount(), mode, LocalDate.ofEpochDay(dateEpoch), note.trim()) }) {
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }

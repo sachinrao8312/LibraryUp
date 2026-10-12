@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
@@ -51,31 +52,47 @@ import java.time.LocalDate
  * not let an app send WhatsApp messages by itself, so this is a queue: tap "Send", WhatsApp
  * opens with the message typed, send it, come back, tap "Send next".
  */
+private enum class ReminderQueue { DUE, EXPIRING, HOLIDAY }
+
 @Composable
 fun RemindersScreen(state: LibraryState, onBack: () -> Unit) {
     val context = LocalContext.current
-    var dueQueue by rememberSaveable { mutableStateOf(true) }
+    var mode by rememberSaveable { mutableStateOf(ReminderQueue.DUE) }
+    var holidayEpoch by rememberSaveable { mutableStateOf(LocalDate.now().plusDays(1).toEpochDay()) }
     var sent by remember { mutableStateOf(listOf<Long>()) }
     val queue: List<StudentOverview> = state.students.filter {
-        if (dueQueue) it.status == DueStatus.OVERDUE || it.status == DueStatus.EXPIRED || it.status == DueStatus.DUE_TODAY || it.status == DueStatus.UNPAID
-        else it.status == DueStatus.EXPIRING_SOON
-    }.sortedBy { it.status?.ordinal ?: Int.MAX_VALUE }
+        when (mode) {
+            ReminderQueue.DUE -> it.status == DueStatus.OVERDUE || it.status == DueStatus.EXPIRED || it.status == DueStatus.DUE_TODAY || it.status == DueStatus.UNPAID
+            ReminderQueue.EXPIRING -> it.status == DueStatus.EXPIRING_SOON
+            // Everyone currently studying here, including frozen students who will come back.
+            ReminderQueue.HOLIDAY -> it.membership != null && it.student.status != StudentStatus.LEFT
+        }
+    }.sortedBy { if (mode == ReminderQueue.HOLIDAY) 0 else it.status?.ordinal ?: Int.MAX_VALUE }
     val next = queue.firstOrNull { it.student.id !in sent }
-    val kind = if (dueQueue) MessageTemplates.Kind.FEE_DUE else MessageTemplates.Kind.EXPIRING
+    val kind = when (mode) {
+        ReminderQueue.DUE -> MessageTemplates.Kind.FEE_DUE
+        ReminderQueue.EXPIRING -> MessageTemplates.Kind.EXPIRING
+        ReminderQueue.HOLIDAY -> MessageTemplates.Kind.HOLIDAY
+    }
     val pkg = state.profile?.whatsappPackage ?: "com.whatsapp"
 
     fun send(s: StudentOverview) {
         sent = sent + s.student.id
-        openWhatsApp(context, s.student.phone, buildMessage(state.profile, kind, s), pkg)
+        val extra = if (mode == ReminderQueue.HOLIDAY) mapOf(MessageTemplates.DUE_DATE to LocalDate.ofEpochDay(holidayEpoch).pretty()) else emptyMap()
+        openWhatsApp(context, s.student.phone, buildMessage(state.profile, kind, s, extra = extra), pkg)
     }
 
     Column(Modifier.fillMaxSize()) {
         LibraryTopBar(stringResource(R.string.title_reminders), onBack = onBack)
         ChipRow {
-            FilterChip(selected = dueQueue, onClick = { dueQueue = true; sent = emptyList() }, label = { Text(stringResource(R.string.reminders_fee_due)) })
-            FilterChip(selected = !dueQueue, onClick = { dueQueue = false; sent = emptyList() }, label = { Text(stringResource(R.string.reminders_expiring)) })
+            FilterChip(selected = mode == ReminderQueue.DUE, onClick = { mode = ReminderQueue.DUE; sent = emptyList() }, label = { Text(stringResource(R.string.reminders_fee_due)) })
+            FilterChip(selected = mode == ReminderQueue.EXPIRING, onClick = { mode = ReminderQueue.EXPIRING; sent = emptyList() }, label = { Text(stringResource(R.string.reminders_expiring)) })
+            FilterChip(selected = mode == ReminderQueue.HOLIDAY, onClick = { mode = ReminderQueue.HOLIDAY; sent = emptyList() }, label = { Text(stringResource(R.string.reminders_holiday)) })
         }
         Column(Modifier.padding(16.dp)) {
+            if (mode == ReminderQueue.HOLIDAY) {
+                DateField(stringResource(R.string.field_holiday_date), LocalDate.ofEpochDay(holidayEpoch), { holidayEpoch = it.toEpochDay() })
+            }
             Text(stringResource(R.string.reminders_progress, sent.count { id -> queue.any { it.student.id == id } }, queue.size))
             Spacer(Modifier.height(8.dp))
             if (next != null) {
@@ -155,6 +172,11 @@ fun AttendanceScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Un
                         a == null -> FilledTonalButton(onClick = { vm.run { checkIn(s.student.id, date) } }) { Text(stringResource(R.string.action_in)) }
                         a.outMinute == null -> OutlinedButton(onClick = { vm.run { checkOut(s.student.id, date) } }) { Text(stringResource(R.string.action_out)) }
                         else -> Icon(Icons.Default.CheckCircle, contentDescription = null, tint = StatusColors.paid)
+                    }
+                    if (a != null) {
+                        IconButton(onClick = { vm.run { undoAttendance(s.student.id, date) } }) {
+                            Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = stringResource(R.string.action_undo))
+                        }
                     }
                 }
                 HorizontalDivider()

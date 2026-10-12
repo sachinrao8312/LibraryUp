@@ -11,6 +11,7 @@ import ai.sach.libraryup.data.local.entity.StudentStatus
 import ai.sach.libraryup.data.backup.BackupManager
 import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.domain.FeeCycleMode
+import ai.sach.libraryup.domain.MessageTemplates
 import ai.sach.libraryup.domain.StudentImport
 import ai.sach.libraryup.domain.UpiLink
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -130,6 +131,12 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
     var calendarMonth by rememberSaveable { mutableStateOf(p.feeCycleMode == FeeCycleMode.CALENDAR_MONTH) }
     var business by rememberSaveable { mutableStateOf(p.whatsappPackage == LibraryProfile.WHATSAPP_BUSINESS) }
     var hindi by rememberSaveable { mutableStateOf(p.messageLanguage == "hi") }
+    var lateFeePerDay by rememberSaveable { mutableStateOf(if (p.lateFeePerDay > 0) p.lateFeePerDay.toString() else "") }
+    var lateFeeMax by rememberSaveable { mutableStateOf(if (p.lateFeeMax > 0) p.lateFeeMax.toString() else "") }
+    var tFeeDue by rememberSaveable { mutableStateOf(p.templateFeeDue.orEmpty()) }
+    var tExpiring by rememberSaveable { mutableStateOf(p.templateExpiring.orEmpty()) }
+    var tWelcome by rememberSaveable { mutableStateOf(p.templateWelcome.orEmpty()) }
+    var tHoliday by rememberSaveable { mutableStateOf(p.templateHoliday.orEmpty()) }
     var editShift by remember { mutableStateOf<Shift?>(null) }
     var editPlan by remember { mutableStateOf<Plan?>(null) }
     var editSeat by remember { mutableStateOf<Seat?>(null) }
@@ -154,6 +161,22 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
             }
             SwitchRow(stringResource(R.string.field_whatsapp_business), business) { business = it }
             SwitchRow(stringResource(R.string.field_messages_hindi), hindi) { hindi = it }
+
+            SectionTitle(stringResource(R.string.section_late_fee))
+            Text(stringResource(R.string.late_fee_hint), style = MaterialTheme.typography.bodySmall)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AmountInput(lateFeePerDay, { lateFeePerDay = it }, stringResource(R.string.field_late_fee_per_day), Modifier.weight(1f))
+                AmountInput(lateFeeMax, { lateFeeMax = it }, stringResource(R.string.field_late_fee_max), Modifier.weight(1f))
+            }
+
+            SectionTitle(stringResource(R.string.section_templates))
+            Text(stringResource(R.string.templates_hint), style = MaterialTheme.typography.bodySmall)
+            val lang = hindi
+            TemplateField(tFeeDue, { tFeeDue = it }, stringResource(R.string.template_fee_due), MessageTemplates.default(MessageTemplates.Kind.FEE_DUE, lang))
+            TemplateField(tExpiring, { tExpiring = it }, stringResource(R.string.template_expiring), MessageTemplates.default(MessageTemplates.Kind.EXPIRING, lang))
+            TemplateField(tWelcome, { tWelcome = it }, stringResource(R.string.template_welcome), MessageTemplates.default(MessageTemplates.Kind.WELCOME, lang))
+            TemplateField(tHoliday, { tHoliday = it }, stringResource(R.string.template_holiday), MessageTemplates.default(MessageTemplates.Kind.HOLIDAY, lang))
+
             Button(
                 enabled = name.isNotBlank() && !upiError,
                 onClick = {
@@ -164,7 +187,13 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
                                 upiVpa = upi.trim(), receiptPrefix = prefix.ifBlank { "LU" }, graceDays = grace.toIntOrNull() ?: 3,
                                 feeCycleMode = if (calendarMonth) FeeCycleMode.CALENDAR_MONTH else FeeCycleMode.FIXED_DAYS,
                                 whatsappPackage = if (business) LibraryProfile.WHATSAPP_BUSINESS else LibraryProfile.WHATSAPP,
-                                messageLanguage = if (hindi) "hi" else "en"
+                                messageLanguage = if (hindi) "hi" else "en",
+                                lateFeePerDay = lateFeePerDay.toAmount(),
+                                lateFeeMax = lateFeeMax.toAmount(),
+                                templateFeeDue = tFeeDue.trim().ifBlank { null },
+                                templateExpiring = tExpiring.trim().ifBlank { null },
+                                templateWelcome = tWelcome.trim().ifBlank { null },
+                                templateHoliday = tHoliday.trim().ifBlank { null }
                             )
                         )
                     }
@@ -213,9 +242,22 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
     }
 
     editShift?.let { s -> ShiftDialog(s, onDismiss = { editShift = null }) { vm.run(R.string.msg_saved) { saveShift(it) }; editShift = null } }
-    editPlan?.let { pl -> PlanDialog(pl, onDismiss = { editPlan = null }) { vm.run(R.string.msg_saved) { savePlan(it) }; editPlan = null } }
+    editPlan?.let { pl -> PlanDialog(pl, state.shifts, onDismiss = { editPlan = null }) { vm.run(R.string.msg_saved) { savePlan(it) }; editPlan = null } }
     editSeat?.let { se -> SeatDialog(state.seats, se, onDismiss = { editSeat = null }) { vm.run(R.string.msg_saved) { saveSeat(it) }; editSeat = null } }
     if (showAddSeats) AddSeatsDialog(onDismiss = { showAddSeats = false }) { block, count -> vm.run(R.string.msg_saved) { addSeats(block, count) }; showAddSeats = false }
+}
+
+/** A message template; blank means "use the built-in one", which is shown as the placeholder. */
+@Composable
+private fun TemplateField(value: String, onChange: (String) -> Unit, label: String, default: String) {
+    androidx.compose.material3.OutlinedTextField(
+        value = value,
+        onValueChange = onChange,
+        label = { Text(label) },
+        placeholder = { Text(default, style = MaterialTheme.typography.bodySmall) },
+        minLines = 2,
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+    )
 }
 
 @Composable
@@ -279,7 +321,9 @@ private fun ShiftDialog(shift: Shift, onDismiss: () -> Unit, onSave: (Shift) -> 
 }
 
 @Composable
-private fun PlanDialog(plan: Plan, onDismiss: () -> Unit, onSave: (Plan) -> Unit) {
+private fun PlanDialog(plan: Plan, shifts: List<Shift>, onDismiss: () -> Unit, onSave: (Plan) -> Unit) {
+    var shiftId by rememberSaveable { mutableStateOf(plan.shiftId) }
+    val anyShift = stringResource(R.string.label_any_shift)
     var name by rememberSaveable { mutableStateOf(plan.name) }
     var months by rememberSaveable { mutableStateOf(plan.durationUnit == DurationUnit.MONTHS) }
     var length by rememberSaveable { mutableStateOf(plan.durationValue.toString()) }
@@ -298,13 +342,21 @@ private fun PlanDialog(plan: Plan, onDismiss: () -> Unit, onSave: (Plan) -> Unit
                 }
                 TextInput(length, { length = it.filter(Char::isDigit).take(3) }, stringResource(R.string.field_duration), keyboardType = KeyboardType.Number)
                 AmountInput(price, { price = it }, stringResource(R.string.field_price))
+                val shiftOptions = listOf<Pair<Long?, String>>(null to anyShift) + shifts.map { it.id to it.name }
+                Picker(
+                    stringResource(R.string.field_shift),
+                    shiftOptions,
+                    shiftOptions.firstOrNull { it.first == shiftId },
+                    { it.second },
+                    { shiftId = it.first }
+                )
                 SwitchRow(stringResource(R.string.label_active), active) { active = it }
             }
         },
         confirmButton = {
             Button(enabled = name.isNotBlank() && len > 0 && price.toAmount() > 0, onClick = {
                 onSave(plan.copy(name = name.trim(), durationUnit = if (months) DurationUnit.MONTHS else DurationUnit.DAYS,
-                    durationValue = len, price = price.toAmount(), active = active))
+                    durationValue = len, price = price.toAmount(), shiftId = shiftId, active = active))
             }) { Text(stringResource(R.string.action_save)) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }

@@ -275,4 +275,21 @@
     <string name="unit_days">days</string>
     <string name="unit_months">months</string>
     <string name="attendance_present">Present %1$d / %2$d</string>
+    <string name="error_seat_label_taken">Another seat in this block already has that number.</string>
+    <string name="label_add_late_fee">Add late fee %1$s</string>
+    <string name="title_edit_payment">Edit payment %1$s</string>
+    <string name="action_delete_student">Delete student</string>
+    <string name="confirm_delete_student_title">Delete student permanently?</string>
+    <string name="confirm_delete_student_text">%1$s and all their payments and attendance will be removed. The activity log keeps a note of it. To keep the history, use Mark left instead.</string>
+    <string name="action_undo">Undo</string>
+    <string name="reminders_holiday">Holiday notice</string>
+    <string name="field_holiday_date">Holiday date</string>
+    <string name="section_late_fee">Automatic late fee</string>
+    <string name="late_fee_hint">Suggested when you collect an overdue fee. Leave per-day empty to turn it off.</string>
+    <string name="field_late_fee_per_day">₹ per day late</string>
+    <string name="field_late_fee_max">Maximum ₹ (optional)</string>
+    <string name="section_templates">Message templates</string>
+    <string name="templates_hint">Leave empty to use the built-in message. You can use {name}, {amount}, {due_date}, {valid_till}, {seat}, {shift}, {library}, {upi_link}.</string>
+    <string name="template_holiday">Holiday notice</string>
+    <string name="label_any_shift">Any shift</string>
 </resources>

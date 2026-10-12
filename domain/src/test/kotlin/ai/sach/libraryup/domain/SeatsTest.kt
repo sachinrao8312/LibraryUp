@@ -115,3 +115,13 @@ class SeatsTest {
         assertEquals(0, Reports.occupancyPercent(0, shifts, bookings, day))
     }
 }
+
+class SeatLabelsTest {
+    @org.junit.Test
+    fun `duplicate labels are per block and case-insensitive`() {
+        val seats = listOf("A" to "1", "a" to " 1", "B" to "1", "A" to "2")
+        org.junit.Assert.assertEquals(setOf("a" to "1"), SeatLabels.duplicates(seats))
+        org.junit.Assert.assertTrue(SeatLabels.isTaken("A", "2", seats))
+        org.junit.Assert.assertFalse(SeatLabels.isTaken("B", "2", seats))
+    }
+}

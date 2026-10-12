@@ -142,3 +142,14 @@ object SeatMap {
         return shifts.filterValues { w -> today.none { it.window.overlaps(w) } }.keys
     }
 }
+
+object SeatLabels {
+    /** Normalised (block, label) pairs that appear more than once; labels compare case-insensitively. */
+    fun duplicates(seats: Collection<Pair<String, String>>): Set<Pair<String, String>> =
+        seats.map { (block, label) -> block.trim().lowercase() to label.trim().lowercase() }
+            .groupingBy { it }.eachCount().filterValues { it > 1 }.keys
+
+    /** True when [label] is already used by another seat in [block]. */
+    fun isTaken(block: String, label: String, others: Collection<Pair<String, String>>): Boolean =
+        others.any { (b, l) -> b.trim().equals(block.trim(), true) && l.trim().equals(label.trim(), true) }
+}

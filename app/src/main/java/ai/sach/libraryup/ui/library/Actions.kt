@@ -55,9 +55,16 @@ fun templateValues(profile: LibraryProfile?, s: StudentOverview, amount: Long? =
     )
 }
 
-fun buildMessage(profile: LibraryProfile?, kind: MessageTemplates.Kind, s: StudentOverview, amount: Long? = null, receiptNo: String = ""): String {
-    val hindi = profile?.messageLanguage == "hi"
-    return MessageTemplates.render(MessageTemplates.default(kind, hindi), templateValues(profile, s, amount, receiptNo))
+fun buildMessage(
+    profile: LibraryProfile?,
+    kind: MessageTemplates.Kind,
+    s: StudentOverview,
+    amount: Long? = null,
+    receiptNo: String = "",
+    extra: Map<String, String> = emptyMap()
+): String {
+    val template = profile?.template(kind) ?: MessageTemplates.default(kind, false)
+    return MessageTemplates.render(template, templateValues(profile, s, amount, receiptNo) + extra)
 }
 
 /* ---------------------------------------------------------------- intents */
