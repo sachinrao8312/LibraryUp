@@ -43,7 +43,8 @@ jobs:
       - name: Resolve dependencies
         run: |
           for attempt in 1 2 3; do
-            ./gradlew :domain:dependencies :app:dependencies --configuration debugRuntimeClasspath -q > /dev/null && exit 0
+            ./gradlew :domain:dependencies --configuration testRuntimeClasspath -q > /dev/null &&
+              ./gradlew :app:dependencies --configuration debugRuntimeClasspath -q > /dev/null && exit 0
             echo "Dependency resolution failed (attempt $attempt), retrying in 30s"
             sleep 30
           done
