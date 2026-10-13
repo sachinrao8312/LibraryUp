@@ -565,4 +565,16 @@
     <string name="action_add_logo">लाइब्रेरी का लोगो जोड़ें</string>
     <string name="action_change_logo">लोगो बदलें</string>
     <string name="action_remove">हटाएँ</string>
+    <string name="title_lockers">लॉकर</string>
+    <string name="title_edit_locker">लॉकर बदलें</string>
+    <string name="more_lockers_desc">लॉकर नंबर, फीस और किसके पास है</string>
+    <string name="action_add_locker">लॉकर जोड़ें</string>
+    <string name="label_locker">लॉकर %1$s</string>
+    <string name="locker_free">खाली</string>
+    <string name="lockers_free_count">%2$d में से %1$d लॉकर खाली</string>
+    <string name="empty_lockers">अभी कोई लॉकर नहीं। जोड़ने के लिए + दबाएँ।</string>
+    <string name="field_locker_number">लॉकर नंबर</string>
+    <string name="field_locker_fee">मासिक फीस ₹</string>
+    <string name="field_assigned_to">किसको दिया</string>
+    <string name="error_locker_taken">इस नंबर का लॉकर पहले से है</string>
 </resources>

@@ -565,4 +565,16 @@
     <string name="action_add_logo">Add library logo</string>
     <string name="action_change_logo">Change logo</string>
     <string name="action_remove">Remove</string>
+    <string name="title_lockers">Lockers</string>
+    <string name="title_edit_locker">Edit locker</string>
+    <string name="more_lockers_desc">Locker numbers, fees and who has them</string>
+    <string name="action_add_locker">Add locker</string>
+    <string name="label_locker">Locker %1$s</string>
+    <string name="locker_free">Free</string>
+    <string name="lockers_free_count">%1$d of %2$d lockers free</string>
+    <string name="empty_lockers">No lockers yet. Tap + to add one.</string>
+    <string name="field_locker_number">Locker number</string>
+    <string name="field_locker_fee">Monthly fee ₹</string>
+    <string name="field_assigned_to">Assigned to</string>
+    <string name="error_locker_taken">A locker with this number already exists</string>
 </resources>

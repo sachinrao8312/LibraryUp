@@ -609,6 +609,19 @@ S = {
  "action_add_logo": ("Add library logo", "लाइब्रेरी का लोगो जोड़ें"),
  "action_change_logo": ("Change logo", "लोगो बदलें"),
  "action_remove": ("Remove", "हटाएँ"),
+ # lockers
+ "title_lockers": ("Lockers", "लॉकर"),
+ "title_edit_locker": ("Edit locker", "लॉकर बदलें"),
+ "more_lockers_desc": ("Locker numbers, fees and who has them", "लॉकर नंबर, फीस और किसके पास है"),
+ "action_add_locker": ("Add locker", "लॉकर जोड़ें"),
+ "label_locker": ("Locker %1$s", "लॉकर %1$s"),
+ "locker_free": ("Free", "खाली"),
+ "lockers_free_count": ("%1$d of %2$d lockers free", "%2$d में से %1$d लॉकर खाली"),
+ "empty_lockers": ("No lockers yet. Tap + to add one.", "अभी कोई लॉकर नहीं। जोड़ने के लिए + दबाएँ।"),
+ "field_locker_number": ("Locker number", "लॉकर नंबर"),
+ "field_locker_fee": ("Monthly fee ₹", "मासिक फीस ₹"),
+ "field_assigned_to": ("Assigned to", "किसको दिया"),
+ "error_locker_taken": ("A locker with this number already exists", "इस नंबर का लॉकर पहले से है"),
 }
 
 def esc(t):

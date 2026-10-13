@@ -175,6 +175,18 @@ interface LibraryDao {
     @Query("SELECT * FROM lockers")
     suspend fun getLockers(): List<Locker>
 
+    @Query("SELECT * FROM lockers ORDER BY CAST(number AS INTEGER), number")
+    fun observeLockers(): Flow<List<Locker>>
+
+    @Upsert
+    suspend fun upsertLocker(locker: Locker): Long
+
+    @Query("DELETE FROM lockers WHERE id = :id")
+    suspend fun deleteLocker(id: Long)
+
+    @Query("UPDATE lockers SET studentId = NULL WHERE studentId = :studentId")
+    suspend fun freeLockersOf(studentId: Long)
+
     @Query("SELECT * FROM enquiries")
     suspend fun getEnquiries(): List<Enquiry>
 

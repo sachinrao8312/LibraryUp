@@ -76,7 +76,7 @@ Must be done before any real owner uses it.
 - [ ] **Enquiry list**: walk-ins with follow-up date + reminder, convert to student
       (`Enquiry` entity exists)
 - [ ] **Staff/operator login**: PIN-based operator role; cannot delete payments or see P&L
-- [ ] **Lockers**: number, fee, assignment (`Locker` entity exists)
+- [x] **Lockers**: number, fee, assignment; freed when a student leaves or is deleted
 - [ ] **Change admin phone/email** in Account screen
 - [ ] Receipt and reminder language per student (Hindi/English)
 - [ ] Monthly report PDF: collections, dues, occupancy, expenses

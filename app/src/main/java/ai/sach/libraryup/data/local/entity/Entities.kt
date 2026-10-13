@@ -294,6 +294,7 @@ data class ActivityLog(
         const val MEMBERSHIP = "membership"
         const val PAYMENT = "payment"
         const val EXPENSE = "expense"
+        const val LOCKER = "locker"
         const val SETUP = "setup"
 
         const val ADD = "add"

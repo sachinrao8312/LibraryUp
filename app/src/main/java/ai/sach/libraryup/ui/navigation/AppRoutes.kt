@@ -16,6 +16,7 @@ object AppRoutes {
     const val LIBRARY_SETTINGS = "librarySettings"
     const val DATA = "data"
     const val ACTIVITY_LOG = "activityLog"
+    const val LOCKERS = "lockers"
     const val SETTINGS = "settings"
 
     fun students(filter: String = "ALL") = "students?filter=$filter"

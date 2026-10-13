@@ -9,6 +9,7 @@ import ai.sach.libraryup.ui.library.AttendanceScreen
 import ai.sach.libraryup.ui.library.DashboardScreen
 import ai.sach.libraryup.ui.library.DataScreen
 import ai.sach.libraryup.ui.library.ExpensesScreen
+import ai.sach.libraryup.ui.library.LockersScreen
 import ai.sach.libraryup.ui.library.LibrarySettingsScreen
 import ai.sach.libraryup.ui.library.LibraryTopBar
 import ai.sach.libraryup.ui.library.LibraryViewModel
@@ -331,16 +332,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             }
             composable(AppRoutes.MORE) {
                 TabScreen(stringResource(R.string.nav_more)) {
-                    MoreScreen(
-                        onReminders = { navController.navigate(AppRoutes.REMINDERS) },
-                        onAttendance = { navController.navigate(AppRoutes.ATTENDANCE) },
-                        onExpenses = { navController.navigate(AppRoutes.EXPENSES) },
-                        onLibrarySettings = { navController.navigate(AppRoutes.LIBRARY_SETTINGS) },
-                        onData = { navController.navigate(AppRoutes.DATA) },
-                        onActivityLog = { navController.navigate(AppRoutes.ACTIVITY_LOG) },
-                        onBackup = { navController.navigate(SettingsNavRoutes.BACKUP) },
-                        onAppSettings = { navController.navigate(AppRoutes.SETTINGS) }
-                    )
+                    MoreScreen(SettingsNavRoutes.BACKUP) { navController.navigate(it) }
                 }
             }
             composable(AppRoutes.STUDENT, arguments = listOf(navArgument("studentId") { type = NavType.LongType })) { back ->
@@ -379,6 +371,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             composable(AppRoutes.LIBRARY_SETTINGS) { LibrarySettingsScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.DATA) { DataScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.ACTIVITY_LOG) { ActivityLogScreen(vm) { navController.popBackStack() } }
+            composable(AppRoutes.LOCKERS) { LockersScreen(state, vm) { navController.popBackStack() } }
 
             // App settings (inherited screens).
             composable(AppRoutes.SETTINGS) {

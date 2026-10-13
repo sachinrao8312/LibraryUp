@@ -3,6 +3,7 @@ package ai.sach.libraryup.data
 import ai.sach.libraryup.R
 import ai.sach.libraryup.data.local.entity.ActivityLog
 import ai.sach.libraryup.data.local.entity.AttendanceMethod
+import ai.sach.libraryup.data.local.entity.Locker
 import ai.sach.libraryup.data.local.entity.MembershipStatus
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.local.entity.StudentStatus
@@ -179,6 +180,15 @@ class LibraryRepositoryTest {
         assertEquals(AttendanceMethod.QR, lib.dao.findAttendance(id, today)!!.method)
         lib.repo.freeze(id, today)
         assertEquals(ScanResult.NOT_ACTIVE, lib.repo.scanAttendance(id, today))
+    }
+
+    @Test
+    fun `locker numbers are unique and a leaving student frees their locker`() = runBlocking {
+        val id = lib.admit("Asha")
+        lib.repo.saveLocker(Locker(number = "L1", fee = 100, studentId = id))
+        expectError(R.string.error_locker_taken) { lib.repo.saveLocker(Locker(number = "l1")) }
+        lib.repo.markLeft(id, LocalDate.now())
+        assertNull(lib.dao.getLockers().single().studentId)
     }
 
     @Test

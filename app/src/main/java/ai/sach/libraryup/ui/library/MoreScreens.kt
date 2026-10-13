@@ -2,6 +2,8 @@ package ai.sach.libraryup.ui.library
 
 import ai.sach.libraryup.LibraryUpApplication
 import ai.sach.libraryup.R
+import androidx.compose.material.icons.filled.Lock
+import ai.sach.libraryup.ui.navigation.AppRoutes
 import ai.sach.libraryup.data.local.entity.DurationUnit
 import ai.sach.libraryup.data.local.entity.LibraryProfile
 import ai.sach.libraryup.data.local.entity.Plan
@@ -78,28 +80,23 @@ import java.time.format.DateTimeFormatter
 
 /* ---------------------------------------------------------------- More */
 
+/** [onOpen] gets the route to open; [backupRoute] lives in the inherited settings graph. */
 @Composable
-fun MoreScreen(
-    onReminders: () -> Unit,
-    onAttendance: () -> Unit,
-    onExpenses: () -> Unit,
-    onLibrarySettings: () -> Unit,
-    onData: () -> Unit,
-    onActivityLog: () -> Unit,
-    onBackup: () -> Unit,
-    onAppSettings: () -> Unit
-) {
+fun MoreScreen(backupRoute: String, onOpen: (String) -> Unit) {
+    @Composable
+    fun item(icon: ImageVector, title: Int, subtitle: Int, route: String) = MoreItem(icon, title, subtitle) { onOpen(route) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        MoreItem(Icons.Default.Campaign, R.string.title_reminders, R.string.more_reminders_desc, onReminders)
-        MoreItem(Icons.Default.EventAvailable, R.string.title_attendance, R.string.more_attendance_desc, onAttendance)
-        MoreItem(Icons.Default.AccountBalanceWallet, R.string.title_expenses, R.string.more_expenses_desc, onExpenses)
+        item(Icons.Default.Campaign, R.string.title_reminders, R.string.more_reminders_desc, AppRoutes.REMINDERS)
+        item(Icons.Default.EventAvailable, R.string.title_attendance, R.string.more_attendance_desc, AppRoutes.ATTENDANCE)
+        item(Icons.Default.AccountBalanceWallet, R.string.title_expenses, R.string.more_expenses_desc, AppRoutes.EXPENSES)
+        item(Icons.Default.Lock, R.string.title_lockers, R.string.more_lockers_desc, AppRoutes.LOCKERS)
         HorizontalDivider()
-        MoreItem(Icons.Default.LocalLibrary, R.string.title_library_settings, R.string.more_library_desc, onLibrarySettings)
-        MoreItem(Icons.Default.ImportExport, R.string.title_data, R.string.more_data_desc, onData)
-        MoreItem(Icons.Default.CloudUpload, R.string.title_backup, R.string.more_backup_desc, onBackup)
-        MoreItem(Icons.Default.History, R.string.title_activity_log, R.string.more_log_desc, onActivityLog)
+        item(Icons.Default.LocalLibrary, R.string.title_library_settings, R.string.more_library_desc, AppRoutes.LIBRARY_SETTINGS)
+        item(Icons.Default.ImportExport, R.string.title_data, R.string.more_data_desc, AppRoutes.DATA)
+        item(Icons.Default.CloudUpload, R.string.title_backup, R.string.more_backup_desc, backupRoute)
+        item(Icons.Default.History, R.string.title_activity_log, R.string.more_log_desc, AppRoutes.ACTIVITY_LOG)
         HorizontalDivider()
-        MoreItem(Icons.Default.Settings, R.string.title_app_settings, R.string.more_settings_desc, onAppSettings)
+        item(Icons.Default.Settings, R.string.title_app_settings, R.string.more_settings_desc, AppRoutes.SETTINGS)
     }
 }
 

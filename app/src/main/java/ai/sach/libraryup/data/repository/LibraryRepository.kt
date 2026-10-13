@@ -8,6 +8,7 @@ import ai.sach.libraryup.data.local.entity.Attendance
 import ai.sach.libraryup.data.local.entity.AttendanceMethod
 import ai.sach.libraryup.data.local.entity.Expense
 import ai.sach.libraryup.data.local.entity.LibraryProfile
+import ai.sach.libraryup.data.local.entity.Locker
 import ai.sach.libraryup.data.local.entity.Membership
 import ai.sach.libraryup.data.local.entity.MembershipStatus
 import ai.sach.libraryup.data.local.entity.Payment
@@ -103,6 +104,7 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     val profile: Flow<LibraryProfile?> = dao.observeProfile()
     val activityLog: Flow<List<ActivityLog>> = dao.observeLog(200)
     val expenses: Flow<List<Expense>> = dao.observeExpenses()
+    val lockers: Flow<List<Locker>> = dao.observeLockers()
 
     fun attendanceOn(date: LocalDate): Flow<List<Attendance>> = dao.observeAttendanceOn(date)
     fun attendanceFor(studentId: Long): Flow<List<Attendance>> = dao.observeAttendanceFor(studentId, 60)
@@ -312,6 +314,7 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     suspend fun deleteStudent(studentId: Long) = database.withTransaction {
         val s = dao.getStudent(studentId) ?: return@withTransaction
         val paid = dao.getPayments().filter { it.studentId == studentId && !it.deleted }
+        dao.freeLockersOf(studentId)
         dao.deleteStudent(studentId)
         log(
             ActivityLog.STUDENT, studentId, ActivityLog.DELETE,
@@ -327,6 +330,7 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
             dao.updateMembership(m.copy(status = MembershipStatus.ENDED, endedOn = endedOn))
         }
         dao.updateStudent(s.copy(status = StudentStatus.LEFT, frozenSince = null, updatedAt = System.currentTimeMillis()))
+        dao.freeLockersOf(studentId)
         log(ActivityLog.STUDENT, s.id, ActivityLog.EDIT, "${s.name} left on $on")
     }
 
@@ -450,6 +454,21 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     suspend fun setExpenseDeleted(expense: Expense, deleted: Boolean) = database.withTransaction {
         dao.upsertExpense(expense.copy(deleted = deleted))
         log(ActivityLog.EXPENSE, expense.id, if (deleted) ActivityLog.DELETE else ActivityLog.RESTORE, "${expense.category} ₹${expense.amount}")
+    }
+
+    /* ======================= Lockers ======================= */
+
+    /** Adds or edits a locker, including who it is assigned to (null = free). Numbers are unique. */
+    suspend fun saveLocker(locker: Locker) = database.withTransaction {
+        val number = locker.number.trim()
+        if (dao.getLockers().any { it.id != locker.id && it.number.equals(number, ignoreCase = true) }) throw UserError(R.string.error_locker_taken)
+        val id = dao.upsertLocker(locker.copy(number = number)).takeIf { locker.id == 0L } ?: locker.id
+        log(ActivityLog.LOCKER, id, if (locker.id == 0L) ActivityLog.ADD else ActivityLog.EDIT, "Locker $number ₹${locker.fee}, student ${locker.studentId ?: "-"}")
+    }
+
+    suspend fun deleteLocker(locker: Locker) = database.withTransaction {
+        dao.deleteLocker(locker.id)
+        log(ActivityLog.LOCKER, locker.id, ActivityLog.DELETE, "Locker ${locker.number}")
     }
 
     /* ======================= Import ======================= */
