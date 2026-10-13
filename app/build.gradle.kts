@@ -200,6 +200,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 }
 tasks.withType<Test>().configureEach {
+    // ScreenshotTest writes PNGs to build/outputs/roborazzi (record only, no comparison).
+    systemProperty("roborazzi.test.record", "true")
     // Print the full cause chain in CI logs; the HTML report is only in the artifact.
     testLogging {
         events("failed")
