@@ -10,8 +10,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -84,15 +86,15 @@ fun DashboardScreen(
         }
 
         Column(Modifier.padding(16.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                StatCard(stringResource(R.string.dash_overdue), overdue.toString(), Modifier.weight(1f), StatusColors.full) { onOpenStudents(StudentFilter.OVERDUE) }
-                StatCard(stringResource(R.string.dash_due_today), dueToday.toString(), Modifier.weight(1f), StatusColors.overdue) { onOpenStudents(StudentFilter.DUE) }
-                StatCard(stringResource(R.string.dash_expiring), expiring.toString(), Modifier.weight(1f), StatusColors.partial) { onOpenStudents(StudentFilter.EXPIRING) }
+            Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                StatCard(stringResource(R.string.dash_overdue), overdue.toString(), Modifier.weight(1f).fillMaxHeight(), StatusColors.full) { onOpenStudents(StudentFilter.OVERDUE) }
+                StatCard(stringResource(R.string.dash_due_today), dueToday.toString(), Modifier.weight(1f).fillMaxHeight(), StatusColors.overdue) { onOpenStudents(StudentFilter.DUE) }
+                StatCard(stringResource(R.string.dash_expiring), expiring.toString(), Modifier.weight(1f).fillMaxHeight(), StatusColors.partial) { onOpenStudents(StudentFilter.EXPIRING) }
             }
             Spacer(Modifier.height(10.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                StatCard(stringResource(R.string.dash_pending_amount), rupees(pending), Modifier.weight(1f), StatusColors.full) { onOpenStudents(StudentFilter.DUE) }
-                StatCard(stringResource(R.string.dash_active_students), activeStudents.toString(), Modifier.weight(1f), MaterialTheme.colorScheme.primary) { onOpenStudents(StudentFilter.ALL) }
+            Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                StatCard(stringResource(R.string.dash_pending_amount), rupees(pending), Modifier.weight(1f).fillMaxHeight(), StatusColors.full) { onOpenStudents(StudentFilter.DUE) }
+                StatCard(stringResource(R.string.dash_active_students), activeStudents.toString(), Modifier.weight(1f).fillMaxHeight(), MaterialTheme.colorScheme.primary) { onOpenStudents(StudentFilter.ALL) }
             }
 
             SectionTitle(stringResource(R.string.dash_quick_actions))

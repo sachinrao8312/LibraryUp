@@ -187,7 +187,7 @@ class ScreenshotTest {
         lib.repo.saveLocker(Locker(number = "L2", fee = 200, studentId = ids[4]))
         lib.repo.saveLocker(Locker(number = "L3", fee = 200))
         lib.repo.saveLocker(Locker(number = "L4", fee = 200))
-        listOf("Rent" to 15000L, "Electricity" to 3200L, "Internet" to 999L, "Staff salary" to 8000L).forEach { (c, a) ->
+        listOf("Rent" to 2500L, "Electricity" to 900L, "Internet" to 499L).forEach { (c, a) ->
             lib.repo.saveExpense(Expense(category = c, amount = a, date = today.withDayOfMonth(1)))
         }
     }

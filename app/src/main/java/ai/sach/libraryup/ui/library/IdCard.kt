@@ -50,7 +50,10 @@ fun idCard(context: Context, profile: LibraryProfile?, s: StudentOverview): Bitm
 
     val photo = s.student.photoUri?.let { ImageUtils.loadBitmapFromUri(context, Uri.parse(it), 400) }
     val photoBox = RectF(40f, 170f, 260f, 440f)
-    if (photo != null) c.drawFit(photo, photoBox) else c.drawRect(photoBox, Paint().apply { color = 0xFFE0E0E0.toInt() })
+    if (photo != null) c.drawFit(photo, photoBox) else {
+        c.drawRect(photoBox, Paint().apply { color = 0xFFDDE1F5.toInt() })
+        c.drawText(s.student.name.trim().take(1).uppercase(), photoBox.centerX(), photoBox.centerY() + 40f, paint(110f, BRAND, bold = true).apply { textAlign = Paint.Align.CENTER })
+    }
 
     val body = paint(30f)
     text(s.student.name, 300f, 215f, paint(42f, bold = true), 380f)
