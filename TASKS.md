@@ -80,7 +80,7 @@ Must be done before any real owner uses it.
 - [x] **Change admin phone/email**: library phone is in Library settings; the account email is the Google sign-in (sign in with another account to change it)
 - [x] Reminder language per student (Hindi/English, default = library setting)
 - [x] Monthly report PDF: collections by mode, expenses by category, profit, dues, admissions (Expenses → PDF icon)
-- [ ] Play listing in English + Hindi, screenshots per `docs/play-listing.md`
+- [ ] Play listing: English draft up to date (`docs/play-listing.md`); Hindi full description and screenshots to do
 
 ## Milestone 3: monetization (see CLAUDE.md → Monetization, App Factory MONETIZATION.md)
 - [ ] `isPro` gate + Firebase Remote Config for limits and prices

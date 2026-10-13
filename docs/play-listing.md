@@ -23,9 +23,15 @@ Run your self-study library or reading room from your phone. No register, no Exc
 
 **Students**: photo, ID proof, father's name, address, exam, guardian phone. Renew in one tap, change seat or shift, freeze while a student is away, mark left.
 
-**Attendance**: In and Out time for every student, every day.
+**Attendance with QR ID cards**: share a student ID card with photo, seat, validity and a QR code. Scan it at the desk to mark In and Out.
 
-**Expenses and profit**: rent, electricity, Wi-Fi, salary, with monthly profit.
+**Fill empty seats**: share a "seats available" poster for WhatsApp status with live free seats per shift and your logo. Keep a list of enquiries with follow-up dates and admit them in one tap.
+
+**Staff mode**: hand the phone to your staff. They can admit students, collect fees and mark attendance, but can't change payments or see your profit.
+
+**Your brand**: your library logo on receipts, ID cards and posters. Lockers with fees.
+
+**Expenses and profit**: rent, electricity, Wi-Fi, salary, with monthly profit and a one-page monthly report PDF.
 
 **Your data stays yours**: your students' details stay on your phone, with optional daily backup to *your own* Google Drive, encrypted with your password. LibraryUp has no server holding your students' data.
 
@@ -44,4 +50,6 @@ library management app, study library, self study library, reading room, library
 5. Reminder queue: "Unlimited WhatsApp reminders with UPI link"
 6. Admission form: "Add a student in 30 seconds"
 7. Backup screen: "Your data, your Drive, your password"
-8. Hindi UI: "हिंदी में भी"
+8. ID card + QR scan: "Attendance by QR ID card"
+9. Vacancy poster: "6 evening seats free? Tell everyone on WhatsApp status"
+10. Hindi UI: "हिंदी में भी"
