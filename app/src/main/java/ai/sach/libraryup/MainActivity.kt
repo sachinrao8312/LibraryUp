@@ -39,7 +39,6 @@ import ai.sach.libraryup.ui.screens.settingsScreen.composable.HelpAndSupportScre
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.LanguageScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.NotificationsScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.PasswordChangeScreen
-import ai.sach.libraryup.ui.screens.settingsScreen.composable.PinLockScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.PrivacyPolicyScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.SecurityScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
@@ -259,7 +258,7 @@ class MainActivity : FragmentActivity() {
 fun LibraryUpApp(onSignOut: () -> Unit = {}) {
     val context = LocalContext.current
     val app = context.applicationContext as LibraryUpApplication
-    val vm: LibraryViewModel = viewModel(factory = LibraryViewModel.Factory(app.libraryRepository))
+    val vm: LibraryViewModel = viewModel(factory = LibraryViewModel.Factory(app.libraryRepository, app.staffMode))
     val state by vm.state.collectAsState()
     val snackbar = remember { SnackbarHostState() }
 
@@ -333,7 +332,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             }
             composable(AppRoutes.MORE) {
                 TabScreen(stringResource(R.string.nav_more)) {
-                    MoreScreen(SettingsNavRoutes.BACKUP) { navController.navigate(it) }
+                    MoreScreen(vm.staff, SettingsNavRoutes.BACKUP) { navController.navigate(it) }
                 }
             }
             composable(AppRoutes.STUDENT, arguments = listOf(navArgument("studentId") { type = NavType.LongType })) { back ->
@@ -393,12 +392,6 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             composable(SettingsNavRoutes.PROFILE_EDIT) { AccountScreen(navController = navController, isEditing = true) }
             composable(SettingsNavRoutes.SECURITY) { SecurityScreen(navController = navController) }
             composable(SettingsNavRoutes.PASSWORD_CHANGE) { PasswordChangeScreen(navController = navController) }
-            composable(
-                route = SettingsNavRoutes.PIN_SETUP + "?isPinSet={isPinSet}",
-                arguments = listOf(navArgument("isPinSet") { type = NavType.BoolType; defaultValue = false })
-            ) { back ->
-                PinLockScreen(navController = navController, isPinAlreadySet = back.arguments?.getBoolean("isPinSet") ?: false)
-            }
             composable(SettingsNavRoutes.APP_PREFERENCES) { AppPreferencesScreen(navController = navController) }
             composable(SettingsNavRoutes.NOTIFICATIONS) { NotificationsScreen(navController = navController) }
             composable(SettingsNavRoutes.LANGUAGE) { LanguageScreen(navController = navController) }

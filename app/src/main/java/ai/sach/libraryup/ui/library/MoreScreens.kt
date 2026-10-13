@@ -2,6 +2,10 @@ package ai.sach.libraryup.ui.library
 
 import ai.sach.libraryup.LibraryUpApplication
 import ai.sach.libraryup.R
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.ContactPhone
 import androidx.compose.material.icons.filled.Lock
 import ai.sach.libraryup.ui.navigation.AppRoutes
@@ -83,23 +87,68 @@ import java.time.format.DateTimeFormatter
 
 /** [onOpen] gets the route to open; [backupRoute] lives in the inherited settings graph. */
 @Composable
-fun MoreScreen(backupRoute: String, onOpen: (String) -> Unit) {
+fun MoreScreen(staff: StaffMode, backupRoute: String, onOpen: (String) -> Unit) {
+    var staffDialog by remember { mutableStateOf(false) }
+    val owner = !staff.isOn
     @Composable
     fun item(icon: ImageVector, title: Int, subtitle: Int, route: String) = MoreItem(icon, title, subtitle) { onOpen(route) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         item(Icons.Default.Campaign, R.string.title_reminders, R.string.more_reminders_desc, AppRoutes.REMINDERS)
         item(Icons.Default.EventAvailable, R.string.title_attendance, R.string.more_attendance_desc, AppRoutes.ATTENDANCE)
-        item(Icons.Default.AccountBalanceWallet, R.string.title_expenses, R.string.more_expenses_desc, AppRoutes.EXPENSES)
         item(Icons.Default.ContactPhone, R.string.title_enquiries, R.string.more_enquiries_desc, AppRoutes.ENQUIRIES)
         item(Icons.Default.Lock, R.string.title_lockers, R.string.more_lockers_desc, AppRoutes.LOCKERS)
+        if (owner) {
+            item(Icons.Default.AccountBalanceWallet, R.string.title_expenses, R.string.more_expenses_desc, AppRoutes.EXPENSES)
+            HorizontalDivider()
+            item(Icons.Default.LocalLibrary, R.string.title_library_settings, R.string.more_library_desc, AppRoutes.LIBRARY_SETTINGS)
+            item(Icons.Default.ImportExport, R.string.title_data, R.string.more_data_desc, AppRoutes.DATA)
+            item(Icons.Default.CloudUpload, R.string.title_backup, R.string.more_backup_desc, backupRoute)
+            item(Icons.Default.History, R.string.title_activity_log, R.string.more_log_desc, AppRoutes.ACTIVITY_LOG)
+            item(Icons.Default.Settings, R.string.title_app_settings, R.string.more_settings_desc, AppRoutes.SETTINGS)
+        }
         HorizontalDivider()
-        item(Icons.Default.LocalLibrary, R.string.title_library_settings, R.string.more_library_desc, AppRoutes.LIBRARY_SETTINGS)
-        item(Icons.Default.ImportExport, R.string.title_data, R.string.more_data_desc, AppRoutes.DATA)
-        item(Icons.Default.CloudUpload, R.string.title_backup, R.string.more_backup_desc, backupRoute)
-        item(Icons.Default.History, R.string.title_activity_log, R.string.more_log_desc, AppRoutes.ACTIVITY_LOG)
-        HorizontalDivider()
-        item(Icons.Default.Settings, R.string.title_app_settings, R.string.more_settings_desc, AppRoutes.SETTINGS)
+        MoreItem(Icons.Default.Badge, if (owner) R.string.staff_enter_title else R.string.staff_exit_title, R.string.more_staff_desc) { staffDialog = true }
     }
+    if (staffDialog) StaffDialog(staff) { staffDialog = false }
+}
+
+/** Entering staff mode sets or keeps the PIN; leaving it asks for the PIN. */
+@Composable
+private fun StaffDialog(staff: StaffMode, onDismiss: () -> Unit) {
+    val leaving = staff.isOn
+    var pin by rememberSaveable { mutableStateOf("") }
+    var wrong by remember { mutableStateOf(false) }
+    val pinOk = pin.length == StaffMode.PIN_LENGTH || (!leaving && pin.isEmpty() && staff.hasPin)
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(if (leaving) R.string.staff_exit_title else R.string.staff_enter_title)) },
+        text = {
+            Column {
+                if (!leaving) Text(stringResource(if (staff.hasPin) R.string.staff_enter_text_keep_pin else R.string.staff_enter_text))
+                OutlinedTextField(
+                    value = pin,
+                    onValueChange = { pin = it.filter(Char::isDigit).take(StaffMode.PIN_LENGTH); wrong = false },
+                    label = { Text(stringResource(R.string.field_staff_pin)) },
+                    isError = wrong,
+                    supportingText = if (wrong) ({ Text(stringResource(R.string.staff_wrong_pin)) }) else null,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                )
+            }
+        },
+        confirmButton = {
+            Button(enabled = pinOk, onClick = {
+                when {
+                    !leaving -> { staff.turnOn(pin.ifEmpty { null }); onDismiss() }
+                    staff.turnOff(pin) -> onDismiss()
+                    else -> wrong = true
+                }
+            }) { Text(stringResource(R.string.action_ok)) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+    )
 }
 
 @Composable

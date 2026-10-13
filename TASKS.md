@@ -75,7 +75,7 @@ Must be done before any real owner uses it.
 - [ ] More posters: admission open, holiday, festival wishes, results
 - [x] **Enquiry list**: walk-ins with follow-up date (in the morning digest), admit to student
       (`Enquiry` entity exists)
-- [ ] **Staff/operator login**: PIN-based operator role; cannot delete payments or see P&L
+- [x] **Staff mode**: owner PIN; staff can't edit/delete payments, delete students, or open expenses, settings, export, backup, log
 - [x] **Lockers**: number, fee, assignment; freed when a student leaves or is deleted
 - [ ] **Change admin phone/email** in Account screen
 - [ ] Receipt and reminder language per student (Hindi/English)

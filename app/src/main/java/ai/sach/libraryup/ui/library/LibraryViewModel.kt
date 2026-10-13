@@ -23,7 +23,7 @@ data class UiMessage(@StringRes val res: Int, val arg: String? = null)
  * and a [run] helper that executes a repository operation and turns failures into a
  * snackbar message instead of a crash.
  */
-class LibraryViewModel(val repository: LibraryRepository) : ViewModel() {
+class LibraryViewModel(val repository: LibraryRepository, val staff: StaffMode) : ViewModel() {
 
     /** Null until the database has emitted once, so screens can tell "loading" from "empty". */
     val state: StateFlow<LibraryState?> = repository.state
@@ -65,8 +65,8 @@ class LibraryViewModel(val repository: LibraryRepository) : ViewModel() {
         }
     }
 
-    class Factory(private val repository: LibraryRepository) : androidx.lifecycle.ViewModelProvider.Factory {
+    class Factory(private val repository: LibraryRepository, private val staff: StaffMode) : androidx.lifecycle.ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = LibraryViewModel(repository) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = LibraryViewModel(repository, staff) as T
     }
 }

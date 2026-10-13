@@ -428,23 +428,6 @@
     <string name="security_delete_title">सारा डेटा हटाएँ?</string>
     <string name="security_delete_text">इससे आपका सारा डेटा हमेशा के लिए हट जाएगा: छात्र, भुगतान, हाज़िरी और सेटिंग्स। इसे वापस नहीं लाया जा सकता।\n\nक्या आप आगे बढ़ना चाहते हैं?</string>
     <string name="security_delete_confirm">सारा डेटा हटाएँ</string>
-    <string name="pin_badge">PIN</string>
-    <string name="pin_set_title">PIN सेट करें</string>
-    <string name="pin_change_title">PIN बदलें</string>
-    <string name="pin_change_text">अपना PIN बदलें</string>
-    <string name="pin_create_text">ऐप को सुरक्षित रखने के लिए PIN बनाएँ</string>
-    <string name="pin_rule">PIN 4 से 6 अंकों का होना चाहिए</string>
-    <string name="pin_current">अभी का PIN</string>
-    <string name="pin_new">नया PIN</string>
-    <string name="pin_confirm">PIN दोबारा डालें</string>
-    <string name="pin_hide">PIN छिपाएँ</string>
-    <string name="pin_show">PIN दिखाएँ</string>
-    <string name="pin_error_current_required">अभी का PIN डालें</string>
-    <string name="pin_error_incorrect">गलत PIN</string>
-    <string name="pin_error_too_short">PIN कम से कम 4 अंकों का होना चाहिए</string>
-    <string name="pin_error_mismatch">दोनों PIN एक जैसे नहीं हैं</string>
-    <string name="pin_save">PIN सेव करें</string>
-    <string name="pin_remove">PIN सुरक्षा हटाएँ</string>
     <string name="password_change_title">पासवर्ड बदलें</string>
     <string name="password_requirements">पासवर्ड की शर्तें</string>
     <string name="password_requirements_list">• कम से कम 8 अक्षर\n• कम से कम एक बड़ा (कैपिटल) अक्षर\n• कम से कम एक अंक\n• कम से कम एक ख़ास चिह्न (जैसे @ या #)</string>
@@ -592,4 +575,11 @@
     <string name="poster_headline">सीटें उपलब्ध</string>
     <string name="poster_seats">%1$d सीटें</string>
     <string name="poster_call">कॉल / WhatsApp %1$s</string>
+    <string name="staff_enter_title">स्टाफ़ मोड चालू करें</string>
+    <string name="staff_exit_title">मालिक मोड पर लौटें</string>
+    <string name="more_staff_desc">फ़ोन स्टाफ़ को दें: भुगतान बदलना, खर्च और सेटिंग्स बंद</string>
+    <string name="staff_enter_text">स्टाफ़ दाख़िला, फीस लेना और हाज़िरी कर सकता है। भुगतान बदलना या हटाना, छात्र हटाना, खर्च, सेटिंग्स, एक्सपोर्ट और बैकअप नहीं। 4 अंकों का PIN रखें; वापस आने के लिए यही चाहिए।</string>
+    <string name="staff_enter_text_keep_pin">स्टाफ़ दाख़िला, फीस और हाज़िरी कर सकता है, पर भुगतान बदलना या सेटिंग्स नहीं। पुराना PIN रखने के लिए खाली छोड़ें, या नया लिखें।</string>
+    <string name="field_staff_pin">मालिक का 4 अंकों का PIN</string>
+    <string name="staff_wrong_pin">ग़लत PIN</string>
 </resources>

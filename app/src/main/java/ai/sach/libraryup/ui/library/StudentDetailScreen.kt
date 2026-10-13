@@ -94,7 +94,7 @@ fun StudentDetailScreen(
                 Icon(Icons.Default.Badge, contentDescription = stringResource(R.string.action_id_card))
             }
             IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit)) }
-            IconButton(onClick = { dialog = StudentDialog.DELETE }) {
+            if (!vm.staff.isOn) IconButton(onClick = { dialog = StudentDialog.DELETE }) {
                 Icon(Icons.Default.DeleteForever, contentDescription = stringResource(R.string.action_delete_student))
             }
         }
@@ -155,6 +155,7 @@ fun StudentDetailScreen(
             payments.forEach { p ->
                 PaymentRow(
                     p,
+                    canChange = !vm.staff.isOn,
                     onEdit = { editPayment = p },
                     onShare = { shareReceiptPdf(context, profile, s, p) },
                     onToggleDeleted = { vm.run(if (p.deleted) R.string.msg_payment_restored else R.string.msg_payment_deleted) { setPaymentDeleted(p.id, !p.deleted) } }
@@ -261,7 +262,7 @@ private fun MembershipCard(s: StudentOverview) {
 }
 
 @Composable
-private fun PaymentRow(p: Payment, onEdit: () -> Unit, onShare: () -> Unit, onToggleDeleted: () -> Unit) {
+private fun PaymentRow(p: Payment, canChange: Boolean, onEdit: () -> Unit, onShare: () -> Unit, onToggleDeleted: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
             Text(
@@ -272,9 +273,9 @@ private fun PaymentRow(p: Payment, onEdit: () -> Unit, onShare: () -> Unit, onTo
             Text("${p.receiptNo} · ${p.paidOn.pretty()}" + if (p.deleted) " · ${stringResource(R.string.label_deleted)}" else "",
                 style = MaterialTheme.typography.bodySmall)
         }
-        if (!p.deleted) IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit)) }
+        if (canChange && !p.deleted) IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit)) }
         if (!p.deleted) IconButton(onClick = onShare) { Icon(Icons.Default.Share, contentDescription = stringResource(R.string.action_share_receipt)) }
-        IconButton(onClick = onToggleDeleted) {
+        if (canChange) IconButton(onClick = onToggleDeleted) {
             Icon(if (p.deleted) Icons.Default.Restore else Icons.Default.Delete,
                 contentDescription = stringResource(if (p.deleted) R.string.action_restore else R.string.action_delete))
         }

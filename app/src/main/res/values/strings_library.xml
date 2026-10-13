@@ -428,23 +428,6 @@
     <string name="security_delete_title">Delete all data?</string>
     <string name="security_delete_text">This permanently deletes all your data, including students, payments, attendance and settings. This can\'t be undone.\n\nDo you want to continue?</string>
     <string name="security_delete_confirm">Delete all data</string>
-    <string name="pin_badge">PIN</string>
-    <string name="pin_set_title">Set PIN</string>
-    <string name="pin_change_title">Change PIN</string>
-    <string name="pin_change_text">Change your PIN</string>
-    <string name="pin_create_text">Create a PIN to protect the app</string>
-    <string name="pin_rule">Your PIN must be 4–6 digits</string>
-    <string name="pin_current">Current PIN</string>
-    <string name="pin_new">New PIN</string>
-    <string name="pin_confirm">Confirm PIN</string>
-    <string name="pin_hide">Hide PIN</string>
-    <string name="pin_show">Show PIN</string>
-    <string name="pin_error_current_required">Enter your current PIN</string>
-    <string name="pin_error_incorrect">Incorrect PIN</string>
-    <string name="pin_error_too_short">PIN must be at least 4 digits</string>
-    <string name="pin_error_mismatch">PINs don\'t match</string>
-    <string name="pin_save">Save PIN</string>
-    <string name="pin_remove">Remove PIN protection</string>
     <string name="password_change_title">Change password</string>
     <string name="password_requirements">Password requirements</string>
     <string name="password_requirements_list">• At least 8 characters\n• At least one uppercase letter\n• At least one number\n• At least one special character</string>
@@ -592,4 +575,11 @@
     <string name="poster_headline">Seats available</string>
     <string name="poster_seats">%1$d seats</string>
     <string name="poster_call">Call / WhatsApp %1$s</string>
+    <string name="staff_enter_title">Switch to staff mode</string>
+    <string name="staff_exit_title">Back to owner mode</string>
+    <string name="more_staff_desc">Hand the phone to staff: no editing payments, no expenses or settings</string>
+    <string name="staff_enter_text">Staff can admit students, collect fees and mark attendance. They can\'t change or delete payments, delete students, or open expenses, settings, export or backup. Set a 4-digit PIN; you will need it to come back.</string>
+    <string name="staff_enter_text_keep_pin">Staff can admit students, collect fees and mark attendance, but not change payments or open settings. Leave the PIN empty to keep your current one, or type a new one.</string>
+    <string name="field_staff_pin">4-digit owner PIN</string>
+    <string name="staff_wrong_pin">Wrong PIN</string>
 </resources>

@@ -467,23 +467,6 @@ S = {
  "security_delete_text": ("This permanently deletes all your data, including students, payments, attendance and settings. This can't be undone.\\n\\nDo you want to continue?", "इससे आपका सारा डेटा हमेशा के लिए हट जाएगा: छात्र, भुगतान, हाज़िरी और सेटिंग्स। इसे वापस नहीं लाया जा सकता।\\n\\nक्या आप आगे बढ़ना चाहते हैं?"),
  "security_delete_confirm": ("Delete all data", "सारा डेटा हटाएँ"),
  # PIN
- "pin_badge": ("PIN", "PIN"),
- "pin_set_title": ("Set PIN", "PIN सेट करें"),
- "pin_change_title": ("Change PIN", "PIN बदलें"),
- "pin_change_text": ("Change your PIN", "अपना PIN बदलें"),
- "pin_create_text": ("Create a PIN to protect the app", "ऐप को सुरक्षित रखने के लिए PIN बनाएँ"),
- "pin_rule": ("Your PIN must be 4–6 digits", "PIN 4 से 6 अंकों का होना चाहिए"),
- "pin_current": ("Current PIN", "अभी का PIN"),
- "pin_new": ("New PIN", "नया PIN"),
- "pin_confirm": ("Confirm PIN", "PIN दोबारा डालें"),
- "pin_hide": ("Hide PIN", "PIN छिपाएँ"),
- "pin_show": ("Show PIN", "PIN दिखाएँ"),
- "pin_error_current_required": ("Enter your current PIN", "अभी का PIN डालें"),
- "pin_error_incorrect": ("Incorrect PIN", "गलत PIN"),
- "pin_error_too_short": ("PIN must be at least 4 digits", "PIN कम से कम 4 अंकों का होना चाहिए"),
- "pin_error_mismatch": ("PINs don't match", "दोनों PIN एक जैसे नहीं हैं"),
- "pin_save": ("Save PIN", "PIN सेव करें"),
- "pin_remove": ("Remove PIN protection", "PIN सुरक्षा हटाएँ"),
  # password
  "password_change_title": ("Change password", "पासवर्ड बदलें"),
  "password_requirements": ("Password requirements", "पासवर्ड की शर्तें"),
@@ -639,6 +622,14 @@ S = {
  "poster_headline": ("Seats available", "सीटें उपलब्ध"),
  "poster_seats": ("%1$d seats", "%1$d सीटें"),
  "poster_call": ("Call / WhatsApp %1$s", "कॉल / WhatsApp %1$s"),
+ # staff mode
+ "staff_enter_title": ("Switch to staff mode", "स्टाफ़ मोड चालू करें"),
+ "staff_exit_title": ("Back to owner mode", "मालिक मोड पर लौटें"),
+ "more_staff_desc": ("Hand the phone to staff: no editing payments, no expenses or settings", "फ़ोन स्टाफ़ को दें: भुगतान बदलना, खर्च और सेटिंग्स बंद"),
+ "staff_enter_text": ("Staff can admit students, collect fees and mark attendance. They can't change or delete payments, delete students, or open expenses, settings, export or backup. Set a 4-digit PIN; you will need it to come back.", "स्टाफ़ दाख़िला, फीस लेना और हाज़िरी कर सकता है। भुगतान बदलना या हटाना, छात्र हटाना, खर्च, सेटिंग्स, एक्सपोर्ट और बैकअप नहीं। 4 अंकों का PIN रखें; वापस आने के लिए यही चाहिए।"),
+ "staff_enter_text_keep_pin": ("Staff can admit students, collect fees and mark attendance, but not change payments or open settings. Leave the PIN empty to keep your current one, or type a new one.", "स्टाफ़ दाख़िला, फीस और हाज़िरी कर सकता है, पर भुगतान बदलना या सेटिंग्स नहीं। पुराना PIN रखने के लिए खाली छोड़ें, या नया लिखें।"),
+ "field_staff_pin": ("4-digit owner PIN", "मालिक का 4 अंकों का PIN"),
+ "staff_wrong_pin": ("Wrong PIN", "ग़लत PIN"),
 }
 
 def esc(t):
