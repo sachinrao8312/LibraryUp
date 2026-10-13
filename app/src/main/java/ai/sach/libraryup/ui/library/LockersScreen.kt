@@ -10,17 +10,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,10 +32,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 /** Lockers: number, monthly fee and who has it. Leaving or deleting a student frees their locker. */
@@ -62,17 +60,13 @@ fun LockersScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Unit)
             if (lockers.isEmpty()) EmptyState(stringResource(R.string.empty_lockers))
             LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
                 items(lockers, key = { it.id }) { l ->
-                    Row(
-                        Modifier.fillMaxWidth().clickable { editing = l }.padding(horizontal = 16.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(stringResource(R.string.label_locker, l.number), fontWeight = FontWeight.SemiBold)
-                            Text(l.studentId?.let(names::get) ?: stringResource(R.string.locker_free), style = MaterialTheme.typography.bodySmall)
-                        }
-                        Text(rupees(l.fee))
-                    }
-                    HorizontalDivider()
+                    ListItem(
+                        modifier = Modifier.clickable { editing = l },
+                        leadingContent = { Icon(Icons.Default.Lock, contentDescription = null) },
+                        headlineContent = { Text(stringResource(R.string.label_locker, l.number)) },
+                        supportingContent = { Text(l.studentId?.let(names::get) ?: stringResource(R.string.locker_free)) },
+                        trailingContent = { Text(rupees(l.fee), style = MaterialTheme.typography.titleMedium) }
+                    )
                 }
             }
         }

@@ -28,9 +28,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.YearMonth
@@ -85,17 +84,14 @@ fun PaymentsScreen(state: LibraryState, onOpenStudent: (Long) -> Unit) {
         if (rows.isEmpty()) EmptyState(stringResource(R.string.empty_payments_month))
         LazyColumn(contentPadding = PaddingValues(bottom = 24.dp)) {
             items(rows, key = { it.id }) { p ->
-                Row(
-                    Modifier.fillMaxWidth().clickable { onOpenStudent(p.studentId) }.padding(horizontal = 16.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(Modifier.weight(1f)) {
-                        Text(names[p.studentId] ?: "-", fontWeight = FontWeight.SemiBold)
-                        Text("${p.receiptNo} · ${p.paidOn.pretty()} · ${stringResource(p.mode.label())}", style = MaterialTheme.typography.bodySmall)
-                    }
-                    Text(rupees(p.amount), fontWeight = FontWeight.SemiBold)
-                }
-                HorizontalDivider()
+                val name = names[p.studentId] ?: "-"
+                ListItem(
+                    modifier = Modifier.clickable { onOpenStudent(p.studentId) },
+                    leadingContent = { Avatar(name) },
+                    headlineContent = { Text(name) },
+                    supportingContent = { Text("${p.receiptNo} · ${p.paidOn.pretty()} · ${stringResource(p.mode.label())}") },
+                    trailingContent = { Text(rupees(p.amount), style = MaterialTheme.typography.titleMedium) }
+                )
             }
         }
     }
@@ -144,20 +140,19 @@ fun ExpensesScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Unit
             if (rows.isEmpty()) EmptyState(stringResource(R.string.empty_expenses))
             LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
                 items(rows, key = { it.id }) { e ->
-                    Row(
-                        Modifier.fillMaxWidth().clickable { editing = e }.padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(e.category, fontWeight = FontWeight.SemiBold)
-                            Text(e.date.pretty() + if (e.note.isNotBlank()) " · ${e.note}" else "", style = MaterialTheme.typography.bodySmall)
+                    ListItem(
+                        modifier = Modifier.clickable { editing = e },
+                        headlineContent = { Text(e.category) },
+                        supportingContent = { Text(e.date.pretty() + if (e.note.isNotBlank()) " · ${e.note}" else "") },
+                        trailingContent = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(rupees(e.amount), style = MaterialTheme.typography.titleMedium)
+                                IconButton(onClick = { vm.run(R.string.msg_deleted) { setExpenseDeleted(e, true) } }) {
+                                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.action_delete))
+                                }
+                            }
                         }
-                        Text(rupees(e.amount))
-                        IconButton(onClick = { vm.run(R.string.msg_deleted) { setExpenseDeleted(e, true) } }) {
-                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.action_delete))
-                        }
-                    }
-                    HorizontalDivider()
+                    )
                 }
             }
         }
