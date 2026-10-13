@@ -128,3 +128,13 @@ object PhoneNumbers {
         }
     }
 }
+
+/** Text in the ID-card QR: an app prefix plus the student id, scanned at the desk for attendance. */
+object StudentQr {
+    private const val PREFIX = "libraryup:student:"
+
+    fun encode(studentId: Long): String = PREFIX + studentId
+
+    fun decode(text: String): Long? =
+        if (text.startsWith(PREFIX)) text.removePrefix(PREFIX).toLongOrNull()?.takeIf { it > 0 } else null
+}

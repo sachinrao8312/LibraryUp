@@ -109,6 +109,9 @@ dependencies {
     // Analytics' AppMeasurementReceiver extends its WakefulBroadcastReceiver.
     implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.legacy.support.core.utils)
+
+    // ID-card QR: encode the card and scan it at the desk (camera screen included).
+    implementation(libs.zxing.android.embedded)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.crashlytics.ktx)

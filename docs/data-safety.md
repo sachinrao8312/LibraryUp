@@ -14,6 +14,7 @@ Re-check before every release that adds a library or a network call.
 
 **Not collected by LibraryUp** (stays on the device, or in the owner's own Google Drive when Drive backup is on):
 students' names, phone numbers, addresses, photos, ID proofs, payments, attendance.
+The camera (QR attendance scan) is used on the device only; no images are saved or sent.
 Play's definition of "collected" is data sent off the device to the developer, so these are not declared as collected. Drive backup goes to the user's own Drive account via the `drive.file` scope, not to us.
 
 ## Security practices

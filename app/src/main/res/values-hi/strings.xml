@@ -552,4 +552,14 @@
     <string name="currency_jpy">जापानी येन</string>
     <string name="currency_cad">कनाडाई डॉलर</string>
     <string name="currency_aud">ऑस्ट्रेलियाई डॉलर</string>
+    <string name="action_id_card">आईडी कार्ड</string>
+    <string name="id_valid_till">%1$s तक मान्य</string>
+    <string name="id_scan_hint">हाज़िरी के लिए स्कैन करें</string>
+    <string name="action_scan">आईडी कार्ड स्कैन करें</string>
+    <string name="scan_prompt">कैमरा छात्र के आईडी कार्ड के QR पर रखें</string>
+    <string name="scan_in">%1$s आ गए</string>
+    <string name="scan_out">%1$s चले गए</string>
+    <string name="scan_already">%1$s की हाज़िरी पहले से लगी है</string>
+    <string name="scan_not_active">%1$s अभी सक्रिय छात्र नहीं हैं</string>
+    <string name="scan_unknown">यह इस लाइब्रेरी का छात्र नहीं है</string>
 </resources>

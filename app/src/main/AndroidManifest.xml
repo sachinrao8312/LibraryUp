@@ -59,6 +59,12 @@
             </intent-filter>
         </activity>
 
+        <!-- QR scanner for desk attendance: follow the phone's rotation (library default is landscape). -->
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
+
         <!-- FileProvider for sharing backup files -->
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -6,6 +6,12 @@ import ai.sach.libraryup.data.local.entity.StudentStatus
 import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.data.repository.StudentOverview
 import ai.sach.libraryup.domain.DueStatus
+import ai.sach.libraryup.data.repository.LibraryRepository.ScanResult
+import ai.sach.libraryup.domain.StudentQr
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.material.icons.filled.QrCodeScanner
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import ai.sach.libraryup.domain.MessageTemplates
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -142,6 +148,21 @@ fun AttendanceScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Un
         .filter { shiftFilter == null || it.shift?.id == shiftFilter }
         .sortedBy { it.seat?.label?.toIntOrNull() ?: Int.MAX_VALUE }
     val isToday = date == LocalDate.now()
+    val scanPrompt = stringResource(R.string.scan_prompt)
+    val scanner = rememberLauncherForActivityResult(ScanContract()) { result ->
+        val text = result.contents ?: return@rememberLauncherForActivityResult
+        val student = StudentQr.decode(text)?.let { id -> state.students.firstOrNull { it.student.id == id }?.student }
+        if (student == null) vm.message(R.string.scan_unknown)
+        else vm.run {
+            val res = when (scanAttendance(student.id, LocalDate.now())) {
+                ScanResult.IN -> R.string.scan_in
+                ScanResult.OUT -> R.string.scan_out
+                ScanResult.ALREADY -> R.string.scan_already
+                ScanResult.NOT_ACTIVE -> R.string.scan_not_active
+            }
+            vm.message(res, student.name)
+        }
+    }
 
     Column(Modifier.fillMaxSize()) {
         LibraryTopBar(stringResource(R.string.title_attendance), onBack = onBack)
@@ -149,6 +170,9 @@ fun AttendanceScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Un
             IconButton(onClick = { dateEpoch -= 1 }) { Icon(Icons.Default.ChevronLeft, contentDescription = null) }
             Text(date.pretty(), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
             Text(stringResource(R.string.attendance_present, records.size, students.size), style = MaterialTheme.typography.bodyMedium)
+            if (isToday) IconButton(onClick = { scanner.launch(ScanOptions().setPrompt(scanPrompt).setOrientationLocked(false)) }) {
+                Icon(Icons.Default.QrCodeScanner, contentDescription = stringResource(R.string.action_scan))
+            }
             IconButton(onClick = { dateEpoch += 1 }, enabled = !isToday) { Icon(Icons.Default.ChevronRight, contentDescription = null) }
         }
         ChipRow {

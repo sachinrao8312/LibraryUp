@@ -68,8 +68,8 @@ Must be done before any real owner uses it.
 - [x] Late fee auto-rule (e.g. ₹10/day after grace) instead of manual entry
 
 ## Milestone 2: public launch (P1 differentiators)
-- [ ] **Student ID card**: photo, seat, shift, validity, father's name, QR (PDF/image share)
-- [ ] **QR attendance**: scan the ID-card QR to mark In/Out (CameraX + ML Kit barcode, or ZXing)
+- [x] **Student ID card**: photo, seat, shift, validity, father's name, QR (PNG share)
+- [x] **QR attendance**: scan the ID-card QR to mark In/Out (ZXing scanner; repeat scan within 5 min ignored)
 - [ ] **Own branding**: library logo on receipts, ID cards, posters (`LibraryProfile.logoUri`)
 - [ ] **Fill-the-seats posters**: vacancy poster from live free seats per shift, admission
       open, holiday, festival wishes, results; share to WhatsApp status

@@ -58,6 +58,7 @@ fragmentKtx = "1.8.6"
 # Testing
 junit = "4.13.2"
 robolectric = "4.14.1"
+zxingEmbedded = "4.3.0"
 legacySupportCoreUtils = "1.0.0"
 androidxTestCore = "1.6.1"
 junitVersion = "1.2.1"
@@ -146,6 +147,7 @@ libphonenumber = { group = "com.googlecode.libphonenumber", name = "libphonenumb
 #=====================================================================
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-legacy-support-core-utils = { group = "androidx.legacy", name = "legacy-support-core-utils", version.ref = "legacySupportCoreUtils" }
+zxing-android-embedded = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingEmbedded" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-test-core = { group = "androidx.test", name = "core-ktx", version.ref = "androidxTestCore" }
 okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okhttp" }

@@ -25,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Delete
@@ -89,6 +90,9 @@ fun StudentDetailScreen(
 
     Column(Modifier.fillMaxSize()) {
         LibraryTopBar(s.student.name, onBack = onBack) {
+            IconButton(onClick = { shareIdCard(context, state.profile, s) }) {
+                Icon(Icons.Default.Badge, contentDescription = stringResource(R.string.action_id_card))
+            }
             IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit)) }
             IconButton(onClick = { dialog = StudentDialog.DELETE }) {
                 Icon(Icons.Default.DeleteForever, contentDescription = stringResource(R.string.action_delete_student))

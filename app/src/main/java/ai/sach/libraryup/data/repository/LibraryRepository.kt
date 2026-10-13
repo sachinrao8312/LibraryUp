@@ -409,6 +409,22 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
         dao.upsertAttendance(a.copy(outMinute = nowMinute()))
     }
 
+    enum class ScanResult { IN, OUT, ALREADY, NOT_ACTIVE }
+
+    /**
+     * Desk QR scan: the first scan of the day checks in, the next checks out. A repeat scan
+     * within [MIN_STAY_MINUTES] of check-in is ignored so a double scan doesn't check out.
+     */
+    suspend fun scanAttendance(studentId: Long, date: LocalDate): ScanResult {
+        if (dao.getStudent(studentId)?.status != StudentStatus.ACTIVE) return ScanResult.NOT_ACTIVE
+        val a = dao.findAttendance(studentId, date)
+        return when {
+            a == null -> { checkIn(studentId, date, AttendanceMethod.QR); ScanResult.IN }
+            a.outMinute == null && nowMinute() - a.inMinute >= MIN_STAY_MINUTES -> { checkOut(studentId, date); ScanResult.OUT }
+            else -> ScanResult.ALREADY
+        }
+    }
+
     /** Undoes the last tap: clears the Out time if set, otherwise removes the In. */
     suspend fun undoAttendance(studentId: Long, date: LocalDate) {
         val a = dao.findAttendance(studentId, date) ?: return
@@ -418,6 +434,10 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     private fun later(a: LocalDate, b: LocalDate): LocalDate = if (a.isAfter(b)) a else b
 
     private fun nowMinute(): Int = LocalTime.now().let { it.hour * 60 + it.minute }
+
+    companion object {
+        const val MIN_STAY_MINUTES = 5
+    }
 
     /* ======================= Expenses ======================= */
 

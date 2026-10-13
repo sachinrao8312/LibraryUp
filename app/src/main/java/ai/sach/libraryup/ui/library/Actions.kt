@@ -150,11 +150,20 @@ fun shareReceiptPdf(context: Context, profile: LibraryProfile?, s: StudentOvervi
     file.outputStream().use { doc.writeTo(it) }
     doc.close()
 
+    shareFile(
+        context, file, "application/pdf",
+        buildMessage(profile, MessageTemplates.Kind.RECEIPT, s, payment.amount, payment.receiptNo),
+        context.getString(R.string.action_share_receipt)
+    )
+}
+
+/** Opens the share sheet for a file in the app's cache (WhatsApp is usually first). */
+fun shareFile(context: Context, file: File, mime: String, text: String, chooserTitle: String) {
     val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     val send = Intent(Intent.ACTION_SEND)
-        .setType("application/pdf")
+        .setType(mime)
         .putExtra(Intent.EXTRA_STREAM, uri)
-        .putExtra(Intent.EXTRA_TEXT, buildMessage(profile, MessageTemplates.Kind.RECEIPT, s, payment.amount, payment.receiptNo))
+        .putExtra(Intent.EXTRA_TEXT, text)
         .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    context.startActivity(Intent.createChooser(send, context.getString(R.string.action_share_receipt)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    context.startActivity(Intent.createChooser(send, chooserTitle).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 }

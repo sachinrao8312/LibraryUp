@@ -595,6 +595,17 @@ S = {
  "currency_jpy": ("Japanese Yen", "जापानी येन"),
  "currency_cad": ("Canadian Dollar", "कनाडाई डॉलर"),
  "currency_aud": ("Australian Dollar", "ऑस्ट्रेलियाई डॉलर"),
+ # milestone 2: ID card and QR attendance
+ "action_id_card": ("ID card", "आईडी कार्ड"),
+ "id_valid_till": ("Valid till %1$s", "%1$s तक मान्य"),
+ "id_scan_hint": ("Scan for attendance", "हाज़िरी के लिए स्कैन करें"),
+ "action_scan": ("Scan ID card", "आईडी कार्ड स्कैन करें"),
+ "scan_prompt": ("Point the camera at the student's ID card QR", "कैमरा छात्र के आईडी कार्ड के QR पर रखें"),
+ "scan_in": ("%1$s checked in", "%1$s आ गए"),
+ "scan_out": ("%1$s checked out", "%1$s चले गए"),
+ "scan_already": ("%1$s already marked", "%1$s की हाज़िरी पहले से लगी है"),
+ "scan_not_active": ("%1$s is not an active student", "%1$s अभी सक्रिय छात्र नहीं हैं"),
+ "scan_unknown": ("Not a student of this library", "यह इस लाइब्रेरी का छात्र नहीं है"),
 }
 
 def esc(t):

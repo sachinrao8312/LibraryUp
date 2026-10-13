@@ -2,9 +2,11 @@ package ai.sach.libraryup.data
 
 import ai.sach.libraryup.R
 import ai.sach.libraryup.data.local.entity.ActivityLog
+import ai.sach.libraryup.data.local.entity.AttendanceMethod
 import ai.sach.libraryup.data.local.entity.MembershipStatus
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.local.entity.StudentStatus
+import ai.sach.libraryup.data.repository.LibraryRepository.ScanResult
 import ai.sach.libraryup.data.repository.UserError
 import ai.sach.libraryup.domain.StudentImportRow
 import android.app.Application
@@ -166,6 +168,17 @@ class LibraryRepositoryTest {
         assertNull(a.outMinute)
         lib.repo.undoAttendance(id, today)
         assertNull(lib.dao.findAttendance(id, today))
+    }
+
+    @Test
+    fun `qr scan checks in once and ignores a quick repeat`() = runBlocking {
+        val id = lib.admit("Asha")
+        val today = LocalDate.now()
+        assertEquals(ScanResult.IN, lib.repo.scanAttendance(id, today))
+        assertEquals(ScanResult.ALREADY, lib.repo.scanAttendance(id, today))
+        assertEquals(AttendanceMethod.QR, lib.dao.findAttendance(id, today)!!.method)
+        lib.repo.freeze(id, today)
+        assertEquals(ScanResult.NOT_ACTIVE, lib.repo.scanAttendance(id, today))
     }
 
     @Test

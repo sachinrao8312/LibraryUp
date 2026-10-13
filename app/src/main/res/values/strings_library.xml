@@ -552,4 +552,14 @@
     <string name="currency_jpy">Japanese Yen</string>
     <string name="currency_cad">Canadian Dollar</string>
     <string name="currency_aud">Australian Dollar</string>
+    <string name="action_id_card">ID card</string>
+    <string name="id_valid_till">Valid till %1$s</string>
+    <string name="id_scan_hint">Scan for attendance</string>
+    <string name="action_scan">Scan ID card</string>
+    <string name="scan_prompt">Point the camera at the student\'s ID card QR</string>
+    <string name="scan_in">%1$s checked in</string>
+    <string name="scan_out">%1$s checked out</string>
+    <string name="scan_already">%1$s already marked</string>
+    <string name="scan_not_active">%1$s is not an active student</string>
+    <string name="scan_unknown">Not a student of this library</string>
 </resources>
