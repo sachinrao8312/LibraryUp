@@ -136,8 +136,10 @@ fun StudentRow(s: StudentOverview, onClick: () -> Unit) {
             else stringResource(R.string.label_seat_shift, s.seat?.label ?: "-", s.shift?.name ?: "-")
             Text(seatLine, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             s.membership?.let {
+                // Unpaid: the fee was due when the period started. Paid: when the period ends.
                 Text(
-                    stringResource(R.string.label_due_on, it.dueDate.pretty()),
+                    if (s.balance > 0) stringResource(R.string.label_fee_due_since, it.startDate.pretty())
+                    else stringResource(R.string.id_valid_till, it.dueDate.minusDays(1).pretty()),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

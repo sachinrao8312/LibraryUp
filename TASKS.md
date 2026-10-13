@@ -44,8 +44,8 @@ Must be done before any real owner uses it.
       encrypted with password or recovery code). Attachments not covered yet
 - [x] Release build with R8 runs in CI (`assembleRelease`); still verify a real restore on
       a release build on a phone
-- [ ] Commit the exported Room schema (`app/schemas/.../1.json`, uploaded by CI) before the
-      first release, so later migrations can be tested against it
+- [x] Room schema v1 committed (`app/schemas/`); CI republishes it on the `screenshots` branch.
+      Re-copy it after any schema change until the first release, then never edit v1 again
 - [x] Translate the main inherited settings/auth screens (sign-in, splash, lock, settings,
       backup, security). Help & support and privacy policy text still English
 - [x] Remove dead RentUp code: Firestore guest-migration of `tenants`/`properties`

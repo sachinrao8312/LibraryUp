@@ -182,7 +182,7 @@
     <string name="label_active">Active</string>
     <string name="label_balance">Balance: %1$s</string>
     <string name="label_deleted">deleted</string>
-    <string name="label_due_on">Due %1$s</string>
+    <string name="label_fee_due_since">Fee due since %1$s</string>
     <string name="label_expenses">Expenses</string>
     <string name="label_father">Father: %1$s</string>
     <string name="label_fee_breakdown">Fee %1$s · discount %2$s · late fee %3$s</string>

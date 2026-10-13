@@ -51,7 +51,8 @@ interface LibraryDao {
     @Upsert
     suspend fun upsertShift(shift: Shift): Long
 
-    @Query("SELECT * FROM seats ORDER BY block, sortOrder, id")
+    /** In the order the owner created them, so blocks keep their setup order on the seat map. */
+    @Query("SELECT * FROM seats ORDER BY sortOrder, id")
     fun observeSeats(): Flow<List<Seat>>
 
     @Query("SELECT * FROM seats ORDER BY block, sortOrder, id")

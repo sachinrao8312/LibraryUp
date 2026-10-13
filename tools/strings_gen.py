@@ -200,7 +200,7 @@ S = {
  "label_active": ("Active", "चालू"),
  "label_balance": ("Balance: %1$s", "बाकी: %1$s"),
  "label_deleted": ("deleted", "हटाया गया"),
- "label_due_on": ("Due %1$s", "देय %1$s"),
+ "label_fee_due_since": ("Fee due since %1$s", "%1$s से फीस बाकी"),
  "label_expenses": ("Expenses", "खर्च"),
  "label_father": ("Father: %1$s", "पिता: %1$s"),
  "label_fee_breakdown": ("Fee %1$s · discount %2$s · late fee %3$s", "फीस %1$s · छूट %2$s · लेट फीस %3$s"),

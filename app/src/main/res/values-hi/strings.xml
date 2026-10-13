@@ -182,7 +182,7 @@
     <string name="label_active">चालू</string>
     <string name="label_balance">बाकी: %1$s</string>
     <string name="label_deleted">हटाया गया</string>
-    <string name="label_due_on">देय %1$s</string>
+    <string name="label_fee_due_since">%1$s से फीस बाकी</string>
     <string name="label_expenses">खर्च</string>
     <string name="label_father">पिता: %1$s</string>
     <string name="label_fee_breakdown">फीस %1$s · छूट %2$s · लेट फीस %3$s</string>
