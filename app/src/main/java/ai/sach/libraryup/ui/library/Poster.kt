@@ -19,8 +19,15 @@ private const val H = 1350
 private const val BRAND = 0xFF283593.toInt()
 private const val ACCENT = 0xFFFFC107.toInt()
 
-/** Shares a "seats available" poster built from today's free seats per shift. */
+/** Shares the vacancy poster as a PNG. */
 fun shareVacancyPoster(context: Context, state: LibraryState) {
+    val file = File(File(context.cacheDir, "posters").apply { mkdirs() }, "vacancy.png")
+    file.outputStream().use { vacancyPoster(context, state).compress(Bitmap.CompressFormat.PNG, 100, it) }
+    shareFile(context, file, "image/png", context.getString(R.string.poster_headline), context.getString(R.string.action_vacancy_poster))
+}
+
+/** A "seats available" poster built from today's free seats per shift. */
+fun vacancyPoster(context: Context, state: LibraryState): Bitmap {
     val profile = state.profile
     val bookings = state.bookings.groupBy { it.seatId }
     val shifts = state.activeShifts
@@ -57,8 +64,5 @@ fun shareVacancyPoster(context: Context, state: LibraryState) {
     profile?.phone?.takeIf { it.isNotBlank() }?.let {
         text(context.getString(R.string.poster_call, it), W / 2f, H - 140f, paint(56f, ACCENT, bold = true, centre))
     }
-
-    val file = File(File(context.cacheDir, "posters").apply { mkdirs() }, "vacancy.png")
-    file.outputStream().use { poster.compress(Bitmap.CompressFormat.PNG, 100, it) }
-    shareFile(context, file, "image/png", context.getString(R.string.poster_headline), context.getString(R.string.action_vacancy_poster))
+    return poster
 }

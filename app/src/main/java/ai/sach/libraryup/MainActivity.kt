@@ -5,17 +5,19 @@ import ai.sach.libraryup.ui.common.composables.BottomNavigationBar
 import ai.sach.libraryup.ui.common.responsiveness.AccessibilityScalingProvider
 import ai.sach.libraryup.ui.common.responsiveness.DimensionsProvider
 import ai.sach.libraryup.ui.library.ActivityLogScreen
+import ai.sach.libraryup.ui.library.AdBanner
 import ai.sach.libraryup.ui.library.AttendanceScreen
 import ai.sach.libraryup.ui.library.DashboardScreen
 import ai.sach.libraryup.ui.library.DataScreen
 import ai.sach.libraryup.ui.library.EnquiriesScreen
 import ai.sach.libraryup.ui.library.ExpensesScreen
-import ai.sach.libraryup.ui.library.LockersScreen
 import ai.sach.libraryup.ui.library.LibrarySettingsScreen
 import ai.sach.libraryup.ui.library.LibraryTopBar
 import ai.sach.libraryup.ui.library.LibraryViewModel
+import ai.sach.libraryup.ui.library.LockersScreen
 import ai.sach.libraryup.ui.library.MoreScreen
 import ai.sach.libraryup.ui.library.PaymentsScreen
+import ai.sach.libraryup.ui.library.ProScreen
 import ai.sach.libraryup.ui.library.RemindersScreen
 import ai.sach.libraryup.ui.library.SeatMapScreen
 import ai.sach.libraryup.ui.library.SetupScreen
@@ -38,7 +40,6 @@ import ai.sach.libraryup.ui.screens.settingsScreen.composable.BackupRestoreScree
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.HelpAndSupportScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.LanguageScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.NotificationsScreen
-import ai.sach.libraryup.ui.screens.settingsScreen.composable.PasswordChangeScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.PrivacyPolicyScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.SecurityScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
@@ -80,7 +81,6 @@ import androidx.compose.ui.unit.Density
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -145,7 +145,7 @@ class MainActivity : FragmentActivity() {
             // Fixed font scale: layouts are tuned for it; large system fonts broke rows on small phones.
             val density = Density(density = LocalDensity.current.density, fontScale = 1.0f)
             CompositionLocalProvider(LocalDensity provides density) {
-                LibraryUpTheme(dynamicColor = false) {
+                LibraryUpTheme {
                     DimensionsProvider {
                         AccessibilityScalingProvider {
                             var appState by remember { mutableStateOf(AppState.Loading) }
@@ -171,7 +171,7 @@ class MainActivity : FragmentActivity() {
                             }
 
                             when (appState) {
-                                AppState.Loading -> SplashScreen(onSplashFinished = {})
+                                AppState.Loading -> SplashScreen()
                                 AppState.Unauthenticated -> GoogleAuthScreen(
                                     authViewModel = viewModel(factory = AuthViewModelFactory(application = app, authRepository = authRepository)),
                                     onNavigateToMain = {
@@ -258,7 +258,7 @@ class MainActivity : FragmentActivity() {
 fun LibraryUpApp(onSignOut: () -> Unit = {}) {
     val context = LocalContext.current
     val app = context.applicationContext as LibraryUpApplication
-    val vm: LibraryViewModel = viewModel(factory = LibraryViewModel.Factory(app.libraryRepository, app.staffMode))
+    val vm: LibraryViewModel = viewModel(factory = LibraryViewModel.Factory(app.libraryRepository, app.staffMode, app.proManager))
     val state by vm.state.collectAsState()
     val snackbar = remember { SnackbarHostState() }
 
@@ -286,6 +286,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
     val route = entry?.destination?.route
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    LaunchedEffect(vm) { vm.paywall.collect { navController.navigate(AppRoutes.PRO) { launchSingleTop = true } } }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
@@ -293,21 +294,31 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
     ) { padding ->
         NavHost(navController = navController, startDestination = AppRoutes.HOME, modifier = Modifier.padding(padding)) {
             composable(AppRoutes.HOME) {
-                DashboardScreen(
-                    state = state,
-                    onOpenStudents = { navController.navigate(AppRoutes.students(it.name)) { launchSingleTop = true } },
-                    onAddStudent = { navController.navigate(AppRoutes.studentForm()) },
-                    onOpenReminders = { navController.navigate(AppRoutes.REMINDERS) },
-                    onOpenAttendance = { navController.navigate(AppRoutes.ATTENDANCE) },
-                    onOpenPayments = { navController.navigate(AppRoutes.PAYMENTS) { launchSingleTop = true } }
-                )
+                val log by remember { vm.repository.activityLog }.collectAsState(initial = emptyList())
+                Column(Modifier.fillMaxSize()) {
+                    Box(Modifier.weight(1f)) {
+                        DashboardScreen(
+                            state = state,
+                            onOpenStudents = { navController.navigate(AppRoutes.students(it.name)) { launchSingleTop = true } },
+                            onAddStudent = { navController.navigate(AppRoutes.studentForm()) },
+                            onOpenReminders = { navController.navigate(AppRoutes.REMINDERS) },
+                            onOpenAttendance = { navController.navigate(AppRoutes.ATTENDANCE) },
+                            onOpenPayments = { navController.navigate(AppRoutes.PAYMENTS) { launchSingleTop = true } },
+                            // Staff can't open the activity log, so they don't see it here either.
+                            recent = if (vm.staff.isOn) emptyList() else log.take(3),
+                            onOpenLog = { navController.navigate(AppRoutes.ACTIVITY_LOG) }
+                        )
+                    }
+                    if (!vm.isPro) AdBanner()
+                }
             }
             composable(AppRoutes.SEATS) {
                 TabScreen(stringResource(R.string.nav_seats)) {
                     SeatMapScreen(
                         state = state,
                         onOpenStudent = { navController.navigate(AppRoutes.student(it)) },
-                        onAssignSeat = { seatId, shiftId -> navController.navigate(AppRoutes.studentForm(seatId = seatId, shiftId = shiftId)) }
+                        onAssignSeat = { seatId, shiftId -> navController.navigate(AppRoutes.studentForm(seatId = seatId, shiftId = shiftId)) },
+                        withPro = vm::withPro
                     )
                 }
             }
@@ -319,8 +330,9 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
                 TabScreen(stringResource(R.string.nav_students)) {
                     StudentsScreen(
                         state = state,
+                        vm = vm,
                         initialFilter = filter,
-                        onOpenStudent = { navController.navigate(AppRoutes.student(it)) },
+                        onEditStudent = { navController.navigate(AppRoutes.studentForm(studentId = it)) },
                         onAddStudent = { navController.navigate(AppRoutes.studentForm()) }
                     )
                 }
@@ -332,7 +344,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             }
             composable(AppRoutes.MORE) {
                 TabScreen(stringResource(R.string.nav_more)) {
-                    MoreScreen(vm.staff, SettingsNavRoutes.BACKUP) { navController.navigate(it) }
+                    MoreScreen(vm, SettingsNavRoutes.BACKUP) { navController.navigate(it) }
                 }
             }
             composable(AppRoutes.STUDENT, arguments = listOf(navArgument("studentId") { type = NavType.LongType })) { back ->
@@ -371,6 +383,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             composable(AppRoutes.LIBRARY_SETTINGS) { LibrarySettingsScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.DATA) { DataScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.ACTIVITY_LOG) { ActivityLogScreen(vm) { navController.popBackStack() } }
+            composable(AppRoutes.PRO) { ProScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.LOCKERS) { LockersScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.ENQUIRIES) {
                 EnquiriesScreen(state, vm, onOpenStudent = { navController.navigate(AppRoutes.student(it)) }) { navController.popBackStack() }
@@ -391,7 +404,6 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             composable(SettingsNavRoutes.ACCOUNT) { AccountScreen(navController = navController) }
             composable(SettingsNavRoutes.PROFILE_EDIT) { AccountScreen(navController = navController, isEditing = true) }
             composable(SettingsNavRoutes.SECURITY) { SecurityScreen(navController = navController) }
-            composable(SettingsNavRoutes.PASSWORD_CHANGE) { PasswordChangeScreen(navController = navController) }
             composable(SettingsNavRoutes.APP_PREFERENCES) { AppPreferencesScreen(navController = navController) }
             composable(SettingsNavRoutes.NOTIFICATIONS) { NotificationsScreen(navController = navController) }
             composable(SettingsNavRoutes.LANGUAGE) { LanguageScreen(navController = navController) }

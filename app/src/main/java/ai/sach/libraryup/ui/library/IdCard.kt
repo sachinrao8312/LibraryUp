@@ -23,8 +23,15 @@ private const val W = 1012 // ID-1 card ratio (85.6 × 54 mm) at 300 dpi
 private const val H = 638
 private const val BRAND = 0xFF283593.toInt()
 
-/** Draws the student's ID card (photo, seat, validity, attendance QR) and shares it as a PNG. */
+/** Shares the student's ID card as a PNG. */
 fun shareIdCard(context: Context, profile: LibraryProfile?, s: StudentOverview) {
+    val file = File(File(context.cacheDir, "id-cards").apply { mkdirs() }, "id-${s.student.id}.png")
+    file.outputStream().use { idCard(context, profile, s).compress(Bitmap.CompressFormat.PNG, 100, it) }
+    shareFile(context, file, "image/png", s.student.name, context.getString(R.string.action_id_card))
+}
+
+/** The ID card: photo, seat, validity and the attendance QR. */
+fun idCard(context: Context, profile: LibraryProfile?, s: StudentOverview): Bitmap {
     val card = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888)
     val c = Canvas(card)
     c.drawColor(Color.WHITE)
@@ -43,7 +50,10 @@ fun shareIdCard(context: Context, profile: LibraryProfile?, s: StudentOverview) 
 
     val photo = s.student.photoUri?.let { ImageUtils.loadBitmapFromUri(context, Uri.parse(it), 400) }
     val photoBox = RectF(40f, 170f, 260f, 440f)
-    if (photo != null) c.drawFit(photo, photoBox) else c.drawRect(photoBox, Paint().apply { color = 0xFFE0E0E0.toInt() })
+    if (photo != null) c.drawFit(photo, photoBox) else {
+        c.drawRect(photoBox, Paint().apply { color = 0xFFDDE1F5.toInt() })
+        c.drawText(s.student.name.trim().take(1).uppercase(), photoBox.centerX(), photoBox.centerY() + 40f, paint(110f, BRAND, bold = true).apply { textAlign = Paint.Align.CENTER })
+    }
 
     val body = paint(30f)
     text(s.student.name, 300f, 215f, paint(42f, bold = true), 380f)
@@ -58,8 +68,5 @@ fun shareIdCard(context: Context, profile: LibraryProfile?, s: StudentOverview) 
     c.drawBitmap(qr, 712f, 160f, null)
     text(context.getString(R.string.id_scan_hint), 712f, 450f, paint(20f, 0xFF666666.toInt()), 260f)
     profile?.phone?.takeIf { it.isNotBlank() }?.let { text(it, 40f, 600f, paint(26f, BRAND, bold = true)) }
-
-    val file = File(File(context.cacheDir, "id-cards").apply { mkdirs() }, "id-${s.student.id}.png")
-    file.outputStream().use { card.compress(Bitmap.CompressFormat.PNG, 100, it) }
-    shareFile(context, file, "image/png", s.student.name, context.getString(R.string.action_id_card))
+    return card
 }

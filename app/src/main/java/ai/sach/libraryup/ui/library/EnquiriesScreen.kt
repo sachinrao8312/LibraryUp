@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,9 +21,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -42,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
@@ -74,23 +72,22 @@ fun EnquiriesScreen(state: LibraryState, vm: LibraryViewModel, onOpenStudent: (L
             if (rows.isEmpty()) EmptyState(stringResource(R.string.empty_enquiries))
             LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
                 items(rows, key = { it.id }) { e ->
-                    Row(
-                        Modifier.fillMaxWidth().clickable { editing = e }.padding(start = 16.dp, top = 6.dp, bottom = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(e.name, fontWeight = FontWeight.SemiBold)
-                            Text(
-                                listOfNotNull(e.phone, e.wantedShiftId?.let { state.shiftsById[it]?.name }, e.note.ifBlank { null }).joinToString(" · "),
-                                style = MaterialTheme.typography.bodySmall
-                            )
+                    ListItem(
+                        modifier = Modifier.clickable { editing = e },
+                        leadingContent = { Avatar(e.name) },
+                        headlineContent = { Text(e.name) },
+                        supportingContent = {
+                            Text(listOfNotNull(e.phone, e.wantedShiftId?.let { state.shiftsById[it]?.name }, e.note.ifBlank { null }).joinToString(" · "))
+                        },
+                        trailingContent = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                e.followUpOn?.takeIf { e.status == EnquiryStatus.OPEN }?.let {
+                                    Text(it.pretty(), style = MaterialTheme.typography.labelMedium, color = if (it.isAfter(today)) Color.Unspecified else MaterialTheme.colorScheme.error)
+                                }
+                                IconButton(onClick = { dial(context, e.phone) }) { Icon(Icons.Default.Call, contentDescription = stringResource(R.string.action_call)) }
+                            }
                         }
-                        e.followUpOn?.takeIf { e.status == EnquiryStatus.OPEN }?.let {
-                            Text(it.pretty(), style = MaterialTheme.typography.bodySmall, color = if (it.isAfter(today)) Color.Unspecified else StatusColors.overdue)
-                        }
-                        IconButton(onClick = { dial(context, e.phone) }) { Icon(Icons.Default.Call, contentDescription = stringResource(R.string.action_call)) }
-                    }
-                    HorizontalDivider()
+                    )
                 }
             }
         }

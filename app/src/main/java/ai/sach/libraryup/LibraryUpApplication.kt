@@ -1,21 +1,22 @@
 package ai.sach.libraryup
 
+import ai.sach.libraryup.billing.ProManager
 import ai.sach.libraryup.data.backup.BackupManager
 import ai.sach.libraryup.data.backup.drive.DriveBackupManager
 import ai.sach.libraryup.data.local.LibraryUpDatabase
 import ai.sach.libraryup.data.repository.LibraryRepository
-import ai.sach.libraryup.ui.library.StaffMode
 import ai.sach.libraryup.notifications.NotificationHelper
 import ai.sach.libraryup.notifications.NotificationPrefs
 import ai.sach.libraryup.notifications.ReminderScheduler
+import ai.sach.libraryup.ui.library.StaffMode
 import ai.sach.libraryup.ui.screens.authentication.AuthRepository
-import ai.sach.libraryup.ui.screens.settingsScreen.ThemePreferencesRepository
 import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
 import ai.sach.libraryup.utils.GooglePlayServicesHelper
 import android.app.Application
 import android.util.Log
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,9 +38,9 @@ class LibraryUpApplication : Application(), Configuration.Provider {
 
     val staffMode by lazy { StaffMode(this) }
 
-    val authRepository by lazy { AuthRepository(applicationContext) }
+    val proManager by lazy { ProManager(this) }
 
-    val themeRepository by lazy { ThemePreferencesRepository(applicationContext) }
+    val authRepository by lazy { AuthRepository(applicationContext) }
 
     val appPreferencesRepository by lazy { AppPreferencesRepository(applicationContext) }
 
@@ -71,7 +72,10 @@ class LibraryUpApplication : Application(), Configuration.Provider {
             }
         }.onFailure { Log.w(TAG, "Google Play Services check failed", it) }
 
+        proManager.start()
+
         applicationScope.launch(Dispatchers.IO) {
+            runCatching { MobileAds.initialize(this@LibraryUpApplication) }.onFailure { Log.w(TAG, "Ads init failed", it) }
             runCatching {
                 if (notificationPrefs.dailyDigestEnabled) reminderScheduler.ensureScheduled() else reminderScheduler.cancel()
                 // Re-arms the daily Drive backup if it's on and its job was lost.

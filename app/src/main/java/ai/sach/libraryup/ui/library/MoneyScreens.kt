@@ -1,11 +1,10 @@
 package ai.sach.libraryup.ui.library
 
 import ai.sach.libraryup.R
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.material.icons.filled.PictureAsPdf
 import ai.sach.libraryup.data.local.entity.Expense
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.repository.LibraryState
+import ai.sach.libraryup.domain.DueStatus
 import ai.sach.libraryup.domain.MoneyEntry
 import ai.sach.libraryup.domain.Reports
 import androidx.compose.foundation.clickable
@@ -24,13 +23,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,8 +44,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.YearMonth
@@ -69,7 +69,7 @@ private fun MonthSwitcher(month: YearMonth, onChange: (YearMonth) -> Unit) {
 fun PaymentsScreen(state: LibraryState, onOpenStudent: (Long) -> Unit) {
     var monthText by rememberSaveable { mutableStateOf(YearMonth.now().toString()) }
     val month = YearMonth.parse(monthText)
-    val names = state.students.associate { it.student.id to it.student.name }
+    val students = state.students.associate { it.student.id to it.student }
     val rows = state.payments.filter { !it.deleted && YearMonth.from(it.paidOn) == month }
     val total = rows.sumOf { it.amount }
     val byMode = rows.groupBy { it.mode }.mapValues { (_, v) -> v.sumOf { it.amount } }
@@ -84,17 +84,15 @@ fun PaymentsScreen(state: LibraryState, onOpenStudent: (Long) -> Unit) {
         if (rows.isEmpty()) EmptyState(stringResource(R.string.empty_payments_month))
         LazyColumn(contentPadding = PaddingValues(bottom = 24.dp)) {
             items(rows, key = { it.id }) { p ->
-                Row(
-                    Modifier.fillMaxWidth().clickable { onOpenStudent(p.studentId) }.padding(horizontal = 16.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(Modifier.weight(1f)) {
-                        Text(names[p.studentId] ?: "-", fontWeight = FontWeight.SemiBold)
-                        Text("${p.receiptNo} · ${p.paidOn.pretty()} · ${stringResource(p.mode.label())}", style = MaterialTheme.typography.bodySmall)
-                    }
-                    Text(rupees(p.amount), fontWeight = FontWeight.SemiBold)
-                }
-                HorizontalDivider()
+                val student = students[p.studentId]
+                val name = student?.name ?: "-"
+                ListItem(
+                    modifier = Modifier.clickable { onOpenStudent(p.studentId) },
+                    leadingContent = { Avatar(name, photoUri = student?.photoUri) },
+                    headlineContent = { Text(name) },
+                    supportingContent = { Text("${p.receiptNo} · ${p.paidOn.pretty()} · ${stringResource(p.mode.label())}") },
+                    trailingContent = { Text(rupees(p.amount), style = MaterialTheme.typography.titleMedium) }
+                )
             }
         }
     }
@@ -119,7 +117,7 @@ fun ExpensesScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Unit
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             LibraryTopBar(stringResource(R.string.title_expenses), onBack = onBack) {
-                IconButton(onClick = { shareMonthlyReport(context, state, expenses, month) }) {
+                IconButton(onClick = { vm.withPro { shareMonthlyReport(context, state, expenses, month) } }) {
                     Icon(Icons.Default.PictureAsPdf, contentDescription = stringResource(R.string.action_monthly_report))
                 }
             }
@@ -137,26 +135,25 @@ fun ExpensesScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Unit
                 StatCard(stringResource(R.string.label_expenses), rupees(profit?.expenses ?: 0L), Modifier.weight(1f))
                 StatCard(
                     stringResource(R.string.label_profit), rupees(profit?.profit ?: 0L), Modifier.weight(1f),
-                    accent = if ((profit?.profit ?: 0L) < 0) StatusColors.full else StatusColors.paid
+                    tone = (if ((profit?.profit ?: 0L) < 0) DueStatus.OVERDUE else DueStatus.PAID).tone()
                 )
             }
             if (rows.isEmpty()) EmptyState(stringResource(R.string.empty_expenses))
             LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
                 items(rows, key = { it.id }) { e ->
-                    Row(
-                        Modifier.fillMaxWidth().clickable { editing = e }.padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(e.category, fontWeight = FontWeight.SemiBold)
-                            Text(e.date.pretty() + if (e.note.isNotBlank()) " · ${e.note}" else "", style = MaterialTheme.typography.bodySmall)
+                    ListItem(
+                        modifier = Modifier.clickable { editing = e },
+                        headlineContent = { Text(e.category) },
+                        supportingContent = { Text(e.date.pretty() + if (e.note.isNotBlank()) " · ${e.note}" else "") },
+                        trailingContent = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(rupees(e.amount), style = MaterialTheme.typography.titleMedium)
+                                IconButton(onClick = { vm.run(R.string.msg_deleted) { setExpenseDeleted(e, true) } }) {
+                                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.action_delete))
+                                }
+                            }
                         }
-                        Text(rupees(e.amount))
-                        IconButton(onClick = { vm.run(R.string.msg_deleted) { setExpenseDeleted(e, true) } }) {
-                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.action_delete))
-                        }
-                    }
-                    HorizontalDivider()
+                    )
                 }
             }
         }
