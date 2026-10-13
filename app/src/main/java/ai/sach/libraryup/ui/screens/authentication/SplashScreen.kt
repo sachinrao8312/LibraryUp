@@ -11,7 +11,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.material3.Icon
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -136,9 +136,9 @@ fun SplashScreen(
                         .background(
                             Brush.radialGradient(
                                 colors = listOf(
-                                    AppColors.PrimaryGreen.copy(alpha = 0.3f),
-                                    AppColors.PrimaryGreen.copy(alpha = 0.1f),
-                                    AppColors.PrimaryGreen.copy(alpha = 0.05f)
+                                    AppColors.Brand.copy(alpha = 0.3f),
+                                    AppColors.Brand.copy(alpha = 0.1f),
+                                    AppColors.Brand.copy(alpha = 0.05f)
                                 )
                             )
                         )
@@ -168,15 +168,15 @@ fun SplashScreen(
                         .background(
                             Brush.linearGradient(
                                 colors = listOf(
-                                    AppColors.PrimaryGreen,
-                                    AppColors.PrimaryGreen.copy(alpha = 0.8f)
+                                    AppColors.Brand,
+                                    AppColors.Brand.copy(alpha = 0.8f)
                                 )
                             )
                         )
                         .shadow(
                             elevation = 12.dp,
                             shape = CircleShape,
-                            spotColor = AppColors.PrimaryGreen.copy(alpha = 0.3f)
+                            spotColor = AppColors.Brand.copy(alpha = 0.3f)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -206,7 +206,7 @@ fun SplashScreen(
                     text = stringResource(R.string.app_name),
                     fontSize = 40.sp, // Increased by 25% from 32sp
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.PrimaryGreen,
+                    color = AppColors.Brand,
                     style = MaterialTheme.typography.headlineLarge
                 )
             }

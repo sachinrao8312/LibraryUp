@@ -30,10 +30,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,8 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.delay
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.MutableState
 
 /**
  * Enhanced Biometric Lock Screen that can be used both on app startup and in the security settings.
@@ -153,7 +153,7 @@ fun BiometricLockScreen(
                 text = title,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = AppColors.PrimaryGreen
+                color = AppColors.Brand
             )
 
             Spacer(modifier = Modifier.height(48.dp))
@@ -167,7 +167,7 @@ fun BiometricLockScreen(
                         .clip(CircleShape)
                         .background(
                             color = if (state.value.errorMessage == null)
-                                AppColors.PrimaryGreen.copy(alpha = 0.1f)
+                                AppColors.Brand.copy(alpha = 0.1f)
                             else
                                 MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
                         )
@@ -178,7 +178,7 @@ fun BiometricLockScreen(
                         imageVector = Icons.Default.Fingerprint,
                         contentDescription = stringResource(R.string.lock_fingerprint),
                         tint = if (state.value.errorMessage == null)
-                            AppColors.PrimaryGreen
+                            AppColors.Brand
                         else
                             MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(64.dp)
@@ -194,7 +194,7 @@ fun BiometricLockScreen(
                         ) {
                             // Circular progress indicator around the icon
                             CircularLoadingIndicator(
-                                color = AppColors.PrimaryGreen
+                                color = AppColors.Brand
                             )
                         }
                     }
@@ -239,7 +239,7 @@ fun BiometricLockScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .padding(vertical = 8.dp),
-                    color = AppColors.PrimaryGreen
+                    color = AppColors.Brand
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -282,7 +282,7 @@ fun BiometricLockScreen(
                         .height(56.dp),
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.PrimaryGreen
+                        containerColor = AppColors.Brand
                     )
                 ) {
                     Row(
@@ -314,7 +314,7 @@ fun BiometricLockScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.lock_skip_for_now),
-                        color = AppColors.PrimaryGreen,
+                        color = AppColors.Brand,
                         fontSize = 16.sp
                     )
                 }
@@ -328,7 +328,7 @@ fun BiometricLockScreen(
  */
 @Composable
 fun CircularLoadingIndicator(
-    color: Color = AppColors.PrimaryGreen
+    color: Color = AppColors.Brand
 ) {
     Box(
         modifier = Modifier

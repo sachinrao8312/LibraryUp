@@ -233,9 +233,9 @@ private fun ModernAppBranding(
                     .background(
                         Brush.radialGradient(
                             colors = listOf(
-                                AppColors.PrimaryGreen.copy(alpha = 0.6f),
-                                AppColors.PrimaryGreen.copy(alpha = 0.4f),
-                                AppColors.PrimaryGreen.copy(alpha = 0.2f)
+                                AppColors.Brand.copy(alpha = 0.6f),
+                                AppColors.Brand.copy(alpha = 0.4f),
+                                AppColors.Brand.copy(alpha = 0.2f)
                             )
                         )
                     )
@@ -249,15 +249,15 @@ private fun ModernAppBranding(
                     .background(
                         Brush.linearGradient(
                             colors = listOf(
-                                AppColors.PrimaryGreen,
-                                AppColors.PrimaryGreen.copy(alpha = 0.8f)
+                                AppColors.Brand,
+                                AppColors.Brand.copy(alpha = 0.8f)
                             )
                         )
                     )
                     .shadow(
                         elevation = 12.dp,
                         shape = CircleShape,
-                        spotColor = AppColors.PrimaryGreen.copy(alpha = 0.3f)
+                        spotColor = AppColors.Brand.copy(alpha = 0.3f)
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -277,8 +277,8 @@ private fun ModernAppBranding(
                         .background(
                             Brush.linearGradient(
                                 colors = listOf(
-                                    AppColors.PrimaryGreen,
-                                    AppColors.PrimaryGreen.copy(alpha = 0.8f)
+                                    AppColors.Brand,
+                                    AppColors.Brand.copy(alpha = 0.8f)
                                 )
                             )
                         ),
@@ -303,7 +303,7 @@ private fun ModernAppBranding(
                 fontSize = if (isSmallScreen) 32.sp else 40.sp
             ),
             fontWeight = FontWeight.Bold,
-            color = AppColors.PrimaryGreen
+            color = AppColors.Brand
         )
         
         // Tagline with better spacing
@@ -335,7 +335,7 @@ private fun ModernAuthenticationCard(
             .shadow(
                 elevation = 20.dp,
                 shape = RoundedCornerShape(28.dp),
-                spotColor = AppColors.PrimaryGreen.copy(alpha = 0.15f)
+                spotColor = AppColors.Brand.copy(alpha = 0.15f)
             ),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
@@ -409,7 +409,7 @@ private fun ModernGoogleSignInButton(
             .fillMaxWidth()
             .height(if (isSmallScreen) 52.dp else 56.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = AppColors.PrimaryGreen,
+            containerColor = AppColors.Brand,
             contentColor = Color.White
         ),
         shape = RoundedCornerShape(16.dp),
@@ -508,7 +508,7 @@ private fun ModernAppFooter(
             SecurityBadge(
                 icon = Icons.Default.Verified,
                 text = stringResource(R.string.auth_badge_secure),
-                color = AppColors.PrimaryGreen
+                color = AppColors.Brand
             )
             SecurityBadge(
                 icon = Icons.Default.Security,

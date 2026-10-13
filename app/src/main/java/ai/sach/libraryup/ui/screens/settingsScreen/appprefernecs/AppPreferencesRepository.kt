@@ -30,7 +30,7 @@ class AppPreferencesRepository(private val context: Context) {
         private val INSTALL_DATE_KEY = stringPreferencesKey("install_date")
 
         // Default values
-        const val DEFAULT_PRIMARY_COLOR = "#0F9B4B"  // Default brand green
+        const val DEFAULT_PRIMARY_COLOR = "#283593" // Brand indigo (launcher icon)
         const val DEFAULT_CURRENCY = "INR"
         const val DEFAULT_COUNTRY = "IN"
     }

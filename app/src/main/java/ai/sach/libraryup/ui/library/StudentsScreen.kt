@@ -6,6 +6,7 @@ import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.data.repository.StudentOverview
 import ai.sach.libraryup.domain.DueStatus
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -127,9 +129,11 @@ fun StudentsScreen(
 @Composable
 fun StudentRow(s: StudentOverview, onClick: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp),
+        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Avatar(s.student.name)
+        Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(s.student.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             val seatLine = if (s.membership == null) stringResource(R.string.label_no_seat)

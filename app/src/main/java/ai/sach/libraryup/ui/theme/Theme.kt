@@ -16,6 +16,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -23,83 +24,67 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowCompat
 
-/**
- * Creates a dark color scheme with the provided primary color.
- *
- * @param primaryColor The primary color to use in the color scheme
- * @return A dark color scheme with the customized primary color
- */
-private fun createDarkColorScheme(primaryColor: Color): ColorScheme {
+/** Solid tones of the brand colour (no transparency, so cards and chips never look washed out). */
+private fun Color.tone(towards: Color, amount: Float) = lerp(this, towards, amount)
+
+private val Amber = Color(0xFFFFB300)
+
+private fun createDarkColorScheme(primary: Color): ColorScheme {
+    val bright = primary.tone(Color.White, 0.45f)
     return darkColorScheme(
-        primary = primaryColor,
-        onPrimary = Color.White,
-        primaryContainer = primaryColor.copy(alpha = 0.2f),
-        onPrimaryContainer = Color.White,
-        secondary = primaryColor.copy(alpha = 0.8f),
-        onSecondary = Color.White,
-        secondaryContainer = primaryColor.copy(alpha = 0.15f),
-        onSecondaryContainer = Color.White,
-        tertiary = primaryColor.copy(alpha = 0.6f),
-        onTertiary = Color.White,
-        tertiaryContainer = primaryColor.copy(alpha = 0.1f),
-        onTertiaryContainer = Color.White,
-        background = Color(0xFF0A0A0A),
-        onBackground = Color.White,
-        surface = Color(0xFF1A1A1A),
-        onSurface = Color.White,
-        surfaceVariant = Color(0xFF2A2A2A),
-        onSurfaceVariant = Color.White.copy(alpha = 0.8f),
-        outline = Color.White.copy(alpha = 0.2f),
-        outlineVariant = Color.White.copy(alpha = 0.1f),
-        error = Color(0xFFF44336),
-        onError = Color.White,
-        errorContainer = Color(0xFFB71C1C),
-        onErrorContainer = Color.White,
-        inverseSurface = Color.White,
-        inverseOnSurface = Color.Black,
-        inversePrimary = primaryColor.copy(alpha = 0.8f),
-        scrim = Color.Black.copy(alpha = 0.32f)
+        primary = bright,
+        onPrimary = primary.tone(Color.Black, 0.6f),
+        primaryContainer = primary.tone(Color.Black, 0.35f),
+        onPrimaryContainer = primary.tone(Color.White, 0.85f),
+        secondary = bright,
+        secondaryContainer = primary.tone(Color.Black, 0.45f),
+        onSecondaryContainer = primary.tone(Color.White, 0.85f),
+        tertiary = Amber,
+        onTertiary = Color.Black,
+        background = Color(0xFF101218),
+        onBackground = Color(0xFFE6E8F0),
+        surface = Color(0xFF181B23),
+        onSurface = Color(0xFFE6E8F0),
+        surfaceVariant = Color(0xFF242836),
+        onSurfaceVariant = Color(0xFFB9BED0),
+        outline = Color(0xFF8A90A6),
+        outlineVariant = Color(0xFF353A4C),
+        error = Color(0xFFFF8A80),
+        onError = Color.Black
     )
 }
 
-/**
- * Creates a light color scheme with the provided primary color.
- *
- * @param primaryColor The primary color to use in the color scheme
- * @return A light color scheme with the customized primary color
- */
-private fun createLightColorScheme(primaryColor: Color): ColorScheme {
-    return lightColorScheme(
-        primary = primaryColor,
-        onPrimary = Color.White,
-        primaryContainer = primaryColor.copy(alpha = 0.12f),
-        onPrimaryContainer = primaryColor.copy(alpha = 0.9f),
-        secondary = primaryColor.copy(alpha = 0.8f),
-        onSecondary = Color.White,
-        secondaryContainer = primaryColor.copy(alpha = 0.1f),
-        onSecondaryContainer = primaryColor.copy(alpha = 0.8f),
-        tertiary = primaryColor.copy(alpha = 0.6f),
-        onTertiary = Color.White,
-        tertiaryContainer = primaryColor.copy(alpha = 0.08f),
-        onTertiaryContainer = primaryColor.copy(alpha = 0.7f),
-        background = Color(0xFFFAFAFA),
-        onBackground = Color(0xFF1C1B1F),
-        surface = Color.White,
-        onSurface = Color(0xFF1C1B1F),
-        surfaceVariant = Color(0xFFF3F4F6),
-        onSurfaceVariant = Color(0xFF49454F),
-        outline = Color(0xFF79747E),
-        outlineVariant = Color(0xFFCAC4D0),
-        error = Color(0xFFD32F2F),
-        onError = Color.White,
-        errorContainer = Color(0xFFFFEBEE),
-        onErrorContainer = Color(0xFFB71C1C),
-        inverseSurface = Color(0xFF313033),
-        inverseOnSurface = Color(0xFFF4EFF4),
-        inversePrimary = primaryColor.copy(alpha = 0.8f),
-        scrim = Color.Black.copy(alpha = 0.32f)
-    )
-}
+private fun createLightColorScheme(primary: Color): ColorScheme = lightColorScheme(
+    primary = primary,
+    onPrimary = Color.White,
+    primaryContainer = primary.tone(Color.White, 0.85f),
+    onPrimaryContainer = primary.tone(Color.Black, 0.45f),
+    secondary = primary,
+    onSecondary = Color.White,
+    secondaryContainer = primary.tone(Color.White, 0.85f),
+    onSecondaryContainer = primary.tone(Color.Black, 0.45f),
+    tertiary = Amber,
+    onTertiary = Color.Black,
+    tertiaryContainer = Color(0xFFFFF0C2),
+    onTertiaryContainer = Color(0xFF3D2C00),
+    background = Color(0xFFF2F4FA),
+    onBackground = Color(0xFF151824),
+    surface = Color.White,
+    onSurface = Color(0xFF151824),
+    surfaceVariant = primary.tone(Color.White, 0.93f),
+    onSurfaceVariant = Color(0xFF4A5068),
+    surfaceContainerLowest = Color.White,
+    surfaceContainerLow = Color(0xFFF7F8FC),
+    surfaceContainer = Color(0xFFF2F4FA),
+    surfaceContainerHigh = Color(0xFFECEFF7),
+    surfaceContainerHighest = Color(0xFFE6E9F2),
+    outline = Color(0xFF767C92),
+    outlineVariant = Color(0xFFD5D9E6),
+    error = Color(0xFFC62828),
+    onError = Color.White,
+    errorContainer = Color(0xFFFFE3E0),
+    onErrorContainer = Color(0xFF7A0E0E)
+)
 
 /**
  * LibraryUp theme that applies the app's color schemes, typography, and shapes.
@@ -136,7 +121,7 @@ fun LibraryUpTheme(
     val primaryColor = try {
         Color(android.graphics.Color.parseColor(primaryColorHex))
     } catch (e: Exception) {
-        AppColors.PrimaryGreen
+        AppColors.Brand
     }
 
     // Dynamic color is available on Android 12+

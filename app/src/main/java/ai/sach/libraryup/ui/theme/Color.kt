@@ -7,10 +7,11 @@ import androidx.compose.ui.graphics.Color
  * Provides consistent access to brand colors and their variants.
  */
 object AppColors {
-    // Primary brand colors
-    val PrimaryGreen = Color(0xFF0F9B4B)
-    val PrimaryGreenLight = Color(0xFFD0F5E0)
-    val PrimaryGreenDark = Color(0xFF097C3B)
+    // Brand: the indigo of the launcher icon
+    val Brand = Color(0xFF283593)
+
+    val BrandLight = Color(0xFFDDE1F5)
+    val BrandDark = Color(0xFF1A237E)
 
     // Functional colors
     val Success = Color(0xFF22C55E)

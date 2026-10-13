@@ -3,16 +3,13 @@ package ai.sach.libraryup.ui.library
 import ai.sach.libraryup.R
 import ai.sach.libraryup.data.local.entity.Shift
 import ai.sach.libraryup.data.local.entity.StudentStatus
+import ai.sach.libraryup.data.repository.LibraryRepository.ScanResult
 import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.data.repository.StudentOverview
 import ai.sach.libraryup.domain.DueStatus
-import ai.sach.libraryup.data.repository.LibraryRepository.ScanResult
+import ai.sach.libraryup.domain.MessageTemplates
 import ai.sach.libraryup.domain.StudentQr
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.material.icons.filled.QrCodeScanner
-import com.journeyapps.barcodescanner.ScanContract
-import com.journeyapps.barcodescanner.ScanOptions
-import ai.sach.libraryup.domain.MessageTemplates
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,6 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
@@ -51,6 +49,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import java.time.LocalDate
 
 /**

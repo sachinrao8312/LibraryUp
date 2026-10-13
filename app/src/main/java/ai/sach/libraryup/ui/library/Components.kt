@@ -4,6 +4,7 @@ import ai.sach.libraryup.R
 import ai.sach.libraryup.domain.DueStatus
 import ai.sach.libraryup.domain.SeatState
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -38,6 +40,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,7 +49,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -58,16 +64,19 @@ import java.time.ZoneOffset
 
 /* ---------------------------------------------------------------- colours */
 
-/** Calm status colours (a competitor got 1★ for colours that "hurt my eyes"). */
+/** Clear, saturated status colours; text on them picks black or white by contrast. */
 object StatusColors {
-    val free = Color(0xFF4CAF7D)
-    val partial = Color(0xFFE6B84C)
-    val full = Color(0xFFD9625B)
-    val overdue = Color(0xFFE5873A)
-    val inactive = Color(0xFF9E9E9E)
-    val paid = Color(0xFF4CAF7D)
-    val frozen = Color(0xFF6C8EBF)
+    val free = Color(0xFF1E8E4E)
+    val partial = Color(0xFFF5B400)
+    val full = Color(0xFFD32F2F)
+    val overdue = Color(0xFFEF6C00)
+    val inactive = Color(0xFF9AA0AE)
+    val paid = Color(0xFF1E8E4E)
+    val frozen = Color(0xFF3D6FB6)
 }
+
+/** Readable text colour on [this] background. */
+fun Color.contentColor(): Color = if (luminance() > 0.5f) Color(0xFF1F1A00) else Color.White
 
 fun SeatState.color(): Color = when (this) {
     SeatState.FREE -> StatusColors.free
@@ -102,6 +111,12 @@ fun DueStatus.label(): Int = when (this) {
 @Composable
 fun LibraryTopBar(title: String, onBack: (() -> Unit)? = null, actions: @Composable () -> Unit = {}) {
     TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+        ),
         title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold) },
         navigationIcon = {
             if (onBack != null) {
@@ -116,10 +131,10 @@ fun LibraryTopBar(title: String, onBack: (() -> Unit)? = null, actions: @Composa
 
 @Composable
 fun StatusPill(text: String, color: Color, modifier: Modifier = Modifier) {
-    Surface(color = color.copy(alpha = 0.15f), shape = RoundedCornerShape(50), modifier = modifier) {
+    Surface(color = color, shape = RoundedCornerShape(50), modifier = modifier) {
         Text(
             text,
-            color = color,
+            color = color.contentColor(),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
@@ -160,18 +175,39 @@ fun EmptyState(message: String, modifier: Modifier = Modifier, action: (@Composa
 fun StatCard(label: String, value: String, modifier: Modifier = Modifier, accent: Color? = null, onClick: (() -> Unit)? = null) {
     Card(
         modifier = modifier.then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        Column(Modifier.padding(14.dp)) {
+        Column(
+            Modifier
+                .drawBehind { accent?.let { drawRect(it, size = size.copy(width = 5.dp.toPx())) } }
+                .padding(start = 16.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
+        ) {
             Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
             Spacer(Modifier.height(4.dp))
             Text(
                 value,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = accent ?: MaterialTheme.colorScheme.onSurface
+                color = accent?.let { if (it.luminance() > 0.5f) lerp(it, Color.Black, 0.35f) else it } ?: MaterialTheme.colorScheme.onSurface
             )
         }
+    }
+}
+
+/** First letter of a name in a tinted circle: makes long lists scannable. */
+@Composable
+fun Avatar(name: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier.size(40.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            name.trim().take(1).uppercase(),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
