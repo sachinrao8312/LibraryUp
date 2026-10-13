@@ -634,6 +634,11 @@ S = {
  "action_admit": ("Admit", "दाख़िला दें"),
  "action_mark_lost": ("Not joining", "नहीं आएँगे"),
  "notification_digest_follow_ups": ("%1$d enquiries to follow up", "%1$d पूछताछ पर संपर्क करना है"),
+ # vacancy poster
+ "action_vacancy_poster": ("Share vacancy poster", "खाली सीटों का पोस्टर भेजें"),
+ "poster_headline": ("Seats available", "सीटें उपलब्ध"),
+ "poster_seats": ("%1$d seats", "%1$d सीटें"),
+ "poster_call": ("Call / WhatsApp %1$s", "कॉल / WhatsApp %1$s"),
 }
 
 def esc(t):

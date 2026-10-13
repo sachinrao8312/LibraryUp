@@ -141,6 +141,16 @@ object SeatMap {
         val today = bookings.filter { it.activeOn(day) }
         return shifts.filterValues { w -> today.none { it.window.overlaps(w) } }.keys
     }
+
+    /** How many seats are free in each shift on [day]; [seatBookings] has one entry per active seat. */
+    fun freeSeatsPerShift(
+        shifts: Map<Long, ShiftWindow>,
+        seatBookings: Collection<Collection<SeatBooking>>,
+        day: LocalDate
+    ): Map<Long, Int> {
+        val free = seatBookings.map { freeShiftIds(shifts, it, day) }
+        return shifts.keys.associateWith { id -> free.count { id in it } }
+    }
 }
 
 object SeatLabels {

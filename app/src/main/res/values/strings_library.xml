@@ -588,4 +588,8 @@
     <string name="action_admit">Admit</string>
     <string name="action_mark_lost">Not joining</string>
     <string name="notification_digest_follow_ups">%1$d enquiries to follow up</string>
+    <string name="action_vacancy_poster">Share vacancy poster</string>
+    <string name="poster_headline">Seats available</string>
+    <string name="poster_seats">%1$d seats</string>
+    <string name="poster_call">Call / WhatsApp %1$s</string>
 </resources>

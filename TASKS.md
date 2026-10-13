@@ -71,8 +71,8 @@ Must be done before any real owner uses it.
 - [x] **Student ID card**: photo, seat, shift, validity, father's name, QR (PNG share)
 - [x] **QR attendance**: scan the ID-card QR to mark In/Out (ZXing scanner; repeat scan within 5 min ignored)
 - [x] **Own branding**: library logo on receipts and ID cards (posters when they exist); logo included in backups
-- [ ] **Fill-the-seats posters**: vacancy poster from live free seats per shift, admission
-      open, holiday, festival wishes, results; share to WhatsApp status
+- [x] **Vacancy poster**: live free seats per shift, logo, phone (Seats tab → megaphone)
+- [ ] More posters: admission open, holiday, festival wishes, results
 - [x] **Enquiry list**: walk-ins with follow-up date (in the morning digest), admit to student
       (`Enquiry` entity exists)
 - [ ] **Staff/operator login**: PIN-based operator role; cannot delete payments or see P&L

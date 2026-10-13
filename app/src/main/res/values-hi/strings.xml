@@ -588,4 +588,8 @@
     <string name="action_admit">दाख़िला दें</string>
     <string name="action_mark_lost">नहीं आएँगे</string>
     <string name="notification_digest_follow_ups">%1$d पूछताछ पर संपर्क करना है</string>
+    <string name="action_vacancy_poster">खाली सीटों का पोस्टर भेजें</string>
+    <string name="poster_headline">सीटें उपलब्ध</string>
+    <string name="poster_seats">%1$d सीटें</string>
+    <string name="poster_call">कॉल / WhatsApp %1$s</string>
 </resources>

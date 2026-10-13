@@ -14,6 +14,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,6 +57,7 @@ fun SeatMapScreen(
     onOpenStudent: (Long) -> Unit,
     onAssignSeat: (seatId: Long, shiftId: Long?) -> Unit
 ) {
+    val context = LocalContext.current
     var shiftFilter by rememberSaveable { mutableStateOf<Long?>(null) }
     var openSeat by rememberSaveable { mutableStateOf<Long?>(null) }
 
@@ -72,13 +78,18 @@ fun SeatMapScreen(
         }
         val counts = state.seats.groupingBy { stateOf(it) }.eachCount()
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            Modifier.fillMaxWidth().padding(start = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             LegendDot(StatusColors.free, "${stringResource(R.string.seat_free)} ${counts[SeatState.FREE] ?: 0}")
             if (shiftFilter == null) LegendDot(StatusColors.partial, "${stringResource(R.string.seat_partial)} ${counts[SeatState.PARTIAL] ?: 0}")
             LegendDot(StatusColors.full, "${stringResource(R.string.seat_full)} ${counts[SeatState.FULL] ?: 0}")
             LegendDot(StatusColors.overdue, "${stringResource(R.string.seat_overdue)} ${counts[SeatState.OVERDUE] ?: 0}")
+            Spacer(Modifier.weight(1f))
+            IconButton(onClick = { shareVacancyPoster(context, state) }, enabled = state.seats.isNotEmpty()) {
+                Icon(Icons.Default.Campaign, contentDescription = stringResource(R.string.action_vacancy_poster))
+            }
         }
         if (state.seats.isEmpty()) {
             EmptyState(stringResource(R.string.empty_seats))
