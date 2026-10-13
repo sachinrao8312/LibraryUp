@@ -18,14 +18,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,13 +62,16 @@ enum class StudentFilter(@StringRes val label: Int) {
 /** Sorts the most urgent first: overdue, then due, then by name. */
 private val urgency = compareBy<StudentOverview>({ it.status?.ordinal ?: Int.MAX_VALUE }, { it.student.name.lowercase() })
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentsScreen(
     state: LibraryState,
+    vm: LibraryViewModel,
     initialFilter: StudentFilter,
-    onOpenStudent: (Long) -> Unit,
+    onEditStudent: (Long) -> Unit,
     onAddStudent: () -> Unit
 ) {
+    var open by rememberSaveable { mutableStateOf<Long?>(null) }
     var filter by rememberSaveable(initialFilter) { mutableStateOf(initialFilter) }
     var query by rememberSaveable { mutableStateOf("") }
     val q = query.trim().lowercase()
@@ -111,10 +117,17 @@ fun StudentsScreen(
             } else {
                 LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
                     items(visible, key = { it.student.id }) { s ->
-                        StudentRow(s) { onOpenStudent(s.student.id) }
+                        StudentRow(s) { open = s.student.id }
                     }
                 }
             }
+        }
+    }
+
+    // Details open as a sheet over the list, like RentUp's tenant sheet.
+    open?.let { id ->
+        ModalBottomSheet(onDismissRequest = { open = null }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+            StudentDetailScreen(state, vm, id, onEdit = { onEditStudent(id) }, onAssignSeat = { onEditStudent(id) }, onBack = { open = null })
         }
     }
 }
@@ -130,18 +143,12 @@ fun StudentRow(s: StudentOverview, onClick: () -> Unit) {
     }
     ListItem(
         modifier = Modifier.clickable(onClick = onClick),
-        leadingContent = { Avatar(s.student.name) },
+        leadingContent = { Avatar(s.student.name, photoUri = s.student.photoUri) },
         headlineContent = { Text(s.student.name) },
         supportingContent = { Text(listOfNotNull(seatLine, dateLine).joinToString("\n")) },
         trailingContent = {
             Column(horizontalAlignment = Alignment.End) {
-                when {
-                    s.student.status == StudentStatus.LEFT -> StatusPill(
-                        stringResource(R.string.status_left),
-                        Tone(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurfaceVariant)
-                    )
-                    s.status != null -> StatusPill(s.status)
-                }
+                StudentStatusPill(s)
                 if (s.balance > 0) Text(
                     rupees(s.balance),
                     color = MaterialTheme.colorScheme.error,
@@ -151,4 +158,14 @@ fun StudentRow(s: StudentOverview, onClick: () -> Unit) {
             }
         }
     )
+}
+
+@Composable
+fun StudentStatusPill(s: StudentOverview) = when {
+    s.student.status == StudentStatus.LEFT -> StatusPill(
+        stringResource(R.string.status_left),
+        Tone(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurfaceVariant)
+    )
+    s.status != null -> StatusPill(s.status)
+    else -> Unit
 }

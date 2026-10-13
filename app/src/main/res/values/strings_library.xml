@@ -183,7 +183,6 @@
     <string name="label_deleted">deleted</string>
     <string name="label_fee_due_since">Fee due since %1$s</string>
     <string name="label_expenses">Expenses</string>
-    <string name="label_father">Father: %1$s</string>
     <string name="label_fee_breakdown">Fee %1$s · discount %2$s · late fee %3$s</string>
     <string name="label_inactive">off</string>
     <string name="label_income">Income</string>
@@ -248,6 +247,12 @@
     <string name="reminders_how">WhatsApp opens with the message typed. Send it, come back and tap the button again for the next student.</string>
     <string name="section_admission">Seat, shift &amp; plan</string>
     <string name="section_attendance">Attendance</string>
+    <string name="section_details">Details</string>
+    <string name="section_documents">Documents</string>
+    <string name="label_photo">Photo</string>
+    <string name="label_id_proof">ID proof</string>
+    <string name="label_joined">Joined</string>
+    <string name="hint_tap_to_call">Tap to call</string>
     <string name="section_first_payment">First payment (optional)</string>
     <string name="section_payments">Payments</string>
     <string name="section_plans">Plans</string>

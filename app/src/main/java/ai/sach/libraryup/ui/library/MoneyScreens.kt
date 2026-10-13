@@ -69,7 +69,7 @@ private fun MonthSwitcher(month: YearMonth, onChange: (YearMonth) -> Unit) {
 fun PaymentsScreen(state: LibraryState, onOpenStudent: (Long) -> Unit) {
     var monthText by rememberSaveable { mutableStateOf(YearMonth.now().toString()) }
     val month = YearMonth.parse(monthText)
-    val names = state.students.associate { it.student.id to it.student.name }
+    val students = state.students.associate { it.student.id to it.student }
     val rows = state.payments.filter { !it.deleted && YearMonth.from(it.paidOn) == month }
     val total = rows.sumOf { it.amount }
     val byMode = rows.groupBy { it.mode }.mapValues { (_, v) -> v.sumOf { it.amount } }
@@ -84,10 +84,11 @@ fun PaymentsScreen(state: LibraryState, onOpenStudent: (Long) -> Unit) {
         if (rows.isEmpty()) EmptyState(stringResource(R.string.empty_payments_month))
         LazyColumn(contentPadding = PaddingValues(bottom = 24.dp)) {
             items(rows, key = { it.id }) { p ->
-                val name = names[p.studentId] ?: "-"
+                val student = students[p.studentId]
+                val name = student?.name ?: "-"
                 ListItem(
                     modifier = Modifier.clickable { onOpenStudent(p.studentId) },
-                    leadingContent = { Avatar(name) },
+                    leadingContent = { Avatar(name, photoUri = student?.photoUri) },
                     headlineContent = { Text(name) },
                     supportingContent = { Text("${p.receiptNo} · ${p.paidOn.pretty()} · ${stringResource(p.mode.label())}") },
                     trailingContent = { Text(rupees(p.amount), style = MaterialTheme.typography.titleMedium) }

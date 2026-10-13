@@ -326,8 +326,9 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
                 TabScreen(stringResource(R.string.nav_students)) {
                     StudentsScreen(
                         state = state,
+                        vm = vm,
                         initialFilter = filter,
-                        onOpenStudent = { navController.navigate(AppRoutes.student(it)) },
+                        onEditStudent = { navController.navigate(AppRoutes.studentForm(studentId = it)) },
                         onAddStudent = { navController.navigate(AppRoutes.studentForm()) }
                     )
                 }

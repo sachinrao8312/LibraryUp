@@ -183,7 +183,6 @@
     <string name="label_deleted">हटाया गया</string>
     <string name="label_fee_due_since">%1$s से फीस बाकी</string>
     <string name="label_expenses">खर्च</string>
-    <string name="label_father">पिता: %1$s</string>
     <string name="label_fee_breakdown">फीस %1$s · छूट %2$s · लेट फीस %3$s</string>
     <string name="label_inactive">बंद</string>
     <string name="label_income">आमदनी</string>
@@ -248,6 +247,12 @@
     <string name="reminders_how">व्हाट्सऐप संदेश लिखा हुआ खुलेगा। भेजें, वापस आएँ और अगले छात्र के लिए बटन फिर दबाएँ।</string>
     <string name="section_admission">सीट, शिफ़्ट और प्लान</string>
     <string name="section_attendance">हाज़िरी</string>
+    <string name="section_details">विवरण</string>
+    <string name="section_documents">दस्तावेज़</string>
+    <string name="label_photo">फ़ोटो</string>
+    <string name="label_id_proof">आईडी प्रूफ़</string>
+    <string name="label_joined">जुड़ने की तारीख</string>
+    <string name="hint_tap_to_call">कॉल करने के लिए टैप करें</string>
     <string name="section_first_payment">पहला भुगतान (वैकल्पिक)</string>
     <string name="section_payments">भुगतान</string>
     <string name="section_plans">प्लान</string>
