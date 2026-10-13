@@ -111,14 +111,16 @@ Must be done before any real owner uses it.
       `core-billing` (from `domain`), `core-backup`, `core-messaging`, `core-docs`, `core-ui`
 - [ ] Next vertical: HostelUp (PG/hostel): research step per App Factory `PLAYBOOK.md`
 
-## Design
-- [x] Brand indigo theme with opaque tones, saturated status colours, contrast-aware text
-- [x] Dashboard header, accent stat cards, quick-action tiles; avatars in student lists
+## Design (Material 3)
+- [x] Colour scheme generated from seed #283593 with Material Color Utilities (tonal spot =
+      Material Theme Builder); `tools/gen_scheme.py` regenerates `ui/theme/Color.kt`
+- [x] Status colours: harmonized success/warning custom colours + scheme error; red only for overdue
+- [x] Standard M3 type scale and shapes; system font scale respected
+- [x] ListItem rows, filled/tonal cards, surface top bars, tonal shortcuts; "Use wallpaper colours" switch
 - [x] Screenshot tests (`ScreenshotTest`, Roborazzi): CI publishes PNGs to the `screenshots` branch
-- [ ] Next: same treatment for the inherited sign-in and settings screens; dark-theme review
+- [ ] Next: same treatment for the inherited sign-in and settings screens; dark-theme screenshots
 
 ## Known issues / tech debt
 - Backups are built in memory (fine for hundreds of students; stream for very large photo sets)
 - `LibraryState` recomputes on every table change; fine at library scale, profile if > 2,000 students
 - Seat map day boundary uses the device date at composition; reopens correct after midnight
-- Fixed font scale (inherited); revisit for accessibility
