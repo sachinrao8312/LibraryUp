@@ -3,6 +3,8 @@ package ai.sach.libraryup.data
 import ai.sach.libraryup.R
 import ai.sach.libraryup.data.local.entity.ActivityLog
 import ai.sach.libraryup.data.local.entity.AttendanceMethod
+import ai.sach.libraryup.data.local.entity.Enquiry
+import ai.sach.libraryup.data.local.entity.EnquiryStatus
 import ai.sach.libraryup.data.local.entity.Locker
 import ai.sach.libraryup.data.local.entity.MembershipStatus
 import ai.sach.libraryup.data.local.entity.PaymentMode
@@ -189,6 +191,17 @@ class LibraryRepositoryTest {
         expectError(R.string.error_locker_taken) { lib.repo.saveLocker(Locker(number = "l1")) }
         lib.repo.markLeft(id, LocalDate.now())
         assertNull(lib.dao.getLockers().single().studentId)
+    }
+
+    @Test
+    fun `admitting an enquiry creates a student and closes it`() = runBlocking {
+        val today = LocalDate.now()
+        lib.repo.saveEnquiry(Enquiry(name = " Ravi ", phone = "9876500009", followUpOn = today))
+        assertEquals(1, lib.repo.followUpsDue(today))
+        val id = lib.repo.convertEnquiry(lib.dao.getEnquiries().single())
+        assertEquals("Ravi", lib.dao.getStudent(id)!!.name)
+        assertEquals(EnquiryStatus.CONVERTED, lib.dao.getEnquiries().single().status)
+        assertEquals(0, lib.repo.followUpsDue(today))
     }
 
     @Test

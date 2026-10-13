@@ -622,6 +622,18 @@ S = {
  "field_locker_fee": ("Monthly fee ₹", "मासिक फीस ₹"),
  "field_assigned_to": ("Assigned to", "किसको दिया"),
  "error_locker_taken": ("A locker with this number already exists", "इस नंबर का लॉकर पहले से है"),
+ # enquiries
+ "title_enquiries": ("Enquiries", "पूछताछ"),
+ "title_enquiry": ("Enquiry", "पूछताछ"),
+ "more_enquiries_desc": ("Walk-ins and calls to follow up", "आए और फ़ोन करने वाले लोग, जिन्हें दोबारा संपर्क करना है"),
+ "action_add_enquiry": ("Add enquiry", "पूछताछ जोड़ें"),
+ "enquiries_open": ("To follow up", "संपर्क करना है"),
+ "enquiries_closed": ("Admitted / lost", "दाख़िला / नहीं आए"),
+ "empty_enquiries": ("No enquiries here. Tap + when someone asks about a seat.", "यहाँ कोई पूछताछ नहीं। कोई सीट के बारे में पूछे तो + दबाएँ।"),
+ "field_follow_up": ("Follow up on", "दोबारा संपर्क की तारीख़"),
+ "action_admit": ("Admit", "दाख़िला दें"),
+ "action_mark_lost": ("Not joining", "नहीं आएँगे"),
+ "notification_digest_follow_ups": ("%1$d enquiries to follow up", "%1$d पूछताछ पर संपर्क करना है"),
 }
 
 def esc(t):

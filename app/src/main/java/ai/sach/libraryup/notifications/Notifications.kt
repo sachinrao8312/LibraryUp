@@ -22,6 +22,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.flow.first
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
@@ -69,15 +70,16 @@ class NotificationHelper(private val context: Context) {
         return NotificationManagerCompat.from(context).areNotificationsEnabled()
     }
 
-    fun postDigest(dueToday: Int, overdue: Int, expiring: Int) {
-        if (!canPost() || dueToday + overdue + expiring == 0) return
+    fun postDigest(dueToday: Int, overdue: Int, expiring: Int, followUps: Int) {
+        if (!canPost() || dueToday + overdue + expiring + followUps == 0) return
         val intent = PendingIntent.getActivity(
             context,
             0,
             Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val text = context.getString(R.string.notification_digest_text, dueToday, overdue, expiring)
+        val text = context.getString(R.string.notification_digest_text, dueToday, overdue, expiring) +
+            if (followUps > 0) "\n" + context.getString(R.string.notification_digest_follow_ups, followUps) else ""
         val notification = NotificationCompat.Builder(context, CHANNEL_DIGEST)
             .setSmallIcon(R.drawable.ic_notification)
             .setColor(ContextCompat.getColor(context, R.color.notification_accent))
@@ -110,7 +112,8 @@ class DailyDigestWorker(context: Context, params: WorkerParameters) : CoroutineW
         app.notificationHelper.postDigest(
             dueToday = statuses.count { it == DueStatus.DUE_TODAY },
             overdue = statuses.count { it == DueStatus.OVERDUE || it == DueStatus.EXPIRED },
-            expiring = statuses.count { it == DueStatus.EXPIRING_SOON }
+            expiring = statuses.count { it == DueStatus.EXPIRING_SOON },
+            followUps = app.libraryRepository.followUpsDue(LocalDate.now())
         )
         return Result.success()
     }

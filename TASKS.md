@@ -73,7 +73,7 @@ Must be done before any real owner uses it.
 - [x] **Own branding**: library logo on receipts and ID cards (posters when they exist); logo included in backups
 - [ ] **Fill-the-seats posters**: vacancy poster from live free seats per shift, admission
       open, holiday, festival wishes, results; share to WhatsApp status
-- [ ] **Enquiry list**: walk-ins with follow-up date + reminder, convert to student
+- [x] **Enquiry list**: walk-ins with follow-up date (in the morning digest), admit to student
       (`Enquiry` entity exists)
 - [ ] **Staff/operator login**: PIN-based operator role; cannot delete payments or see P&L
 - [x] **Lockers**: number, fee, assignment; freed when a student leaves or is deleted

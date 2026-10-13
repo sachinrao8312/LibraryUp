@@ -577,4 +577,15 @@
     <string name="field_locker_fee">Monthly fee ₹</string>
     <string name="field_assigned_to">Assigned to</string>
     <string name="error_locker_taken">A locker with this number already exists</string>
+    <string name="title_enquiries">Enquiries</string>
+    <string name="title_enquiry">Enquiry</string>
+    <string name="more_enquiries_desc">Walk-ins and calls to follow up</string>
+    <string name="action_add_enquiry">Add enquiry</string>
+    <string name="enquiries_open">To follow up</string>
+    <string name="enquiries_closed">Admitted / lost</string>
+    <string name="empty_enquiries">No enquiries here. Tap + when someone asks about a seat.</string>
+    <string name="field_follow_up">Follow up on</string>
+    <string name="action_admit">Admit</string>
+    <string name="action_mark_lost">Not joining</string>
+    <string name="notification_digest_follow_ups">%1$d enquiries to follow up</string>
 </resources>

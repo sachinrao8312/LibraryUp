@@ -190,6 +190,15 @@ interface LibraryDao {
     @Query("SELECT * FROM enquiries")
     suspend fun getEnquiries(): List<Enquiry>
 
+    @Query("SELECT * FROM enquiries ORDER BY createdAt DESC")
+    fun observeEnquiries(): Flow<List<Enquiry>>
+
+    @Upsert
+    suspend fun upsertEnquiry(enquiry: Enquiry)
+
+    @Query("SELECT COUNT(*) FROM enquiries WHERE status = 'OPEN' AND followUpOn <= :date")
+    suspend fun countFollowUpsDue(date: LocalDate): Int
+
     /* ---------- Activity log ---------- */
 
     @Insert

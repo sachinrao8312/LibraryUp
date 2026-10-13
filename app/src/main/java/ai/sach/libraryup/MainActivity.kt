@@ -8,6 +8,7 @@ import ai.sach.libraryup.ui.library.ActivityLogScreen
 import ai.sach.libraryup.ui.library.AttendanceScreen
 import ai.sach.libraryup.ui.library.DashboardScreen
 import ai.sach.libraryup.ui.library.DataScreen
+import ai.sach.libraryup.ui.library.EnquiriesScreen
 import ai.sach.libraryup.ui.library.ExpensesScreen
 import ai.sach.libraryup.ui.library.LockersScreen
 import ai.sach.libraryup.ui.library.LibrarySettingsScreen
@@ -372,6 +373,9 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             composable(AppRoutes.DATA) { DataScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.ACTIVITY_LOG) { ActivityLogScreen(vm) { navController.popBackStack() } }
             composable(AppRoutes.LOCKERS) { LockersScreen(state, vm) { navController.popBackStack() } }
+            composable(AppRoutes.ENQUIRIES) {
+                EnquiriesScreen(state, vm, onOpenStudent = { navController.navigate(AppRoutes.student(it)) }) { navController.popBackStack() }
+            }
 
             // App settings (inherited screens).
             composable(AppRoutes.SETTINGS) {

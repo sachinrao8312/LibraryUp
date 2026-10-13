@@ -2,6 +2,7 @@ package ai.sach.libraryup.ui.library
 
 import ai.sach.libraryup.LibraryUpApplication
 import ai.sach.libraryup.R
+import androidx.compose.material.icons.filled.ContactPhone
 import androidx.compose.material.icons.filled.Lock
 import ai.sach.libraryup.ui.navigation.AppRoutes
 import ai.sach.libraryup.data.local.entity.DurationUnit
@@ -89,6 +90,7 @@ fun MoreScreen(backupRoute: String, onOpen: (String) -> Unit) {
         item(Icons.Default.Campaign, R.string.title_reminders, R.string.more_reminders_desc, AppRoutes.REMINDERS)
         item(Icons.Default.EventAvailable, R.string.title_attendance, R.string.more_attendance_desc, AppRoutes.ATTENDANCE)
         item(Icons.Default.AccountBalanceWallet, R.string.title_expenses, R.string.more_expenses_desc, AppRoutes.EXPENSES)
+        item(Icons.Default.ContactPhone, R.string.title_enquiries, R.string.more_enquiries_desc, AppRoutes.ENQUIRIES)
         item(Icons.Default.Lock, R.string.title_lockers, R.string.more_lockers_desc, AppRoutes.LOCKERS)
         HorizontalDivider()
         item(Icons.Default.LocalLibrary, R.string.title_library_settings, R.string.more_library_desc, AppRoutes.LIBRARY_SETTINGS)

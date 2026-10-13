@@ -7,6 +7,8 @@ import ai.sach.libraryup.data.local.entity.ActivityLog
 import ai.sach.libraryup.data.local.entity.Attendance
 import ai.sach.libraryup.data.local.entity.AttendanceMethod
 import ai.sach.libraryup.data.local.entity.Expense
+import ai.sach.libraryup.data.local.entity.Enquiry
+import ai.sach.libraryup.data.local.entity.EnquiryStatus
 import ai.sach.libraryup.data.local.entity.LibraryProfile
 import ai.sach.libraryup.data.local.entity.Locker
 import ai.sach.libraryup.data.local.entity.Membership
@@ -105,6 +107,7 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     val activityLog: Flow<List<ActivityLog>> = dao.observeLog(200)
     val expenses: Flow<List<Expense>> = dao.observeExpenses()
     val lockers: Flow<List<Locker>> = dao.observeLockers()
+    val enquiries: Flow<List<Enquiry>> = dao.observeEnquiries()
 
     fun attendanceOn(date: LocalDate): Flow<List<Attendance>> = dao.observeAttendanceOn(date)
     fun attendanceFor(studentId: Long): Flow<List<Attendance>> = dao.observeAttendanceFor(studentId, 60)
@@ -469,6 +472,20 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     suspend fun deleteLocker(locker: Locker) = database.withTransaction {
         dao.deleteLocker(locker.id)
         log(ActivityLog.LOCKER, locker.id, ActivityLog.DELETE, "Locker ${locker.number}")
+    }
+
+    /* ======================= Enquiries ======================= */
+
+    suspend fun saveEnquiry(enquiry: Enquiry) = dao.upsertEnquiry(enquiry.copy(name = enquiry.name.trim(), phone = enquiry.phone.trim()))
+
+    suspend fun followUpsDue(today: LocalDate): Int = dao.countFollowUpsDue(today)
+
+    /** Turns an enquiry into a student without a seat yet; returns the new student's id. */
+    suspend fun convertEnquiry(enquiry: Enquiry): Long = database.withTransaction {
+        val id = dao.insertStudent(Student(name = enquiry.name.trim(), phone = enquiry.phone.trim(), notes = enquiry.note))
+        dao.upsertEnquiry(enquiry.copy(status = EnquiryStatus.CONVERTED, convertedStudentId = id))
+        log(ActivityLog.STUDENT, id, ActivityLog.ADD, "Admitted ${enquiry.name} from an enquiry")
+        id
     }
 
     /* ======================= Import ======================= */

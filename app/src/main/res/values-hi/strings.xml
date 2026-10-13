@@ -577,4 +577,15 @@
     <string name="field_locker_fee">मासिक फीस ₹</string>
     <string name="field_assigned_to">किसको दिया</string>
     <string name="error_locker_taken">इस नंबर का लॉकर पहले से है</string>
+    <string name="title_enquiries">पूछताछ</string>
+    <string name="title_enquiry">पूछताछ</string>
+    <string name="more_enquiries_desc">आए और फ़ोन करने वाले लोग, जिन्हें दोबारा संपर्क करना है</string>
+    <string name="action_add_enquiry">पूछताछ जोड़ें</string>
+    <string name="enquiries_open">संपर्क करना है</string>
+    <string name="enquiries_closed">दाख़िला / नहीं आए</string>
+    <string name="empty_enquiries">यहाँ कोई पूछताछ नहीं। कोई सीट के बारे में पूछे तो + दबाएँ।</string>
+    <string name="field_follow_up">दोबारा संपर्क की तारीख़</string>
+    <string name="action_admit">दाख़िला दें</string>
+    <string name="action_mark_lost">नहीं आएँगे</string>
+    <string name="notification_digest_follow_ups">%1$d पूछताछ पर संपर्क करना है</string>
 </resources>
