@@ -111,6 +111,12 @@ Must be done before any real owner uses it.
       `core-billing` (from `domain`), `core-backup`, `core-messaging`, `core-docs`, `core-ui`
 - [ ] Next vertical: HostelUp (PG/hostel): research step per App Factory `PLAYBOOK.md`
 
+## Design
+- [x] Brand indigo theme with opaque tones, saturated status colours, contrast-aware text
+- [x] Dashboard header, accent stat cards, quick-action tiles; avatars in student lists
+- [x] Screenshot tests (`ScreenshotTest`, Roborazzi): CI publishes PNGs to the `screenshots` branch
+- [ ] Next: same treatment for the inherited sign-in and settings screens; dark-theme review
+
 ## Known issues / tech debt
 - Backups are built in memory (fine for hundreds of students; stream for very large photo sets)
 - `LibraryState` recomputes on every table change; fine at library scale, profile if > 2,000 students
