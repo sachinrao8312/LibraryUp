@@ -252,7 +252,6 @@
     <string name="label_photo">Photo</string>
     <string name="label_id_proof">ID proof</string>
     <string name="label_joined">Joined</string>
-    <string name="hint_tap_to_call">Tap to call</string>
     <string name="section_first_payment">First payment (optional)</string>
     <string name="section_payments">Payments</string>
     <string name="section_plans">Plans</string>

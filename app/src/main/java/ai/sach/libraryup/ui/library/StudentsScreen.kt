@@ -126,7 +126,11 @@ fun StudentsScreen(
 
     // Details open as a sheet over the list, like RentUp's tenant sheet.
     open?.let { id ->
-        ModalBottomSheet(onDismissRequest = { open = null }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        ModalBottomSheet(
+            onDismissRequest = { open = null },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
             StudentDetailScreen(state, vm, id, onEdit = { onEditStudent(id) }, onAssignSeat = { onEditStudent(id) }, onBack = { open = null })
         }
     }

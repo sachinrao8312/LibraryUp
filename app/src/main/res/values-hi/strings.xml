@@ -252,7 +252,6 @@
     <string name="label_photo">फ़ोटो</string>
     <string name="label_id_proof">आईडी प्रूफ़</string>
     <string name="label_joined">जुड़ने की तारीख</string>
-    <string name="hint_tap_to_call">कॉल करने के लिए टैप करें</string>
     <string name="section_first_payment">पहला भुगतान (वैकल्पिक)</string>
     <string name="section_payments">भुगतान</string>
     <string name="section_plans">प्लान</string>

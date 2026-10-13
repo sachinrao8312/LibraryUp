@@ -177,14 +177,14 @@ fun StudentDetailScreen(
                 }
             }
 
-            SectionTitle(stringResource(R.string.section_details))
-            DetailsCard(s.student, onCall = { dial(context, it) })
-
             SectionTitle(stringResource(R.string.section_documents))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 DocumentTile(stringResource(R.string.label_photo), s.student.photoUri, Modifier.weight(1f), onOpen = { viewing = it }, onAdd = onEdit)
                 DocumentTile(stringResource(R.string.label_id_proof), s.student.idProofUri, Modifier.weight(1f), onOpen = { viewing = it }, onAdd = onEdit)
             }
+
+            SectionTitle(stringResource(R.string.section_details))
+            DetailsCard(s.student, onCall = { dial(context, it) })
 
             PrimaryTabRow(selectedTabIndex = tab, Modifier.padding(top = 16.dp)) {
                 Tab(tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.section_payments)) })
@@ -293,11 +293,8 @@ private fun MembershipCard(s: StudentOverview) {
                 Text(stringResource(if (s.student.status == StudentStatus.LEFT) R.string.label_left else R.string.label_no_seat))
                 return@Column
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.label_seat_shift, s.seat?.label ?: "-", s.shift?.name ?: "-"),
-                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                s.status?.let { StatusPill(it) }
-            }
+            Text(stringResource(R.string.label_seat_shift, s.seat?.label ?: "-", s.shift?.name ?: "-"),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text("${m.planName} · ${m.startDate.pretty()} → ${m.dueDate.minusDays(1).pretty()}", style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(8.dp))
             val p = s.period
@@ -331,7 +328,7 @@ private fun DetailRow(icon: ImageVector, label: String, value: String, onCall: (
         leadingContent = { Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
         overlineContent = { Text(label) },
         headlineContent = { Text(value) },
-        supportingContent = onCall?.let { { Text(stringResource(R.string.hint_tap_to_call)) } }
+        trailingContent = onCall?.let { { Icon(Icons.Default.Call, contentDescription = stringResource(R.string.action_call), tint = MaterialTheme.colorScheme.primary) } }
     )
 }
 

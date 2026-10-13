@@ -54,10 +54,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -152,6 +155,12 @@ class ScreenshotTest {
         compose.onNodeWithText("Aarav Singh").performClick()
         repeat(3) { Thread.sleep(200); compose.waitForIdle() }
         captureScreenRoboImage(File(out, "26_student_sheet.png").path)
+
+        // Lower half of the student page: documents, details and the payments tab.
+        shot("27_student_detail_lower") { StudentDetailScreen(state, vm, asha.student.id, {}, {}, {}) }
+        compose.onAllNodes(hasScrollAction())[0].performTouchInput { swipeUp() }
+        repeat(3) { Thread.sleep(200); compose.waitForIdle() }
+        compose.onRoot().captureRoboImage(File(out, "27_student_detail_lower.png").path)
     }
 
     /** Shows [content], lets Room flows deliver their first rows, then captures the screen. */

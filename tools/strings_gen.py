@@ -277,7 +277,6 @@ S = {
  "label_photo": ("Photo", "फ़ोटो"),
  "label_id_proof": ("ID proof", "आईडी प्रूफ़"),
  "label_joined": ("Joined", "जुड़ने की तारीख"),
- "hint_tap_to_call": ("Tap to call", "कॉल करने के लिए टैप करें"),
  "section_first_payment": ("First payment (optional)", "पहला भुगतान (वैकल्पिक)"),
  "section_payments": ("Payments", "भुगतान"),
  "section_plans": ("Plans", "प्लान"),
