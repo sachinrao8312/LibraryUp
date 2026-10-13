@@ -96,18 +96,16 @@ data class ToneSet(val color: Color, val onColor: Color, val container: Color, v
 
 /** Status colours harmonized with the seed (Theme Builder "custom colours"). Errors use colorScheme.error. */
 @Immutable
-data class StatusColorScheme(val success: ToneSet, val warning: ToneSet, val overdue: ToneSet)
+data class StatusColorScheme(val success: ToneSet, val warning: ToneSet)
 
 internal val LightStatus = StatusColorScheme(
     success = ToneSet(Color(0xFF006D43), Color(0xFFFFFFFF), Color(0xFF92F7BC), Color(0xFF002111)),
-    warning = ToneSet(Color(0xFF914C00), Color(0xFFFFFFFF), Color(0xFFFFDCC3), Color(0xFF2F1500)),
-    overdue = ToneSet(Color(0xFFAE3111), Color(0xFFFFFFFF), Color(0xFFFFDAD2), Color(0xFF3C0700))
+    warning = ToneSet(Color(0xFF914C00), Color(0xFFFFFFFF), Color(0xFFFFDCC3), Color(0xFF2F1500))
 )
 
 internal val DarkStatus = StatusColorScheme(
     success = ToneSet(Color(0xFF76DAA1), Color(0xFF003920), Color(0xFF005231), Color(0xFF92F7BC)),
-    warning = ToneSet(Color(0xFFFFB77F), Color(0xFF4E2600), Color(0xFF6E3900), Color(0xFFFFDCC3)),
-    overdue = ToneSet(Color(0xFFFFB4A2), Color(0xFF621100), Color(0xFF8A1C00), Color(0xFFFFDAD2))
+    warning = ToneSet(Color(0xFFFFB77F), Color(0xFF4E2600), Color(0xFF6E3900), Color(0xFFFFDCC3))
 )
 
 val LocalStatusColors = staticCompositionLocalOf { LightStatus }

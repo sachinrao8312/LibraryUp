@@ -25,7 +25,7 @@ for dark in (False, True):
         if dc is None: print("   // missing", r); continue
         print(f"    {r} = {hexc(dc.get_argb(s))},")
     print(")\n")
-customs = {"success": 0xFF2E7D32, "warning": 0xFFF9A825, "overdue": 0xFFEF6C00}
+customs = {"success": 0xFF2E7D32, "warning": 0xFFF9A825}
 for name, c in customs.items():
     h = Blend.harmonize(c, SEED)
     p = TonalPalette.from_hct(Hct.from_int(h))

@@ -89,8 +89,8 @@ fun DueStatus.tone(): Tone {
     val c = MaterialTheme.colorScheme
     return when (this) {
         DueStatus.OVERDUE, DueStatus.EXPIRED -> Tone(c.errorContainer, c.onErrorContainer)
-        DueStatus.DUE_TODAY, DueStatus.UNPAID -> status.overdue.tone
-        DueStatus.EXPIRING_SOON -> status.warning.tone
+        DueStatus.DUE_TODAY, DueStatus.UNPAID -> status.warning.tone
+        DueStatus.EXPIRING_SOON -> Tone(c.secondaryContainer, c.onSecondaryContainer)
         DueStatus.PAID -> status.success.tone
         DueStatus.FROZEN -> Tone(c.secondaryContainer, c.onSecondaryContainer)
     }
