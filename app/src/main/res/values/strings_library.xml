@@ -582,4 +582,12 @@
     <string name="staff_enter_text_keep_pin">Staff can admit students, collect fees and mark attendance, but not change payments or open settings. Leave the PIN empty to keep your current one, or type a new one.</string>
     <string name="field_staff_pin">4-digit owner PIN</string>
     <string name="staff_wrong_pin">Wrong PIN</string>
+    <string name="action_monthly_report">Monthly report (PDF)</string>
+    <string name="report_title">Report for %1$s</string>
+    <string name="report_admissions">New admissions</string>
+    <string name="report_receipts">Receipts issued</string>
+    <string name="field_message_language">WhatsApp message language</string>
+    <string name="language_library_default">Library default</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">हिंदी</string>
 </resources>

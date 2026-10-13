@@ -1,6 +1,8 @@
 package ai.sach.libraryup.ui.library
 
 import ai.sach.libraryup.R
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.filled.PictureAsPdf
 import ai.sach.libraryup.data.local.entity.Expense
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.repository.LibraryState
@@ -49,7 +51,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-private val monthFormat = DateTimeFormatter.ofPattern("MMMM yyyy")
+val monthFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MMMM yyyy")
 
 @Composable
 private fun MonthSwitcher(month: YearMonth, onChange: (YearMonth) -> Unit) {
@@ -101,6 +103,7 @@ fun PaymentsScreen(state: LibraryState, onOpenStudent: (Long) -> Unit) {
 /** Expenses and the monthly profit-and-loss summary. */
 @Composable
 fun ExpensesScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Unit) {
+    val context = LocalContext.current
     val expenses by remember { vm.repository.expenses }.collectAsState(initial = emptyList())
     var monthText by rememberSaveable { mutableStateOf(YearMonth.now().toString()) }
     val month = YearMonth.parse(monthText)
@@ -114,7 +117,13 @@ fun ExpensesScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Unit
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = { LibraryTopBar(stringResource(R.string.title_expenses), onBack = onBack) },
+        topBar = {
+            LibraryTopBar(stringResource(R.string.title_expenses), onBack = onBack) {
+                IconButton(onClick = { shareMonthlyReport(context, state, expenses, month) }) {
+                    Icon(Icons.Default.PictureAsPdf, contentDescription = stringResource(R.string.action_monthly_report))
+                }
+            }
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { editing = Expense(category = "", amount = 0, date = LocalDate.now()) }) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.action_add_expense))

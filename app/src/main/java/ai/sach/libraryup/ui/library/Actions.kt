@@ -67,7 +67,8 @@ fun buildMessage(
     receiptNo: String = "",
     extra: Map<String, String> = emptyMap()
 ): String {
-    val template = profile?.template(kind) ?: MessageTemplates.default(kind, false)
+    val hindi = s.student.messageHindi ?: (profile?.messageLanguage == "hi")
+    val template = profile?.template(kind, hindi) ?: MessageTemplates.default(kind, hindi)
     return MessageTemplates.render(template, templateValues(profile, s, amount, receiptNo) + extra)
 }
 

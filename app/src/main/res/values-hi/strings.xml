@@ -582,4 +582,12 @@
     <string name="staff_enter_text_keep_pin">स्टाफ़ दाख़िला, फीस और हाज़िरी कर सकता है, पर भुगतान बदलना या सेटिंग्स नहीं। पुराना PIN रखने के लिए खाली छोड़ें, या नया लिखें।</string>
     <string name="field_staff_pin">मालिक का 4 अंकों का PIN</string>
     <string name="staff_wrong_pin">ग़लत PIN</string>
+    <string name="action_monthly_report">मासिक रिपोर्ट (PDF)</string>
+    <string name="report_title">%1$s की रिपोर्ट</string>
+    <string name="report_admissions">नए दाख़िले</string>
+    <string name="report_receipts">रसीदें दी गईं</string>
+    <string name="field_message_language">WhatsApp संदेश की भाषा</string>
+    <string name="language_library_default">लाइब्रेरी की डिफ़ॉल्ट</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">हिंदी</string>
 </resources>

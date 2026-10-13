@@ -630,6 +630,15 @@ S = {
  "staff_enter_text_keep_pin": ("Staff can admit students, collect fees and mark attendance, but not change payments or open settings. Leave the PIN empty to keep your current one, or type a new one.", "स्टाफ़ दाख़िला, फीस और हाज़िरी कर सकता है, पर भुगतान बदलना या सेटिंग्स नहीं। पुराना PIN रखने के लिए खाली छोड़ें, या नया लिखें।"),
  "field_staff_pin": ("4-digit owner PIN", "मालिक का 4 अंकों का PIN"),
  "staff_wrong_pin": ("Wrong PIN", "ग़लत PIN"),
+ # monthly report
+ "action_monthly_report": ("Monthly report (PDF)", "मासिक रिपोर्ट (PDF)"),
+ "report_title": ("Report for %1$s", "%1$s की रिपोर्ट"),
+ "report_admissions": ("New admissions", "नए दाख़िले"),
+ "report_receipts": ("Receipts issued", "रसीदें दी गईं"),
+ "field_message_language": ("WhatsApp message language", "WhatsApp संदेश की भाषा"),
+ "language_library_default": ("Library default", "लाइब्रेरी की डिफ़ॉल्ट"),
+ "language_english": ("English", "English"),
+ "language_hindi": ("हिंदी", "हिंदी"),
 }
 
 def esc(t):

@@ -54,7 +54,7 @@ data class LibraryProfile(
     val lateFeeRule: LateFeeRule get() = LateFeeRule(lateFeePerDay, lateFeeMax)
 
     /** The owner's template for [kind] if set, else the built-in one in [messageLanguage]. */
-    fun template(kind: MessageTemplates.Kind): String {
+    fun template(kind: MessageTemplates.Kind, hindi: Boolean = messageLanguage == "hi"): String {
         val custom = when (kind) {
             MessageTemplates.Kind.FEE_DUE -> templateFeeDue
             MessageTemplates.Kind.EXPIRING -> templateExpiring
@@ -62,7 +62,7 @@ data class LibraryProfile(
             MessageTemplates.Kind.HOLIDAY -> templateHoliday
             MessageTemplates.Kind.RECEIPT -> null
         }
-        return custom?.takeIf { it.isNotBlank() } ?: MessageTemplates.default(kind, messageLanguage == "hi")
+        return custom?.takeIf { it.isNotBlank() } ?: MessageTemplates.default(kind, hindi)
     }
 
     companion object {
@@ -144,6 +144,8 @@ data class Student(
     val idProofUri: String? = null,
     val joinDate: LocalDate = LocalDate.now(),
     val notes: String = "",
+    /** Hindi messages for this student; null = the library's default language. */
+    val messageHindi: Boolean? = null,
     val status: StudentStatus = StudentStatus.ACTIVE,
     /** Set while [status] is FROZEN. */
     val frozenSince: LocalDate? = null,

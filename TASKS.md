@@ -77,9 +77,9 @@ Must be done before any real owner uses it.
       (`Enquiry` entity exists)
 - [x] **Staff mode**: owner PIN; staff can't edit/delete payments, delete students, or open expenses, settings, export, backup, log
 - [x] **Lockers**: number, fee, assignment; freed when a student leaves or is deleted
-- [ ] **Change admin phone/email** in Account screen
-- [ ] Receipt and reminder language per student (Hindi/English)
-- [ ] Monthly report PDF: collections, dues, occupancy, expenses
+- [x] **Change admin phone/email**: library phone is in Library settings; the account email is the Google sign-in (sign in with another account to change it)
+- [x] Reminder language per student (Hindi/English, default = library setting)
+- [x] Monthly report PDF: collections by mode, expenses by category, profit, dues, admissions (Expenses → PDF icon)
 - [ ] Play listing in English + Hindi, screenshots per `docs/play-listing.md`
 
 ## Milestone 3: monetization (see CLAUDE.md → Monetization, App Factory MONETIZATION.md)
