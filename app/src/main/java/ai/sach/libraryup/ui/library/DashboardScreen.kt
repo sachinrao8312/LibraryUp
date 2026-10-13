@@ -55,6 +55,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -222,8 +224,10 @@ private fun RevenueCard(current: YearMonth, months: List<Pair<YearMonth, Long>>)
             }
             Row(Modifier.fillMaxWidth().height(140.dp).padding(top = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 months.forEach { (m, total) ->
+                    val amount = rupees(total)
                     Column(
-                        Modifier.weight(1f).fillMaxHeight().clickable { picked = m },
+                        // Screen readers hear "Oct ₹6,500" for each bar.
+                        Modifier.weight(1f).fillMaxHeight().clickable { picked = m }.semantics(mergeDescendants = true) { contentDescription = amount },
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Bottom
                     ) {
