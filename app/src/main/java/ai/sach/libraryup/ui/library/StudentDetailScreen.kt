@@ -90,7 +90,7 @@ fun StudentDetailScreen(
 
     Column(Modifier.fillMaxSize()) {
         LibraryTopBar(s.student.name, onBack = onBack) {
-            IconButton(onClick = { shareIdCard(context, state.profile, s) }) {
+            IconButton(onClick = { vm.withPro { shareIdCard(context, state.profile, s) } }) {
                 Icon(Icons.Default.Badge, contentDescription = stringResource(R.string.action_id_card))
             }
             IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit)) }

@@ -10,7 +10,8 @@ Re-check before every release that adds a library or a network call.
 | Name, email (owner's Google account) | Yes | No | Account management (Firebase Auth) | Required to sign in | Stored by Firebase Auth |
 | User IDs | Yes | No | Account management, fraud prevention | Required | Firebase uid |
 | App interactions, crash logs, diagnostics | Yes | No | Analytics, app stability (Firebase Analytics, Crashlytics) | Required | No student data in logs |
-| Device or other IDs | Yes | No | Fraud prevention / security (sign-in abuse protection) | Required | |
+| Device or other IDs | Yes | **Yes** | Fraud prevention, security; **advertising** (AdMob, free plan only) | Required | Advertising ID is shared with Google AdMob; Pro has no ads |
+| Purchase history | Yes | No | App functionality (Pro) | Only if you buy | Held by Google Play Billing |
 
 **Not collected by LibraryUp** (stays on the device, or in the owner's own Google Drive when Drive backup is on):
 students' names, phone numbers, addresses, photos, ID proofs, payments, attendance.
@@ -24,7 +25,9 @@ Play's definition of "collected" is data sent off the device to the developer, s
 - Independent security review: No.
 
 ## When this must change
-- **AdMob / ads** (planned): declare Device or other IDs → shared with advertising partners, purpose Advertising.
+- **AdMob** (done in v0.3): Device or other IDs are declared as shared for Advertising. Before release, also tick
+  App interactions and Diagnostics as collected by the AdMob SDK, add `app-ads.txt` to the developer website,
+  and set the Play Console "Contains ads" flag.
 - **Multi-device sync** (planned): student data would then be collected (stored on our servers) → declare
   personal info, photos, financial info (payment records) as collected, encrypted in transit and at rest.
-- **Play Billing**: purchase history collected by Google Play, not by us.
+- **Play Billing** (done in v0.3): purchase history collected by Google Play, not by us.

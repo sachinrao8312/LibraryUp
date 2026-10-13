@@ -639,6 +639,28 @@ S = {
  "language_library_default": ("Library default", "लाइब्रेरी की डिफ़ॉल्ट"),
  "language_english": ("English", "English"),
  "language_hindi": ("हिंदी", "हिंदी"),
+ # pro
+ "title_pro": ("LibraryUp Pro", "LibraryUp Pro"),
+ "more_pro_desc": ("Your plan, trial and upgrade", "आपका प्लान, ट्रायल और अपग्रेड"),
+ "pro_status_active": ("Pro is active. Thank you!", "Pro चालू है। धन्यवाद!"),
+ "pro_status_trial": ("Free Pro trial: %1$d days left", "मुफ़्त Pro ट्रायल: %1$d दिन बाकी"),
+ "pro_status_pass": ("Pro for today (ad pass)", "आज के लिए Pro (विज्ञापन पास)"),
+ "pro_status_free": ("Free plan: up to %1$d seats, all basic features", "मुफ़्त प्लान: %1$d सीटों तक, सभी ज़रूरी सुविधाएँ"),
+ "pro_benefit_seats": ("Unlimited seats", "असीमित सीटें"),
+ "pro_benefit_staff": ("Staff mode with owner PIN", "मालिक PIN के साथ स्टाफ़ मोड"),
+ "pro_benefit_cards": ("Student ID cards with QR", "QR के साथ छात्र आईडी कार्ड"),
+ "pro_benefit_enquiries": ("Enquiry list with follow-ups", "फ़ॉलो-अप के साथ पूछताछ सूची"),
+ "pro_benefit_brand": ("Your logo, vacancy posters", "आपका लोगो, खाली सीटों के पोस्टर"),
+ "pro_benefit_report": ("Monthly report PDF", "मासिक रिपोर्ट PDF"),
+ "pro_benefit_no_ads": ("No ads", "कोई विज्ञापन नहीं"),
+ "pro_prices_loading": ("Prices load from Google Play when you are online.", "ऑनलाइन होने पर Google Play से कीमतें दिखेंगी।"),
+ "pro_buy_yearly": ("Yearly: %1$s", "सालाना: %1$s"),
+ "pro_buy_lifetime": ("Lifetime: %1$s", "हमेशा के लिए: %1$s"),
+ "pro_watch_ad": ("Watch a short ad: Pro free for 24 hours", "छोटा विज्ञापन देखें: 24 घंटे Pro मुफ़्त"),
+ "pro_pass_granted": ("Pro unlocked for 24 hours", "24 घंटे के लिए Pro चालू"),
+ "pro_ad_failed": ("No ad available right now. Try again later.", "अभी कोई विज्ञापन नहीं है। बाद में कोशिश करें।"),
+ "pro_restore": ("Restore purchases", "पुरानी ख़रीद वापस लाएँ"),
+ "pro_never_locked": ("Your data is never locked. Export and backup are always free, on any plan.", "आपका डेटा कभी बंद नहीं होगा। एक्सपोर्ट और बैकअप हर प्लान में हमेशा मुफ़्त।"),
 }
 
 def esc(t):

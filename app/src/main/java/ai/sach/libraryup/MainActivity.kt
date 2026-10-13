@@ -4,6 +4,8 @@ import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.ui.common.composables.BottomNavigationBar
 import ai.sach.libraryup.ui.common.responsiveness.AccessibilityScalingProvider
 import ai.sach.libraryup.ui.common.responsiveness.DimensionsProvider
+import ai.sach.libraryup.ui.library.AdBanner
+import ai.sach.libraryup.ui.library.ProScreen
 import ai.sach.libraryup.ui.library.ActivityLogScreen
 import ai.sach.libraryup.ui.library.AttendanceScreen
 import ai.sach.libraryup.ui.library.DashboardScreen
@@ -258,7 +260,7 @@ class MainActivity : FragmentActivity() {
 fun LibraryUpApp(onSignOut: () -> Unit = {}) {
     val context = LocalContext.current
     val app = context.applicationContext as LibraryUpApplication
-    val vm: LibraryViewModel = viewModel(factory = LibraryViewModel.Factory(app.libraryRepository, app.staffMode))
+    val vm: LibraryViewModel = viewModel(factory = LibraryViewModel.Factory(app.libraryRepository, app.staffMode, app.proManager))
     val state by vm.state.collectAsState()
     val snackbar = remember { SnackbarHostState() }
 
@@ -286,6 +288,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
     val route = entry?.destination?.route
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    LaunchedEffect(vm) { vm.paywall.collect { navController.navigate(AppRoutes.PRO) { launchSingleTop = true } } }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
@@ -293,21 +296,27 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
     ) { padding ->
         NavHost(navController = navController, startDestination = AppRoutes.HOME, modifier = Modifier.padding(padding)) {
             composable(AppRoutes.HOME) {
-                DashboardScreen(
-                    state = state,
-                    onOpenStudents = { navController.navigate(AppRoutes.students(it.name)) { launchSingleTop = true } },
-                    onAddStudent = { navController.navigate(AppRoutes.studentForm()) },
-                    onOpenReminders = { navController.navigate(AppRoutes.REMINDERS) },
-                    onOpenAttendance = { navController.navigate(AppRoutes.ATTENDANCE) },
-                    onOpenPayments = { navController.navigate(AppRoutes.PAYMENTS) { launchSingleTop = true } }
-                )
+                Column(Modifier.fillMaxSize()) {
+                    Box(Modifier.weight(1f)) {
+                        DashboardScreen(
+                            state = state,
+                            onOpenStudents = { navController.navigate(AppRoutes.students(it.name)) { launchSingleTop = true } },
+                            onAddStudent = { navController.navigate(AppRoutes.studentForm()) },
+                            onOpenReminders = { navController.navigate(AppRoutes.REMINDERS) },
+                            onOpenAttendance = { navController.navigate(AppRoutes.ATTENDANCE) },
+                            onOpenPayments = { navController.navigate(AppRoutes.PAYMENTS) { launchSingleTop = true } }
+                        )
+                    }
+                    if (!vm.isPro) AdBanner()
+                }
             }
             composable(AppRoutes.SEATS) {
                 TabScreen(stringResource(R.string.nav_seats)) {
                     SeatMapScreen(
                         state = state,
                         onOpenStudent = { navController.navigate(AppRoutes.student(it)) },
-                        onAssignSeat = { seatId, shiftId -> navController.navigate(AppRoutes.studentForm(seatId = seatId, shiftId = shiftId)) }
+                        onAssignSeat = { seatId, shiftId -> navController.navigate(AppRoutes.studentForm(seatId = seatId, shiftId = shiftId)) },
+                        withPro = vm::withPro
                     )
                 }
             }
@@ -332,7 +341,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             }
             composable(AppRoutes.MORE) {
                 TabScreen(stringResource(R.string.nav_more)) {
-                    MoreScreen(vm.staff, SettingsNavRoutes.BACKUP) { navController.navigate(it) }
+                    MoreScreen(vm, SettingsNavRoutes.BACKUP) { navController.navigate(it) }
                 }
             }
             composable(AppRoutes.STUDENT, arguments = listOf(navArgument("studentId") { type = NavType.LongType })) { back ->
@@ -371,6 +380,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             composable(AppRoutes.LIBRARY_SETTINGS) { LibrarySettingsScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.DATA) { DataScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.ACTIVITY_LOG) { ActivityLogScreen(vm) { navController.popBackStack() } }
+            composable(AppRoutes.PRO) { ProScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.LOCKERS) { LockersScreen(state, vm) { navController.popBackStack() } }
             composable(AppRoutes.ENQUIRIES) {
                 EnquiriesScreen(state, vm, onOpenStudent = { navController.navigate(AppRoutes.student(it)) }) { navController.popBackStack() }

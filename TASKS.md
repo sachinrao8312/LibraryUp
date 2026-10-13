@@ -72,7 +72,7 @@ Must be done before any real owner uses it.
 - [x] **QR attendance**: scan the ID-card QR to mark In/Out (ZXing scanner; repeat scan within 5 min ignored)
 - [x] **Own branding**: library logo on receipts and ID cards (posters when they exist); logo included in backups
 - [x] **Vacancy poster**: live free seats per shift, logo, phone (Seats tab → megaphone)
-- [ ] More posters: admission open, holiday, festival wishes, results
+- [ ] Later: more posters (admission open, holiday, festival wishes, results)
 - [x] **Enquiry list**: walk-ins with follow-up date (in the morning digest), admit to student
       (`Enquiry` entity exists)
 - [x] **Staff mode**: owner PIN; staff can't edit/delete payments, delete students, or open expenses, settings, export, backup, log
@@ -83,15 +83,16 @@ Must be done before any real owner uses it.
 - [ ] Play listing: English draft up to date (`docs/play-listing.md`); Hindi full description and screenshots to do
 
 ## Milestone 3: monetization (see CLAUDE.md → Monetization, App Factory MONETIZATION.md)
-- [ ] `isPro` gate + Firebase Remote Config for limits and prices
-- [ ] Free tier limit (~50 seats); Pro yearly ₹799–999, lifetime ~₹2,499 via Play Billing
-- [ ] 30-day full trial, no activation code; data never locked behind payment
-- [ ] AdMob rewarded ads to unlock: bulk reminders run, export, poster, 24h Pro
-- [ ] AdMob banner/native on dashboard and lists only; **never** on payment/receipt screens
-- [ ] Referral codes: 1 free Pro month per referred library that activates
-- [ ] Update Data Safety for ads (`docs/data-safety.md`)
-- [ ] "LibraryUp saved you" card: fees recovered via reminders, Pro months earned
-- [ ] Later: direct-sold sponsor card per city; affiliates (broadband, furniture, inverters)
+- [x] Pro gate (`ProRules` in domain, `ProManager`): Pro = purchase, 30-day trial from setup, or 24h ad pass
+- [x] Free tier: stops adding seats past 50 (Remote Config `free_seat_limit`, `trial_days`); Pro extras open
+      the Pro screen. Nothing entered is ever locked; export and backup always free
+- [x] Play Billing: `pro_yearly` (subscription) and `pro_lifetime` (one-time), restore purchases, offline cache
+- [x] AdMob: banner on the dashboard (free plan only); rewarded ad gives 24h Pro. Test IDs until
+      `admobAppId`, `admobBannerId`, `admobRewardedId` are set in `gradle.properties`
+- [x] Data Safety draft updated for ads and billing (`docs/data-safety.md`)
+- [ ] Manual: create `pro_yearly` (₹999/yr) and `pro_lifetime` (₹2,499) in Play Console; AdMob app + units;
+      Remote Config keys; `app-ads.txt`; "Contains ads" in Play Console
+- [ ] Later: referral codes, "LibraryUp saved you" card, sponsor cards / affiliates
 
 ## Milestone 4: growth (P2)
 - [ ] Multi-device sync (owner + manager phones), end-to-end encrypted

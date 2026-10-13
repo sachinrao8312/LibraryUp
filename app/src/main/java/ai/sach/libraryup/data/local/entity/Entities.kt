@@ -11,7 +11,9 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * Room schema for LibraryUp. Amounts are whole rupees (Long), dates are [LocalDate]
@@ -52,6 +54,9 @@ data class LibraryProfile(
     val createdAt: Long = System.currentTimeMillis()
 ) {
     val lateFeeRule: LateFeeRule get() = LateFeeRule(lateFeePerDay, lateFeeMax)
+
+    /** The Pro trial runs from the day the library was set up (kept across backup and restore). */
+    val trialStartedOn: LocalDate get() = Instant.ofEpochMilli(createdAt).atZone(ZoneId.systemDefault()).toLocalDate()
 
     /** The owner's template for [kind] if set, else the built-in one in [messageLanguage]. */
     fun template(kind: MessageTemplates.Kind, hindi: Boolean = messageLanguage == "hi"): String {

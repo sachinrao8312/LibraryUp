@@ -590,4 +590,25 @@
     <string name="language_library_default">लाइब्रेरी की डिफ़ॉल्ट</string>
     <string name="language_english">English</string>
     <string name="language_hindi">हिंदी</string>
+    <string name="title_pro">LibraryUp Pro</string>
+    <string name="more_pro_desc">आपका प्लान, ट्रायल और अपग्रेड</string>
+    <string name="pro_status_active">Pro चालू है। धन्यवाद!</string>
+    <string name="pro_status_trial">मुफ़्त Pro ट्रायल: %1$d दिन बाकी</string>
+    <string name="pro_status_pass">आज के लिए Pro (विज्ञापन पास)</string>
+    <string name="pro_status_free">मुफ़्त प्लान: %1$d सीटों तक, सभी ज़रूरी सुविधाएँ</string>
+    <string name="pro_benefit_seats">असीमित सीटें</string>
+    <string name="pro_benefit_staff">मालिक PIN के साथ स्टाफ़ मोड</string>
+    <string name="pro_benefit_cards">QR के साथ छात्र आईडी कार्ड</string>
+    <string name="pro_benefit_enquiries">फ़ॉलो-अप के साथ पूछताछ सूची</string>
+    <string name="pro_benefit_brand">आपका लोगो, खाली सीटों के पोस्टर</string>
+    <string name="pro_benefit_report">मासिक रिपोर्ट PDF</string>
+    <string name="pro_benefit_no_ads">कोई विज्ञापन नहीं</string>
+    <string name="pro_prices_loading">ऑनलाइन होने पर Google Play से कीमतें दिखेंगी।</string>
+    <string name="pro_buy_yearly">सालाना: %1$s</string>
+    <string name="pro_buy_lifetime">हमेशा के लिए: %1$s</string>
+    <string name="pro_watch_ad">छोटा विज्ञापन देखें: 24 घंटे Pro मुफ़्त</string>
+    <string name="pro_pass_granted">24 घंटे के लिए Pro चालू</string>
+    <string name="pro_ad_failed">अभी कोई विज्ञापन नहीं है। बाद में कोशिश करें।</string>
+    <string name="pro_restore">पुरानी ख़रीद वापस लाएँ</string>
+    <string name="pro_never_locked">आपका डेटा कभी बंद नहीं होगा। एक्सपोर्ट और बैकअप हर प्लान में हमेशा मुफ़्त।</string>
 </resources>

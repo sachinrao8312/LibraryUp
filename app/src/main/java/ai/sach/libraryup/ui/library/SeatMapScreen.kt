@@ -55,7 +55,8 @@ import androidx.compose.ui.unit.dp
 fun SeatMapScreen(
     state: LibraryState,
     onOpenStudent: (Long) -> Unit,
-    onAssignSeat: (seatId: Long, shiftId: Long?) -> Unit
+    onAssignSeat: (seatId: Long, shiftId: Long?) -> Unit,
+    withPro: (() -> Unit) -> Unit
 ) {
     val context = LocalContext.current
     var shiftFilter by rememberSaveable { mutableStateOf<Long?>(null) }
@@ -87,7 +88,7 @@ fun SeatMapScreen(
             LegendDot(StatusColors.full, "${stringResource(R.string.seat_full)} ${counts[SeatState.FULL] ?: 0}")
             LegendDot(StatusColors.overdue, "${stringResource(R.string.seat_overdue)} ${counts[SeatState.OVERDUE] ?: 0}")
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = { shareVacancyPoster(context, state) }, enabled = state.seats.isNotEmpty()) {
+            IconButton(onClick = { withPro { shareVacancyPoster(context, state) } }, enabled = state.seats.isNotEmpty()) {
                 Icon(Icons.Default.Campaign, contentDescription = stringResource(R.string.action_vacancy_poster))
             }
         }

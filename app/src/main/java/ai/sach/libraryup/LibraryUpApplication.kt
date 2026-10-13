@@ -4,7 +4,9 @@ import ai.sach.libraryup.data.backup.BackupManager
 import ai.sach.libraryup.data.backup.drive.DriveBackupManager
 import ai.sach.libraryup.data.local.LibraryUpDatabase
 import ai.sach.libraryup.data.repository.LibraryRepository
+import ai.sach.libraryup.billing.ProManager
 import ai.sach.libraryup.ui.library.StaffMode
+import com.google.android.gms.ads.MobileAds
 import ai.sach.libraryup.notifications.NotificationHelper
 import ai.sach.libraryup.notifications.NotificationPrefs
 import ai.sach.libraryup.notifications.ReminderScheduler
@@ -36,6 +38,8 @@ class LibraryUpApplication : Application(), Configuration.Provider {
     val libraryRepository by lazy { LibraryRepository(database) }
 
     val staffMode by lazy { StaffMode(this) }
+
+    val proManager by lazy { ProManager(this) }
 
     val authRepository by lazy { AuthRepository(applicationContext) }
 
@@ -71,7 +75,10 @@ class LibraryUpApplication : Application(), Configuration.Provider {
             }
         }.onFailure { Log.w(TAG, "Google Play Services check failed", it) }
 
+        proManager.start()
+
         applicationScope.launch(Dispatchers.IO) {
+            runCatching { MobileAds.initialize(this@LibraryUpApplication) }.onFailure { Log.w(TAG, "Ads init failed", it) }
             runCatching {
                 if (notificationPrefs.dailyDigestEnabled) reminderScheduler.ensureScheduled() else reminderScheduler.cancel()
                 // Re-arms the daily Drive backup if it's on and its job was lost.

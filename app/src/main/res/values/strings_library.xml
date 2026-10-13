@@ -590,4 +590,25 @@
     <string name="language_library_default">Library default</string>
     <string name="language_english">English</string>
     <string name="language_hindi">हिंदी</string>
+    <string name="title_pro">LibraryUp Pro</string>
+    <string name="more_pro_desc">Your plan, trial and upgrade</string>
+    <string name="pro_status_active">Pro is active. Thank you!</string>
+    <string name="pro_status_trial">Free Pro trial: %1$d days left</string>
+    <string name="pro_status_pass">Pro for today (ad pass)</string>
+    <string name="pro_status_free">Free plan: up to %1$d seats, all basic features</string>
+    <string name="pro_benefit_seats">Unlimited seats</string>
+    <string name="pro_benefit_staff">Staff mode with owner PIN</string>
+    <string name="pro_benefit_cards">Student ID cards with QR</string>
+    <string name="pro_benefit_enquiries">Enquiry list with follow-ups</string>
+    <string name="pro_benefit_brand">Your logo, vacancy posters</string>
+    <string name="pro_benefit_report">Monthly report PDF</string>
+    <string name="pro_benefit_no_ads">No ads</string>
+    <string name="pro_prices_loading">Prices load from Google Play when you are online.</string>
+    <string name="pro_buy_yearly">Yearly: %1$s</string>
+    <string name="pro_buy_lifetime">Lifetime: %1$s</string>
+    <string name="pro_watch_ad">Watch a short ad: Pro free for 24 hours</string>
+    <string name="pro_pass_granted">Pro unlocked for 24 hours</string>
+    <string name="pro_ad_failed">No ad available right now. Try again later.</string>
+    <string name="pro_restore">Restore purchases</string>
+    <string name="pro_never_locked">Your data is never locked. Export and backup are always free, on any plan.</string>
 </resources>

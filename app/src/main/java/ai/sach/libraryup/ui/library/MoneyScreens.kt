@@ -119,7 +119,7 @@ fun ExpensesScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Unit
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             LibraryTopBar(stringResource(R.string.title_expenses), onBack = onBack) {
-                IconButton(onClick = { shareMonthlyReport(context, state, expenses, month) }) {
+                IconButton(onClick = { vm.withPro { shareMonthlyReport(context, state, expenses, month) } }) {
                     Icon(Icons.Default.PictureAsPdf, contentDescription = stringResource(R.string.action_monthly_report))
                 }
             }
