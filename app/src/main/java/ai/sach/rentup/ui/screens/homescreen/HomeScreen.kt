@@ -195,7 +195,7 @@ fun HomeScreen(
 
     val tenants by viewModel.allTenants.observeAsState(emptyList())
     val isDarkTheme = isSystemInDarkTheme()
-    val backgroundColor = if (isDarkTheme) Color(0xFF121212) else RentUpColors.BackgroundGray
+    val backgroundColor = MaterialTheme.colorScheme.background
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var uiState by remember { mutableStateOf(HomeScreenUiState()) }
