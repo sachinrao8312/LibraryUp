@@ -255,7 +255,7 @@ private fun MembershipCard(s: StudentOverview) {
             if (p != null) {
                 Text(stringResource(R.string.label_fee_breakdown, rupees(m.fee), rupees(m.discount), rupees(m.lateFee)), style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(R.string.label_paid_balance, rupees(s.paid), rupees(p.balance)),
-                    fontWeight = FontWeight.SemiBold, color = if (p.balance > 0) StatusColors.full else StatusColors.paid)
+                    fontWeight = FontWeight.SemiBold, color = if (p.balance > 0) MaterialTheme.colorScheme.error else successColor)
             }
         }
     }

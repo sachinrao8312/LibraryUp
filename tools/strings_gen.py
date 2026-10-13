@@ -556,13 +556,6 @@ S = {
  "backup_password_or_code": ("Password or recovery code", "पासवर्ड या रिकवरी कोड"),
  "backup_password_repeat": ("Repeat password", "पासवर्ड दोबारा डालें"),
  # app preferences
- "prefs_subtitle": ("Customize how the app looks and behaves", "ऐप कैसा दिखे और कैसे चले, यह चुनें"),
- "prefs_theme_color": ("Theme color", "थीम का रंग"),
- "prefs_select_color": ("Choose color", "रंग चुनें"),
- "prefs_back_to_colors": ("Back to colors", "रंगों पर वापस"),
- "prefs_country_currency": ("Country & currency", "देश और करेंसी"),
- "prefs_select_currency": ("Choose currency", "करेंसी चुनें"),
- "prefs_currency_hint": ("Changes the currency symbol throughout the app", "पूरे ऐप में करेंसी का चिह्न बदल जाएगा"),
  "country_in": ("India", "भारत"),
  "country_us": ("United States", "अमेरिका"),
  "country_gb": ("United Kingdom", "ब्रिटेन"),
@@ -661,6 +654,10 @@ S = {
  "pro_ad_failed": ("No ad available right now. Try again later.", "अभी कोई विज्ञापन नहीं है। बाद में कोशिश करें।"),
  "pro_restore": ("Restore purchases", "पुरानी ख़रीद वापस लाएँ"),
  "pro_never_locked": ("Your data is never locked. Export and backup are always free, on any plan.", "आपका डेटा कभी बंद नहीं होगा। एक्सपोर्ट और बैकअप हर प्लान में हमेशा मुफ़्त।"),
+ "dash_students_count": ("%1$d students", "%1$d छात्र"),
+ "prefs_wallpaper_colors": ("Use wallpaper colours", "वॉलपेपर के रंग इस्तेमाल करें"),
+ "prefs_wallpaper_colors_desc": ("Material You: the app takes its colours from your wallpaper", "Material You: ऐप के रंग आपके वॉलपेपर से आएँगे"),
+ "prefs_wallpaper_colors_unsupported": ("Needs Android 12 or newer", "Android 12 या नया चाहिए"),
 }
 
 def esc(t):

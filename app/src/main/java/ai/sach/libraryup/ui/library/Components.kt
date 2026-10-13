@@ -3,9 +3,11 @@ package ai.sach.libraryup.ui.library
 import ai.sach.libraryup.R
 import ai.sach.libraryup.domain.DueStatus
 import ai.sach.libraryup.domain.SeatState
+import ai.sach.libraryup.ui.theme.LocalStatusColors
+import ai.sach.libraryup.ui.theme.ToneSet
 import androidx.annotation.StringRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,19 +42,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,35 +63,41 @@ import java.time.ZoneOffset
 
 /* ---------------------------------------------------------------- colours */
 
-/** Clear, saturated status colours; text on them picks black or white by contrast. */
-object StatusColors {
-    val free = Color(0xFF1E8E4E)
-    val partial = Color(0xFFF5B400)
-    val full = Color(0xFFD32F2F)
-    val overdue = Color(0xFFEF6C00)
-    val inactive = Color(0xFF9AA0AE)
-    val paid = Color(0xFF1E8E4E)
-    val frozen = Color(0xFF3D6FB6)
+/** A status colour pair: a container and the text/icon colour that goes on it. */
+@Immutable
+data class Tone(val container: Color, val content: Color)
+
+private val ToneSet.tone get() = Tone(container, onContainer)
+
+/** Free green, part-booked amber, full neutral, fee problem red: red only ever means "act on this". */
+@Composable
+fun SeatState.tone(): Tone {
+    val status = LocalStatusColors.current
+    val c = MaterialTheme.colorScheme
+    return when (this) {
+        SeatState.FREE -> status.success.tone
+        SeatState.PARTIAL -> status.warning.tone
+        SeatState.FULL -> Tone(c.surfaceContainerHighest, c.onSurfaceVariant)
+        SeatState.OVERDUE -> Tone(c.errorContainer, c.onErrorContainer)
+        SeatState.INACTIVE -> Tone(c.surfaceContainer, c.outline)
+    }
 }
 
-/** Readable text colour on [this] background. */
-fun Color.contentColor(): Color = if (luminance() > 0.5f) Color(0xFF1F1A00) else Color.White
-
-fun SeatState.color(): Color = when (this) {
-    SeatState.FREE -> StatusColors.free
-    SeatState.PARTIAL -> StatusColors.partial
-    SeatState.FULL -> StatusColors.full
-    SeatState.OVERDUE -> StatusColors.overdue
-    SeatState.INACTIVE -> StatusColors.inactive
+@Composable
+fun DueStatus.tone(): Tone {
+    val status = LocalStatusColors.current
+    val c = MaterialTheme.colorScheme
+    return when (this) {
+        DueStatus.OVERDUE, DueStatus.EXPIRED -> Tone(c.errorContainer, c.onErrorContainer)
+        DueStatus.DUE_TODAY, DueStatus.UNPAID -> status.overdue.tone
+        DueStatus.EXPIRING_SOON -> status.warning.tone
+        DueStatus.PAID -> status.success.tone
+        DueStatus.FROZEN -> Tone(c.secondaryContainer, c.onSecondaryContainer)
+    }
 }
 
-fun DueStatus.color(): Color = when (this) {
-    DueStatus.OVERDUE, DueStatus.EXPIRED -> StatusColors.full
-    DueStatus.DUE_TODAY, DueStatus.UNPAID -> StatusColors.overdue
-    DueStatus.EXPIRING_SOON -> StatusColors.partial
-    DueStatus.PAID -> StatusColors.paid
-    DueStatus.FROZEN -> StatusColors.frozen
-}
+/** Positive money and "done" ticks. */
+val successColor: Color @Composable get() = LocalStatusColors.current.success.color
 
 @StringRes
 fun DueStatus.label(): Int = when (this) {
@@ -111,13 +116,7 @@ fun DueStatus.label(): Int = when (this) {
 @Composable
 fun LibraryTopBar(title: String, onBack: (() -> Unit)? = null, actions: @Composable () -> Unit = {}) {
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold) },
+        title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         navigationIcon = {
             if (onBack != null) {
                 IconButton(onClick = onBack) {
@@ -130,11 +129,11 @@ fun LibraryTopBar(title: String, onBack: (() -> Unit)? = null, actions: @Composa
 }
 
 @Composable
-fun StatusPill(text: String, color: Color, modifier: Modifier = Modifier) {
-    Surface(color = color, shape = RoundedCornerShape(50), modifier = modifier) {
+fun StatusPill(text: String, tone: Tone, modifier: Modifier = Modifier) {
+    Surface(color = tone.container, shape = MaterialTheme.shapes.small, modifier = modifier) {
         Text(
             text,
-            color = color.contentColor(),
+            color = tone.content,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
@@ -144,7 +143,7 @@ fun StatusPill(text: String, color: Color, modifier: Modifier = Modifier) {
 
 @Composable
 fun StatusPill(status: DueStatus, modifier: Modifier = Modifier) =
-    StatusPill(stringResource(status.label()), status.color(), modifier)
+    StatusPill(stringResource(status.label()), status.tone(), modifier)
 
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {
@@ -171,26 +170,20 @@ fun EmptyState(message: String, modifier: Modifier = Modifier, action: (@Composa
     }
 }
 
+/** A number with its label on a tinted card; [tone] colours it by status. */
 @Composable
-fun StatCard(label: String, value: String, modifier: Modifier = Modifier, accent: Color? = null, onClick: (() -> Unit)? = null) {
+fun StatCard(label: String, value: String, modifier: Modifier = Modifier, tone: Tone? = null, onClick: (() -> Unit)? = null) {
     Card(
         modifier = modifier.then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        colors = CardDefaults.cardColors(
+            containerColor = tone?.container ?: MaterialTheme.colorScheme.surfaceContainerLow,
+            contentColor = tone?.content ?: MaterialTheme.colorScheme.onSurface
+        )
     ) {
-        Column(
-            Modifier
-                .drawBehind { accent?.let { drawRect(it, size = size.copy(width = 5.dp.toPx())) } }
-                .padding(start = 16.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
-        ) {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
+        Column(Modifier.padding(16.dp)) {
+            Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold, maxLines = 1)
             Spacer(Modifier.height(4.dp))
-            Text(
-                value,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = accent?.let { if (it.luminance() > 0.5f) lerp(it, Color.Black, 0.35f) else it } ?: MaterialTheme.colorScheme.onSurface
-            )
+            Text(label, style = MaterialTheme.typography.labelLarge, maxLines = 2)
         }
     }
 }
@@ -212,9 +205,9 @@ fun Avatar(name: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LegendDot(color: Color, label: String) {
+fun LegendDot(tone: Tone, label: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(10.dp).background(color, RoundedCornerShape(3.dp)))
+        Box(Modifier.size(12.dp).background(tone.container, RoundedCornerShape(3.dp)).border(1.dp, tone.content.copy(alpha = 0.4f), RoundedCornerShape(3.dp)))
         Spacer(Modifier.width(4.dp))
         Text(label, style = MaterialTheme.typography.labelSmall)
     }

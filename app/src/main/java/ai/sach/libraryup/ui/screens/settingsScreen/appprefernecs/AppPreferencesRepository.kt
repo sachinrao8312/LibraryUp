@@ -5,115 +5,22 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-/**
- * Repository for managing app preferences using DataStore.
- * Handles storage and retrieval of app preferences like theme color, currency settings, etc.
- *
- * @param context Android application context used to access DataStore
- */
+/** Device-level look-and-feel preferences (library data lives in Room, not here). */
 class AppPreferencesRepository(private val context: Context) {
 
-    // Define the DataStore at companion object level for singleton access
-    companion object {
-        // DataStore name
-        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_preferences")
+    /** Material You: take the theme from the wallpaper (Android 12+) instead of LibraryUp indigo. */
+    val wallpaperColors: Flow<Boolean> = context.dataStore.data.map { it[WALLPAPER_COLORS] ?: false }
 
-        // Preference keys
-        private val PRIMARY_COLOR_KEY = stringPreferencesKey("primary_color")
-        private val CURRENCY_KEY = stringPreferencesKey("currency")
-        private val COUNTRY_KEY = stringPreferencesKey("country")
-        private val INSTALL_DATE_KEY = stringPreferencesKey("install_date")
-
-        // Default values
-        const val DEFAULT_PRIMARY_COLOR = "#283593" // Brand indigo (launcher icon)
-        const val DEFAULT_CURRENCY = "INR"
-        const val DEFAULT_COUNTRY = "IN"
+    suspend fun setWallpaperColors(on: Boolean) {
+        context.dataStore.edit { it[WALLPAPER_COLORS] = on }
     }
 
-    /**
-     * Get the current primary color as a Flow.
-     * This Flow will emit a new value whenever the setting changes.
-     */
-    val primaryColor: Flow<String> = context.dataStore.data
-        .map { preferences ->
-            // Return the current value or default if not set
-            preferences[PRIMARY_COLOR_KEY] ?: DEFAULT_PRIMARY_COLOR
-        }
-
-    /**
-     * Update the primary color setting.
-     *
-     * @param colorHex The hex color code to set as the primary color
-     */
-    suspend fun setPrimaryColor(colorHex: String) {
-        context.dataStore.edit { preferences ->
-            preferences[PRIMARY_COLOR_KEY] = colorHex
-        }
+    private companion object {
+        val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_preferences")
+        val WALLPAPER_COLORS = booleanPreferencesKey("wallpaper_colors")
     }
-
-    /**
-     * Get the current currency as a Flow.
-     * This Flow will emit a new value whenever the setting changes.
-     */
-    val currency: Flow<String> = context.dataStore.data
-        .map { preferences ->
-            // Return the current value or default if not set
-            preferences[CURRENCY_KEY] ?: DEFAULT_CURRENCY
-        }
-
-    /**
-     * Update the currency setting.
-     *
-     * @param currency The currency code to set
-     */
-    suspend fun setCurrency(currency: String) {
-        context.dataStore.edit { preferences ->
-            preferences[CURRENCY_KEY] = currency
-        }
-    }
-
-    /**
-     * Get the current country as a Flow.
-     * This Flow will emit a new value whenever the setting changes.
-     */
-    val country: Flow<String> = context.dataStore.data
-        .map { preferences ->
-            // Return the current value or default if not set
-            preferences[COUNTRY_KEY] ?: DEFAULT_COUNTRY
-        }
-
-    /**
-     * Update the country setting.
-     *
-     * @param country The country code to set
-     */
-    suspend fun setCountry(country: String) {
-        context.dataStore.edit { preferences ->
-            preferences[COUNTRY_KEY] = country
-        }
-    }
-
-
-    /**
-     * Get the app install date as a Flow (timestamp string or null if not set).
-     */
-    val installDate: Flow<String?> = context.dataStore.data
-        .map { preferences ->
-            preferences[INSTALL_DATE_KEY]
-        }
-
-    /**
-     * Set the app install date (should only be called once).
-     */
-    suspend fun setInstallDate(installDate: String) {
-        context.dataStore.edit { preferences ->
-            preferences[INSTALL_DATE_KEY] = installDate
-        }
-    }
-
 }

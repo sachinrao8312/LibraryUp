@@ -54,7 +54,7 @@ fun ProScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Unit) {
                 stringResource(R.string.pro_benefit_no_ads)
             ).forEach { benefit ->
                 Row(Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = StatusColors.paid)
+                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = successColor)
                     Spacer(Modifier.width(8.dp))
                     Text(benefit)
                 }

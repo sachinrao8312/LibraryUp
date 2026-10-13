@@ -86,7 +86,7 @@ fun EnquiriesScreen(state: LibraryState, vm: LibraryViewModel, onOpenStudent: (L
                             )
                         }
                         e.followUpOn?.takeIf { e.status == EnquiryStatus.OPEN }?.let {
-                            Text(it.pretty(), style = MaterialTheme.typography.bodySmall, color = if (it.isAfter(today)) Color.Unspecified else StatusColors.overdue)
+                            Text(it.pretty(), style = MaterialTheme.typography.bodySmall, color = if (it.isAfter(today)) Color.Unspecified else MaterialTheme.colorScheme.error)
                         }
                         IconButton(onClick = { dial(context, e.phone) }) { Icon(Icons.Default.Call, contentDescription = stringResource(R.string.action_call)) }
                     }

@@ -106,7 +106,7 @@ fun RemindersScreen(state: LibraryState, onBack: () -> Unit) {
                     Text(stringResource(R.string.reminders_send_next, next.student.name))
                 }
             } else if (queue.isNotEmpty()) {
-                Text(stringResource(R.string.reminders_done), color = StatusColors.paid)
+                Text(stringResource(R.string.reminders_done), color = successColor)
             }
             Text(
                 stringResource(R.string.reminders_how),
@@ -126,7 +126,7 @@ fun RemindersScreen(state: LibraryState, onBack: () -> Unit) {
                         Text(s.student.name, fontWeight = FontWeight.SemiBold)
                         Text(stringResource(R.string.label_seat_shift, s.seat?.label ?: "-", s.shift?.name ?: "-"), style = MaterialTheme.typography.bodySmall)
                     }
-                    if (s.student.id in sent) Icon(Icons.Default.CheckCircle, contentDescription = null, tint = StatusColors.paid)
+                    if (s.student.id in sent) Icon(Icons.Default.CheckCircle, contentDescription = null, tint = successColor)
                     else s.status?.let { StatusPill(it) }
                 }
                 HorizontalDivider()
@@ -195,7 +195,7 @@ fun AttendanceScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Un
                     when {
                         a == null -> FilledTonalButton(onClick = { vm.run { checkIn(s.student.id, date) } }) { Text(stringResource(R.string.action_in)) }
                         a.outMinute == null -> OutlinedButton(onClick = { vm.run { checkOut(s.student.id, date) } }) { Text(stringResource(R.string.action_out)) }
-                        else -> Icon(Icons.Default.CheckCircle, contentDescription = null, tint = StatusColors.paid)
+                        else -> Icon(Icons.Default.CheckCircle, contentDescription = null, tint = successColor)
                     }
                     if (a != null) {
                         IconButton(onClick = { vm.run { undoAttendance(s.student.id, date) } }) {

@@ -147,7 +147,7 @@ class MainActivity : FragmentActivity() {
             // Fixed font scale: layouts are tuned for it; large system fonts broke rows on small phones.
             val density = Density(density = LocalDensity.current.density, fontScale = 1.0f)
             CompositionLocalProvider(LocalDensity provides density) {
-                LibraryUpTheme(dynamicColor = false) {
+                LibraryUpTheme {
                     DimensionsProvider {
                         AccessibilityScalingProvider {
                             var appState by remember { mutableStateOf(AppState.Loading) }

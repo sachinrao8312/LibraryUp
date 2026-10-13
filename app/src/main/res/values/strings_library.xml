@@ -513,13 +513,6 @@
     <string name="backup_password_min">Password (at least 6 characters)</string>
     <string name="backup_password_or_code">Password or recovery code</string>
     <string name="backup_password_repeat">Repeat password</string>
-    <string name="prefs_subtitle">Customize how the app looks and behaves</string>
-    <string name="prefs_theme_color">Theme color</string>
-    <string name="prefs_select_color">Choose color</string>
-    <string name="prefs_back_to_colors">Back to colors</string>
-    <string name="prefs_country_currency">Country &amp; currency</string>
-    <string name="prefs_select_currency">Choose currency</string>
-    <string name="prefs_currency_hint">Changes the currency symbol throughout the app</string>
     <string name="country_in">India</string>
     <string name="country_us">United States</string>
     <string name="country_gb">United Kingdom</string>
@@ -611,4 +604,8 @@
     <string name="pro_ad_failed">No ad available right now. Try again later.</string>
     <string name="pro_restore">Restore purchases</string>
     <string name="pro_never_locked">Your data is never locked. Export and backup are always free, on any plan.</string>
+    <string name="dash_students_count">%1$d students</string>
+    <string name="prefs_wallpaper_colors">Use wallpaper colours</string>
+    <string name="prefs_wallpaper_colors_desc">Material You: the app takes its colours from your wallpaper</string>
+    <string name="prefs_wallpaper_colors_unsupported">Needs Android 12 or newer</string>
 </resources>

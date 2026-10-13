@@ -4,6 +4,7 @@ import ai.sach.libraryup.R
 import ai.sach.libraryup.data.local.entity.Expense
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.repository.LibraryState
+import ai.sach.libraryup.domain.DueStatus
 import ai.sach.libraryup.domain.MoneyEntry
 import ai.sach.libraryup.domain.Reports
 import androidx.compose.foundation.clickable
@@ -137,7 +138,7 @@ fun ExpensesScreen(state: LibraryState, vm: LibraryViewModel, onBack: () -> Unit
                 StatCard(stringResource(R.string.label_expenses), rupees(profit?.expenses ?: 0L), Modifier.weight(1f))
                 StatCard(
                     stringResource(R.string.label_profit), rupees(profit?.profit ?: 0L), Modifier.weight(1f),
-                    accent = if ((profit?.profit ?: 0L) < 0) StatusColors.full else StatusColors.paid
+                    tone = (if ((profit?.profit ?: 0L) < 0) DueStatus.OVERDUE else DueStatus.PAID).tone()
                 )
             }
             if (rows.isEmpty()) EmptyState(stringResource(R.string.empty_expenses))
