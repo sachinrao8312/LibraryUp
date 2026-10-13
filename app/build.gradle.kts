@@ -20,6 +20,12 @@ android {
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // AdMob: Google's test IDs unless real ones are set in gradle.properties / CI secrets.
+        fun prop(name: String, default: String) = (project.findProperty(name) as String?) ?: default
+        manifestPlaceholders["admobAppId"] = prop("admobAppId", "ca-app-pub-3940256099942544~3347511713")
+        buildConfigField("String", "ADMOB_BANNER_ID", "\"${prop("admobBannerId", "ca-app-pub-3940256099942544/9214589741")}\"")
+        buildConfigField("String", "ADMOB_REWARDED_ID", "\"${prop("admobRewardedId", "ca-app-pub-3940256099942544/5224354917")}\"")
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -109,6 +115,14 @@ dependencies {
     // Analytics' AppMeasurementReceiver extends its WakefulBroadcastReceiver.
     implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.legacy.support.core.utils)
+
+    // ID-card QR: encode the card and scan it at the desk (camera screen included).
+    implementation(libs.zxing.android.embedded)
+
+    // Pro: Play Billing, Remote Config (free-tier limit, trial length), AdMob for the free tier.
+    implementation(libs.billing.ktx)
+    implementation(libs.firebase.config.ktx)
+    implementation(libs.play.services.ads)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.crashlytics.ktx)
@@ -178,12 +192,18 @@ dependencies {
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
 tasks.withType<Test>().configureEach {
+    // ScreenshotTest writes PNGs to build/outputs/roborazzi (record only, no comparison).
+    systemProperty("roborazzi.test.record", "true")
     // Print the full cause chain in CI logs; the HTML report is only in the artifact.
     testLogging {
         events("failed")

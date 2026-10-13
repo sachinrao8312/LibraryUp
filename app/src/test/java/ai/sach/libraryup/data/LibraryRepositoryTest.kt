@@ -2,9 +2,14 @@ package ai.sach.libraryup.data
 
 import ai.sach.libraryup.R
 import ai.sach.libraryup.data.local.entity.ActivityLog
+import ai.sach.libraryup.data.local.entity.AttendanceMethod
+import ai.sach.libraryup.data.local.entity.Enquiry
+import ai.sach.libraryup.data.local.entity.EnquiryStatus
+import ai.sach.libraryup.data.local.entity.Locker
 import ai.sach.libraryup.data.local.entity.MembershipStatus
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.local.entity.StudentStatus
+import ai.sach.libraryup.data.repository.LibraryRepository.ScanResult
 import ai.sach.libraryup.data.repository.UserError
 import ai.sach.libraryup.domain.StudentImportRow
 import android.app.Application
@@ -166,6 +171,37 @@ class LibraryRepositoryTest {
         assertNull(a.outMinute)
         lib.repo.undoAttendance(id, today)
         assertNull(lib.dao.findAttendance(id, today))
+    }
+
+    @Test
+    fun `qr scan checks in once and ignores a quick repeat`() = runBlocking {
+        val id = lib.admit("Asha")
+        val today = LocalDate.now()
+        assertEquals(ScanResult.IN, lib.repo.scanAttendance(id, today))
+        assertEquals(ScanResult.ALREADY, lib.repo.scanAttendance(id, today))
+        assertEquals(AttendanceMethod.QR, lib.dao.findAttendance(id, today)!!.method)
+        lib.repo.freeze(id, today)
+        assertEquals(ScanResult.NOT_ACTIVE, lib.repo.scanAttendance(id, today))
+    }
+
+    @Test
+    fun `locker numbers are unique and a leaving student frees their locker`() = runBlocking {
+        val id = lib.admit("Asha")
+        lib.repo.saveLocker(Locker(number = "L1", fee = 100, studentId = id))
+        expectError(R.string.error_locker_taken) { lib.repo.saveLocker(Locker(number = "l1")) }
+        lib.repo.markLeft(id, LocalDate.now())
+        assertNull(lib.dao.getLockers().single().studentId)
+    }
+
+    @Test
+    fun `admitting an enquiry creates a student and closes it`() = runBlocking {
+        val today = LocalDate.now()
+        lib.repo.saveEnquiry(Enquiry(name = " Ravi ", phone = "9876500009", followUpOn = today))
+        assertEquals(1, lib.repo.followUpsDue(today))
+        val id = lib.repo.convertEnquiry(lib.dao.getEnquiries().single())
+        assertEquals("Ravi", lib.dao.getStudent(id)!!.name)
+        assertEquals(EnquiryStatus.CONVERTED, lib.dao.getEnquiries().single().status)
+        assertEquals(0, lib.repo.followUpsDue(today))
     }
 
     @Test

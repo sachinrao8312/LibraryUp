@@ -13,6 +13,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # publishes screenshots to the `screenshots` branch
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
@@ -63,6 +65,21 @@ jobs:
       - name: Build release APK (R8)
         run: ./gradlew :app:assembleRelease --stacktrace
 
+      # Screenshots and the Room schema go to the `screenshots` branch (overwritten each run)
+      # so they can be reviewed without downloading artifacts. Same-repo PRs and main only.
+      - name: Publish screenshots
+        if: always() && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+        run: |
+          [ -d app/build/outputs/roborazzi ] || exit 0
+          out=$(mktemp -d)
+          cp app/build/outputs/roborazzi/*.png "$out"/
+          cp -r app/schemas "$out"/ 2>/dev/null || true
+          cd "$out"
+          git init -q -b screenshots
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com add .
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "Screenshots for ${{ github.sha }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" screenshots
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -72,4 +89,5 @@ jobs:
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/mapping/release/mapping.txt
             app/schemas/
+            app/build/outputs/roborazzi/
           retention-days: 7

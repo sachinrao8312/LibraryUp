@@ -9,26 +9,26 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 enum class StudentFilter(@StringRes val label: Int) {
@@ -63,13 +62,16 @@ enum class StudentFilter(@StringRes val label: Int) {
 /** Sorts the most urgent first: overdue, then due, then by name. */
 private val urgency = compareBy<StudentOverview>({ it.status?.ordinal ?: Int.MAX_VALUE }, { it.student.name.lowercase() })
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentsScreen(
     state: LibraryState,
+    vm: LibraryViewModel,
     initialFilter: StudentFilter,
-    onOpenStudent: (Long) -> Unit,
+    onEditStudent: (Long) -> Unit,
     onAddStudent: () -> Unit
 ) {
+    var open by rememberSaveable { mutableStateOf<Long?>(null) }
     var filter by rememberSaveable(initialFilter) { mutableStateOf(initialFilter) }
     var query by rememberSaveable { mutableStateOf("") }
     val q = query.trim().lowercase()
@@ -115,43 +117,59 @@ fun StudentsScreen(
             } else {
                 LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
                     items(visible, key = { it.student.id }) { s ->
-                        StudentRow(s) { onOpenStudent(s.student.id) }
-                        HorizontalDivider()
+                        StudentRow(s) { open = s.student.id }
                     }
                 }
             }
+        }
+    }
+
+    // Details open as a sheet over the list, like RentUp's tenant sheet.
+    open?.let { id ->
+        ModalBottomSheet(
+            onDismissRequest = { open = null },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            StudentDetailScreen(state, vm, id, onEdit = { onEditStudent(id) }, onAssignSeat = { onEditStudent(id) }, onBack = { open = null })
         }
     }
 }
 
 @Composable
 fun StudentRow(s: StudentOverview, onClick: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(s.student.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            val seatLine = if (s.membership == null) stringResource(R.string.label_no_seat)
-            else stringResource(R.string.label_seat_shift, s.seat?.label ?: "-", s.shift?.name ?: "-")
-            Text(seatLine, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            s.membership?.let {
-                Text(
-                    stringResource(R.string.label_due_on, it.dueDate.pretty()),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+    val seatLine = if (s.membership == null) stringResource(R.string.label_no_seat)
+    else stringResource(R.string.label_seat_shift, s.seat?.label ?: "-", s.shift?.name ?: "-")
+    // Unpaid: when the fee fell due (period start). Paid: how long the seat is valid.
+    val dateLine = s.membership?.let {
+        if (s.balance > 0) stringResource(R.string.label_fee_due_since, it.startDate.pretty())
+        else stringResource(R.string.id_valid_till, it.dueDate.minusDays(1).pretty())
+    }
+    ListItem(
+        modifier = Modifier.clickable(onClick = onClick),
+        leadingContent = { Avatar(s.student.name, photoUri = s.student.photoUri) },
+        headlineContent = { Text(s.student.name) },
+        supportingContent = { Text(listOfNotNull(seatLine, dateLine).joinToString("\n")) },
+        trailingContent = {
+            Column(horizontalAlignment = Alignment.End) {
+                StudentStatusPill(s)
+                if (s.balance > 0) Text(
+                    rupees(s.balance),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(top = 6.dp)
                 )
             }
         }
-        Column(horizontalAlignment = Alignment.End) {
-            when {
-                s.student.status == StudentStatus.LEFT -> StatusPill(stringResource(R.string.status_left), StatusColors.inactive)
-                s.status != null -> StatusPill(s.status)
-            }
-            if (s.balance > 0) {
-                Spacer(Modifier.height(4.dp))
-                Text(rupees(s.balance), color = StatusColors.full, fontWeight = FontWeight.SemiBold)
-            }
-        }
-    }
+    )
+}
+
+@Composable
+fun StudentStatusPill(s: StudentOverview) = when {
+    s.student.status == StudentStatus.LEFT -> StatusPill(
+        stringResource(R.string.status_left),
+        Tone(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurfaceVariant)
+    )
+    s.status != null -> StatusPill(s.status)
+    else -> Unit
 }

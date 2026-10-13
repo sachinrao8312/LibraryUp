@@ -1,10 +1,12 @@
 package ai.sach.libraryup.ui.library
 
 import ai.sach.libraryup.R
+import ai.sach.libraryup.billing.ProManager
 import ai.sach.libraryup.data.local.entity.Payment
 import ai.sach.libraryup.data.repository.LibraryRepository
 import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.data.repository.UserError
+import ai.sach.libraryup.domain.ProRules
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,7 +25,7 @@ data class UiMessage(@StringRes val res: Int, val arg: String? = null)
  * and a [run] helper that executes a repository operation and turns failures into a
  * snackbar message instead of a crash.
  */
-class LibraryViewModel(val repository: LibraryRepository) : ViewModel() {
+class LibraryViewModel(val repository: LibraryRepository, val staff: StaffMode, val pro: ProManager) : ViewModel() {
 
     /** Null until the database has emitted once, so screens can tell "loading" from "empty". */
     val state: StateFlow<LibraryState?> = repository.state
@@ -31,6 +33,20 @@ class LibraryViewModel(val repository: LibraryRepository) : ViewModel() {
 
     private val messageChannel = Channel<UiMessage>(Channel.BUFFERED)
     val messages = messageChannel.receiveAsFlow()
+
+    private val paywallChannel = Channel<Unit>(Channel.CONFLATED)
+    /** Emits when a Pro feature was tapped without Pro; the shell opens the Pro screen. */
+    val paywall = paywallChannel.receiveAsFlow()
+
+    val isPro: Boolean get() = pro.isPro(state.value?.profile)
+
+    fun withPro(block: () -> Unit) {
+        if (isPro) block() else paywallChannel.trySend(Unit)
+    }
+
+    /** Adds seats only within the free limit unless Pro; otherwise opens the Pro screen. */
+    fun canAddSeats(adding: Int): Boolean =
+        ProRules.canAddSeats(state.value?.seats?.size ?: 0, adding, isPro, pro.seatLimit).also { if (!it) paywallChannel.trySend(Unit) }
 
     fun message(@StringRes res: Int, arg: String? = null) {
         messageChannel.trySend(UiMessage(res, arg))
@@ -65,8 +81,12 @@ class LibraryViewModel(val repository: LibraryRepository) : ViewModel() {
         }
     }
 
-    class Factory(private val repository: LibraryRepository) : androidx.lifecycle.ViewModelProvider.Factory {
+    class Factory(
+        private val repository: LibraryRepository,
+        private val staff: StaffMode,
+        private val pro: ProManager
+    ) : androidx.lifecycle.ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = LibraryViewModel(repository) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = LibraryViewModel(repository, staff, pro) as T
     }
 }

@@ -2,18 +2,20 @@ package ai.sach.libraryup.ui.library
 
 import ai.sach.libraryup.LibraryUpApplication
 import ai.sach.libraryup.R
+import ai.sach.libraryup.data.backup.BackupManager
 import ai.sach.libraryup.data.local.entity.DurationUnit
 import ai.sach.libraryup.data.local.entity.LibraryProfile
 import ai.sach.libraryup.data.local.entity.Plan
 import ai.sach.libraryup.data.local.entity.Seat
 import ai.sach.libraryup.data.local.entity.Shift
 import ai.sach.libraryup.data.local.entity.StudentStatus
-import ai.sach.libraryup.data.backup.BackupManager
 import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.domain.FeeCycleMode
 import ai.sach.libraryup.domain.MessageTemplates
 import ai.sach.libraryup.domain.StudentImport
 import ai.sach.libraryup.domain.UpiLink
+import ai.sach.libraryup.ui.navigation.AppRoutes
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -26,28 +28,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Campaign
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.ContactPhone
 import androidx.compose.material.icons.filled.EventAvailable
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.filled.LocalLibrary
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -66,7 +74,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
@@ -75,45 +85,83 @@ import java.time.format.DateTimeFormatter
 
 /* ---------------------------------------------------------------- More */
 
+/** [onOpen] gets the route to open; [backupRoute] lives in the inherited settings graph. */
 @Composable
-fun MoreScreen(
-    onReminders: () -> Unit,
-    onAttendance: () -> Unit,
-    onExpenses: () -> Unit,
-    onLibrarySettings: () -> Unit,
-    onData: () -> Unit,
-    onActivityLog: () -> Unit,
-    onBackup: () -> Unit,
-    onAppSettings: () -> Unit
-) {
+fun MoreScreen(vm: LibraryViewModel, backupRoute: String, onOpen: (String) -> Unit) {
+    val staff = vm.staff
+    var staffDialog by remember { mutableStateOf(false) }
+    val owner = !staff.isOn
+    @Composable
+    fun item(icon: ImageVector, title: Int, subtitle: Int, route: String, pro: Boolean = false) =
+        MoreItem(icon, title, subtitle) { if (pro) vm.withPro { onOpen(route) } else onOpen(route) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        MoreItem(Icons.Default.Campaign, R.string.title_reminders, R.string.more_reminders_desc, onReminders)
-        MoreItem(Icons.Default.EventAvailable, R.string.title_attendance, R.string.more_attendance_desc, onAttendance)
-        MoreItem(Icons.Default.AccountBalanceWallet, R.string.title_expenses, R.string.more_expenses_desc, onExpenses)
+        if (owner) item(Icons.Default.WorkspacePremium, R.string.title_pro, R.string.more_pro_desc, AppRoutes.PRO)
+        item(Icons.Default.Campaign, R.string.title_reminders, R.string.more_reminders_desc, AppRoutes.REMINDERS)
+        item(Icons.Default.EventAvailable, R.string.title_attendance, R.string.more_attendance_desc, AppRoutes.ATTENDANCE)
+        item(Icons.Default.ContactPhone, R.string.title_enquiries, R.string.more_enquiries_desc, AppRoutes.ENQUIRIES, pro = true)
+        item(Icons.Default.Lock, R.string.title_lockers, R.string.more_lockers_desc, AppRoutes.LOCKERS)
+        if (owner) {
+            item(Icons.Default.AccountBalanceWallet, R.string.title_expenses, R.string.more_expenses_desc, AppRoutes.EXPENSES)
+            HorizontalDivider()
+            item(Icons.Default.LocalLibrary, R.string.title_library_settings, R.string.more_library_desc, AppRoutes.LIBRARY_SETTINGS)
+            item(Icons.Default.ImportExport, R.string.title_data, R.string.more_data_desc, AppRoutes.DATA)
+            item(Icons.Default.CloudUpload, R.string.title_backup, R.string.more_backup_desc, backupRoute)
+            item(Icons.Default.History, R.string.title_activity_log, R.string.more_log_desc, AppRoutes.ACTIVITY_LOG)
+            item(Icons.Default.Settings, R.string.title_app_settings, R.string.more_settings_desc, AppRoutes.SETTINGS)
+        }
         HorizontalDivider()
-        MoreItem(Icons.Default.LocalLibrary, R.string.title_library_settings, R.string.more_library_desc, onLibrarySettings)
-        MoreItem(Icons.Default.ImportExport, R.string.title_data, R.string.more_data_desc, onData)
-        MoreItem(Icons.Default.CloudUpload, R.string.title_backup, R.string.more_backup_desc, onBackup)
-        MoreItem(Icons.Default.History, R.string.title_activity_log, R.string.more_log_desc, onActivityLog)
-        HorizontalDivider()
-        MoreItem(Icons.Default.Settings, R.string.title_app_settings, R.string.more_settings_desc, onAppSettings)
+        MoreItem(Icons.Default.Badge, if (owner) R.string.staff_enter_title else R.string.staff_exit_title, R.string.more_staff_desc) { if (owner) vm.withPro { staffDialog = true } else staffDialog = true }
     }
+    if (staffDialog) StaffDialog(staff) { staffDialog = false }
+}
+
+/** Entering staff mode sets or keeps the PIN; leaving it asks for the PIN. */
+@Composable
+private fun StaffDialog(staff: StaffMode, onDismiss: () -> Unit) {
+    val leaving = staff.isOn
+    var pin by rememberSaveable { mutableStateOf("") }
+    var wrong by remember { mutableStateOf(false) }
+    val pinOk = pin.length == StaffMode.PIN_LENGTH || (!leaving && pin.isEmpty() && staff.hasPin)
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(if (leaving) R.string.staff_exit_title else R.string.staff_enter_title)) },
+        text = {
+            Column {
+                if (!leaving) Text(stringResource(if (staff.hasPin) R.string.staff_enter_text_keep_pin else R.string.staff_enter_text))
+                OutlinedTextField(
+                    value = pin,
+                    onValueChange = { pin = it.filter(Char::isDigit).take(StaffMode.PIN_LENGTH); wrong = false },
+                    label = { Text(stringResource(R.string.field_staff_pin)) },
+                    isError = wrong,
+                    supportingText = if (wrong) ({ Text(stringResource(R.string.staff_wrong_pin)) }) else null,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                )
+            }
+        },
+        confirmButton = {
+            Button(enabled = pinOk, onClick = {
+                when {
+                    !leaving -> { staff.turnOn(pin.ifEmpty { null }); onDismiss() }
+                    staff.turnOff(pin) -> onDismiss()
+                    else -> wrong = true
+                }
+            }) { Text(stringResource(R.string.action_ok)) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+    )
 }
 
 @Composable
 private fun MoreItem(icon: ImageVector, title: Int, subtitle: Int, onClick: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-        Spacer(Modifier.width(16.dp))
-        Column(Modifier.weight(1f)) {
-            Text(stringResource(title), style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(subtitle), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Icon(Icons.Default.ChevronRight, contentDescription = null)
-    }
+    ListItem(
+        modifier = Modifier.clickable(onClick = onClick),
+        leadingContent = { Icon(icon, contentDescription = null) },
+        headlineContent = { Text(stringResource(title)) },
+        supportingContent = { Text(stringResource(subtitle)) }
+    )
 }
 
 /* ---------------------------------------------------------------- Library settings */
@@ -141,6 +189,14 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
     var editPlan by remember { mutableStateOf<Plan?>(null) }
     var editSeat by remember { mutableStateOf<Seat?>(null) }
     var showAddSeats by remember { mutableStateOf(false) }
+    var logo by rememberSaveable { mutableStateOf(p.logoUri) }
+    val context = LocalContext.current
+    val logoPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            logo = uri.toString()
+        }
+    }
     val upiError = upi.isNotBlank() && !UpiLink.isValidVpa(upi)
 
     Column(Modifier.fillMaxSize()) {
@@ -148,6 +204,13 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding().padding(horizontal = 16.dp)) {
             SectionTitle(stringResource(R.string.setup_step_library))
             TextInput(name, { name = it }, stringResource(R.string.field_library_name))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                logo?.let { AsyncImage(model = it, contentDescription = null, modifier = Modifier.size(48.dp)) }
+                OutlinedButton(onClick = { vm.withPro { logoPicker.launch(arrayOf("image/*")) } }) {
+                    Text(stringResource(if (logo == null) R.string.action_add_logo else R.string.action_change_logo))
+                }
+                if (logo != null) TextButton(onClick = { logo = null }) { Text(stringResource(R.string.action_remove)) }
+            }
             TextInput(ownerName, { ownerName = it }, stringResource(R.string.field_owner_name))
             TextInput(phone, { phone = it }, stringResource(R.string.field_phone), keyboardType = KeyboardType.Phone)
             TextInput(address, { address = it }, stringResource(R.string.field_address), singleLine = false)
@@ -183,7 +246,7 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
                     vm.run(R.string.msg_saved) {
                         saveProfile(
                             p.copy(
-                                name = name.trim(), ownerName = ownerName.trim(), phone = phone.trim(), address = address.trim(),
+                                name = name.trim(), logoUri = logo, ownerName = ownerName.trim(), phone = phone.trim(), address = address.trim(),
                                 upiVpa = upi.trim(), receiptPrefix = prefix.ifBlank { "LU" }, graceDays = grace.toIntOrNull() ?: 3,
                                 feeCycleMode = if (calendarMonth) FeeCycleMode.CALENDAR_MONTH else FeeCycleMode.FIXED_DAYS,
                                 whatsappPackage = if (business) LibraryProfile.WHATSAPP_BUSINESS else LibraryProfile.WHATSAPP,
@@ -244,7 +307,7 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
     editShift?.let { s -> ShiftDialog(s, onDismiss = { editShift = null }) { vm.run(R.string.msg_saved) { saveShift(it) }; editShift = null } }
     editPlan?.let { pl -> PlanDialog(pl, state.shifts, onDismiss = { editPlan = null }) { vm.run(R.string.msg_saved) { savePlan(it) }; editPlan = null } }
     editSeat?.let { se -> SeatDialog(state.seats, se, onDismiss = { editSeat = null }) { vm.run(R.string.msg_saved) { saveSeat(it) }; editSeat = null } }
-    if (showAddSeats) AddSeatsDialog(onDismiss = { showAddSeats = false }) { block, count -> vm.run(R.string.msg_saved) { addSeats(block, count) }; showAddSeats = false }
+    if (showAddSeats) AddSeatsDialog(onDismiss = { showAddSeats = false }) { block, count -> if (vm.canAddSeats(count)) vm.run(R.string.msg_saved) { addSeats(block, count) }; showAddSeats = false }
 }
 
 /** A message template; blank means "use the built-in one", which is shown as the placeholder. */

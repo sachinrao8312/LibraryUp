@@ -51,7 +51,8 @@ interface LibraryDao {
     @Upsert
     suspend fun upsertShift(shift: Shift): Long
 
-    @Query("SELECT * FROM seats ORDER BY block, sortOrder, id")
+    /** In the order the owner created them, so blocks keep their setup order on the seat map. */
+    @Query("SELECT * FROM seats ORDER BY sortOrder, id")
     fun observeSeats(): Flow<List<Seat>>
 
     @Query("SELECT * FROM seats ORDER BY block, sortOrder, id")
@@ -175,8 +176,29 @@ interface LibraryDao {
     @Query("SELECT * FROM lockers")
     suspend fun getLockers(): List<Locker>
 
+    @Query("SELECT * FROM lockers ORDER BY CAST(number AS INTEGER), number")
+    fun observeLockers(): Flow<List<Locker>>
+
+    @Upsert
+    suspend fun upsertLocker(locker: Locker): Long
+
+    @Query("DELETE FROM lockers WHERE id = :id")
+    suspend fun deleteLocker(id: Long)
+
+    @Query("UPDATE lockers SET studentId = NULL WHERE studentId = :studentId")
+    suspend fun freeLockersOf(studentId: Long)
+
     @Query("SELECT * FROM enquiries")
     suspend fun getEnquiries(): List<Enquiry>
+
+    @Query("SELECT * FROM enquiries ORDER BY createdAt DESC")
+    fun observeEnquiries(): Flow<List<Enquiry>>
+
+    @Upsert
+    suspend fun upsertEnquiry(enquiry: Enquiry)
+
+    @Query("SELECT COUNT(*) FROM enquiries WHERE status = 'OPEN' AND followUpOn <= :date")
+    suspend fun countFollowUpsDue(date: LocalDate): Int
 
     /* ---------- Activity log ---------- */
 

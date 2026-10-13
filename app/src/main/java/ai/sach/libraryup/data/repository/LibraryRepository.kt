@@ -7,7 +7,10 @@ import ai.sach.libraryup.data.local.entity.ActivityLog
 import ai.sach.libraryup.data.local.entity.Attendance
 import ai.sach.libraryup.data.local.entity.AttendanceMethod
 import ai.sach.libraryup.data.local.entity.Expense
+import ai.sach.libraryup.data.local.entity.Enquiry
+import ai.sach.libraryup.data.local.entity.EnquiryStatus
 import ai.sach.libraryup.data.local.entity.LibraryProfile
+import ai.sach.libraryup.data.local.entity.Locker
 import ai.sach.libraryup.data.local.entity.Membership
 import ai.sach.libraryup.data.local.entity.MembershipStatus
 import ai.sach.libraryup.data.local.entity.Payment
@@ -103,6 +106,8 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     val profile: Flow<LibraryProfile?> = dao.observeProfile()
     val activityLog: Flow<List<ActivityLog>> = dao.observeLog(200)
     val expenses: Flow<List<Expense>> = dao.observeExpenses()
+    val lockers: Flow<List<Locker>> = dao.observeLockers()
+    val enquiries: Flow<List<Enquiry>> = dao.observeEnquiries()
 
     fun attendanceOn(date: LocalDate): Flow<List<Attendance>> = dao.observeAttendanceOn(date)
     fun attendanceFor(studentId: Long): Flow<List<Attendance>> = dao.observeAttendanceFor(studentId, 60)
@@ -312,6 +317,7 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     suspend fun deleteStudent(studentId: Long) = database.withTransaction {
         val s = dao.getStudent(studentId) ?: return@withTransaction
         val paid = dao.getPayments().filter { it.studentId == studentId && !it.deleted }
+        dao.freeLockersOf(studentId)
         dao.deleteStudent(studentId)
         log(
             ActivityLog.STUDENT, studentId, ActivityLog.DELETE,
@@ -327,6 +333,7 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
             dao.updateMembership(m.copy(status = MembershipStatus.ENDED, endedOn = endedOn))
         }
         dao.updateStudent(s.copy(status = StudentStatus.LEFT, frozenSince = null, updatedAt = System.currentTimeMillis()))
+        dao.freeLockersOf(studentId)
         log(ActivityLog.STUDENT, s.id, ActivityLog.EDIT, "${s.name} left on $on")
     }
 
@@ -409,6 +416,22 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
         dao.upsertAttendance(a.copy(outMinute = nowMinute()))
     }
 
+    enum class ScanResult { IN, OUT, ALREADY, NOT_ACTIVE }
+
+    /**
+     * Desk QR scan: the first scan of the day checks in, the next checks out. A repeat scan
+     * within [MIN_STAY_MINUTES] of check-in is ignored so a double scan doesn't check out.
+     */
+    suspend fun scanAttendance(studentId: Long, date: LocalDate): ScanResult {
+        if (dao.getStudent(studentId)?.status != StudentStatus.ACTIVE) return ScanResult.NOT_ACTIVE
+        val a = dao.findAttendance(studentId, date)
+        return when {
+            a == null -> { checkIn(studentId, date, AttendanceMethod.QR); ScanResult.IN }
+            a.outMinute == null && nowMinute() - a.inMinute >= MIN_STAY_MINUTES -> { checkOut(studentId, date); ScanResult.OUT }
+            else -> ScanResult.ALREADY
+        }
+    }
+
     /** Undoes the last tap: clears the Out time if set, otherwise removes the In. */
     suspend fun undoAttendance(studentId: Long, date: LocalDate) {
         val a = dao.findAttendance(studentId, date) ?: return
@@ -418,6 +441,10 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     private fun later(a: LocalDate, b: LocalDate): LocalDate = if (a.isAfter(b)) a else b
 
     private fun nowMinute(): Int = LocalTime.now().let { it.hour * 60 + it.minute }
+
+    companion object {
+        const val MIN_STAY_MINUTES = 5
+    }
 
     /* ======================= Expenses ======================= */
 
@@ -430,6 +457,35 @@ class LibraryRepository(private val database: LibraryUpDatabase) {
     suspend fun setExpenseDeleted(expense: Expense, deleted: Boolean) = database.withTransaction {
         dao.upsertExpense(expense.copy(deleted = deleted))
         log(ActivityLog.EXPENSE, expense.id, if (deleted) ActivityLog.DELETE else ActivityLog.RESTORE, "${expense.category} ₹${expense.amount}")
+    }
+
+    /* ======================= Lockers ======================= */
+
+    /** Adds or edits a locker, including who it is assigned to (null = free). Numbers are unique. */
+    suspend fun saveLocker(locker: Locker) = database.withTransaction {
+        val number = locker.number.trim()
+        if (dao.getLockers().any { it.id != locker.id && it.number.equals(number, ignoreCase = true) }) throw UserError(R.string.error_locker_taken)
+        val id = dao.upsertLocker(locker.copy(number = number)).takeIf { locker.id == 0L } ?: locker.id
+        log(ActivityLog.LOCKER, id, if (locker.id == 0L) ActivityLog.ADD else ActivityLog.EDIT, "Locker $number ₹${locker.fee}, student ${locker.studentId ?: "-"}")
+    }
+
+    suspend fun deleteLocker(locker: Locker) = database.withTransaction {
+        dao.deleteLocker(locker.id)
+        log(ActivityLog.LOCKER, locker.id, ActivityLog.DELETE, "Locker ${locker.number}")
+    }
+
+    /* ======================= Enquiries ======================= */
+
+    suspend fun saveEnquiry(enquiry: Enquiry) = dao.upsertEnquiry(enquiry.copy(name = enquiry.name.trim(), phone = enquiry.phone.trim()))
+
+    suspend fun followUpsDue(today: LocalDate): Int = dao.countFollowUpsDue(today)
+
+    /** Turns an enquiry into a student without a seat yet; returns the new student's id. */
+    suspend fun convertEnquiry(enquiry: Enquiry): Long = database.withTransaction {
+        val id = dao.insertStudent(Student(name = enquiry.name.trim(), phone = enquiry.phone.trim(), notes = enquiry.note))
+        dao.upsertEnquiry(enquiry.copy(status = EnquiryStatus.CONVERTED, convertedStudentId = id))
+        log(ActivityLog.STUDENT, id, ActivityLog.ADD, "Admitted ${enquiry.name} from an enquiry")
+        id
     }
 
     /* ======================= Import ======================= */

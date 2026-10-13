@@ -40,11 +40,16 @@ class TestLibrary {
             listOf("A" to 3),
             listOf(Plan(name = "Monthly", durationUnit = DurationUnit.MONTHS, durationValue = 1, price = 1000))
         )
+        return loadIds()
+    }
+
+    /** Reads back the ids created by setup (shifts by name, the first plan, seats in order). */
+    suspend fun loadIds(): TestLibrary {
         val shifts = dao.getShifts().associateBy { it.name }
         morning = shifts.getValue("Morning")
         evening = shifts.getValue("Evening")
         fullDay = shifts.getValue("Full day")
-        monthly = dao.getPlans().single()
+        monthly = dao.getPlans().first { it.name == "Monthly" }
         seatIds += dao.getSeats().sortedBy { it.sortOrder }.map { it.id }
         return this
     }

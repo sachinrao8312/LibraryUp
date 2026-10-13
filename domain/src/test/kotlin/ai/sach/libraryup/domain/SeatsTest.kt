@@ -106,6 +106,13 @@ class SeatsTest {
     }
 
     @Test
+    fun `free seats per shift for the vacancy poster`() {
+        // Seat 1: morning taken. Seat 2: full day taken. Seat 3: empty.
+        val seats = listOf(listOf(booking(1)), listOf(booking(2, seat = 2, window = fullDay)), emptyList())
+        assertEquals(mapOf(1L to 1, 2L to 2, 3L to 2), SeatMap.freeSeatsPerShift(shifts, seats, day))
+    }
+
+    @Test
     fun `occupancy percentages`() {
         val bookings = listOf(booking(1, seat = 1), booking(2, seat = 2, window = fullDay))
         // 2 seats x 3 shifts = 6 slots; seat 1 uses 1, seat 2 uses 3.

@@ -44,8 +44,8 @@ Must be done before any real owner uses it.
       encrypted with password or recovery code). Attachments not covered yet
 - [x] Release build with R8 runs in CI (`assembleRelease`); still verify a real restore on
       a release build on a phone
-- [ ] Commit the exported Room schema (`app/schemas/.../1.json`, uploaded by CI) before the
-      first release, so later migrations can be tested against it
+- [x] Room schema v1 committed (`app/schemas/`); CI republishes it on the `screenshots` branch.
+      Re-copy it after any schema change until the first release, then never edit v1 again
 - [x] Translate the main inherited settings/auth screens (sign-in, splash, lock, settings,
       backup, security). Help & support and privacy policy text still English
 - [x] Remove dead RentUp code: Firestore guest-migration of `tenants`/`properties`
@@ -68,30 +68,31 @@ Must be done before any real owner uses it.
 - [x] Late fee auto-rule (e.g. ₹10/day after grace) instead of manual entry
 
 ## Milestone 2: public launch (P1 differentiators)
-- [ ] **Student ID card**: photo, seat, shift, validity, father's name, QR (PDF/image share)
-- [ ] **QR attendance**: scan the ID-card QR to mark In/Out (CameraX + ML Kit barcode, or ZXing)
-- [ ] **Own branding**: library logo on receipts, ID cards, posters (`LibraryProfile.logoUri`)
-- [ ] **Fill-the-seats posters**: vacancy poster from live free seats per shift, admission
-      open, holiday, festival wishes, results; share to WhatsApp status
-- [ ] **Enquiry list**: walk-ins with follow-up date + reminder, convert to student
+- [x] **Student ID card**: photo, seat, shift, validity, father's name, QR (PNG share)
+- [x] **QR attendance**: scan the ID-card QR to mark In/Out (ZXing scanner; repeat scan within 5 min ignored)
+- [x] **Own branding**: library logo on receipts and ID cards (posters when they exist); logo included in backups
+- [x] **Vacancy poster**: live free seats per shift, logo, phone (Seats tab → megaphone)
+- [ ] Later: more posters (admission open, holiday, festival wishes, results)
+- [x] **Enquiry list**: walk-ins with follow-up date (in the morning digest), admit to student
       (`Enquiry` entity exists)
-- [ ] **Staff/operator login**: PIN-based operator role; cannot delete payments or see P&L
-- [ ] **Lockers**: number, fee, assignment (`Locker` entity exists)
-- [ ] **Change admin phone/email** in Account screen
-- [ ] Receipt and reminder language per student (Hindi/English)
-- [ ] Monthly report PDF: collections, dues, occupancy, expenses
-- [ ] Play listing in English + Hindi, screenshots per `docs/play-listing.md`
+- [x] **Staff mode**: owner PIN; staff can't edit/delete payments, delete students, or open expenses, settings, export, backup, log
+- [x] **Lockers**: number, fee, assignment; freed when a student leaves or is deleted
+- [x] **Change admin phone/email**: library phone is in Library settings; the account email is the Google sign-in (sign in with another account to change it)
+- [x] Reminder language per student (Hindi/English, default = library setting)
+- [x] Monthly report PDF: collections by mode, expenses by category, profit, dues, admissions (Expenses → PDF icon)
+- [x] Play listing text in English + Hindi (`docs/play-listing.md`); final phone screenshots still to capture
 
 ## Milestone 3: monetization (see CLAUDE.md → Monetization, App Factory MONETIZATION.md)
-- [ ] `isPro` gate + Firebase Remote Config for limits and prices
-- [ ] Free tier limit (~50 seats); Pro yearly ₹799–999, lifetime ~₹2,499 via Play Billing
-- [ ] 30-day full trial, no activation code; data never locked behind payment
-- [ ] AdMob rewarded ads to unlock: bulk reminders run, export, poster, 24h Pro
-- [ ] AdMob banner/native on dashboard and lists only; **never** on payment/receipt screens
-- [ ] Referral codes: 1 free Pro month per referred library that activates
-- [ ] Update Data Safety for ads (`docs/data-safety.md`)
-- [ ] "LibraryUp saved you" card: fees recovered via reminders, Pro months earned
-- [ ] Later: direct-sold sponsor card per city; affiliates (broadband, furniture, inverters)
+- [x] Pro gate (`ProRules` in domain, `ProManager`): Pro = purchase, 30-day trial from setup, or 24h ad pass
+- [x] Free tier: stops adding seats past 50 (Remote Config `free_seat_limit`, `trial_days`); Pro extras open
+      the Pro screen. Nothing entered is ever locked; export and backup always free
+- [x] Play Billing: `pro_yearly` (subscription) and `pro_lifetime` (one-time), restore purchases, offline cache
+- [x] AdMob: banner on the dashboard (free plan only); rewarded ad gives 24h Pro. Test IDs until
+      `admobAppId`, `admobBannerId`, `admobRewardedId` are set in `gradle.properties`
+- [x] Data Safety draft updated for ads and billing (`docs/data-safety.md`)
+- [ ] Manual: create `pro_yearly` (₹999/yr) and `pro_lifetime` (₹2,499) in Play Console; AdMob app + units;
+      Remote Config keys; `app-ads.txt`; "Contains ads" in Play Console
+- [ ] Later: referral codes, "LibraryUp saved you" card, sponsor cards / affiliates
 
 ## Milestone 4: growth (P2)
 - [ ] Multi-device sync (owner + manager phones), end-to-end encrypted
@@ -110,8 +111,16 @@ Must be done before any real owner uses it.
       `core-billing` (from `domain`), `core-backup`, `core-messaging`, `core-docs`, `core-ui`
 - [ ] Next vertical: HostelUp (PG/hostel): research step per App Factory `PLAYBOOK.md`
 
+## Design (Material 3)
+- [x] Colour scheme generated from seed #283593 with Material Color Utilities (tonal spot =
+      Material Theme Builder); `tools/gen_scheme.py` regenerates `ui/theme/Color.kt`
+- [x] Status colours: harmonized success/warning custom colours + scheme error; red only for overdue
+- [x] Standard M3 type scale and shapes; system font scale respected
+- [x] ListItem rows, filled/tonal cards, surface top bars, tonal shortcuts; "Use wallpaper colours" switch
+- [x] Screenshot tests (`ScreenshotTest`, Roborazzi): CI publishes PNGs to the `screenshots` branch
+- [ ] Next: same treatment for the inherited sign-in and settings screens; dark-theme screenshots
+
 ## Known issues / tech debt
 - Backups are built in memory (fine for hundreds of students; stream for very large photo sets)
 - `LibraryState` recomputes on every table change; fine at library scale, profile if > 2,000 students
 - Seat map day boundary uses the device date at composition; reopens correct after midnight
-- Fixed font scale (inherited); revisit for accessibility

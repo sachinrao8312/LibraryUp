@@ -77,4 +77,12 @@ class MessagingTest {
         assertEquals(listOf(YearMonth.of(2026, 3), YearMonth.of(2026, 4), YearMonth.of(2026, 5)), r.map { it.month })
         assertEquals(listOf(300L, -100L, 700L), r.map { it.profit })
     }
+
+    @Test
+    fun studentQrRoundTrip() {
+        assertEquals(42L, StudentQr.decode(StudentQr.encode(42)))
+        assertNull(StudentQr.decode("42"))
+        assertNull(StudentQr.decode("libraryup:student:abc"))
+        assertNull(StudentQr.decode("libraryup:student:0"))
+    }
 }
