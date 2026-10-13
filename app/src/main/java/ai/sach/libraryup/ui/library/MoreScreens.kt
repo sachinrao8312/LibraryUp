@@ -14,6 +14,9 @@ import ai.sach.libraryup.domain.FeeCycleMode
 import ai.sach.libraryup.domain.MessageTemplates
 import ai.sach.libraryup.domain.StudentImport
 import ai.sach.libraryup.domain.UpiLink
+import android.content.Intent
+import androidx.compose.foundation.layout.size
+import coil.compose.AsyncImage
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -141,6 +144,14 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
     var editPlan by remember { mutableStateOf<Plan?>(null) }
     var editSeat by remember { mutableStateOf<Seat?>(null) }
     var showAddSeats by remember { mutableStateOf(false) }
+    var logo by rememberSaveable { mutableStateOf(p.logoUri) }
+    val context = LocalContext.current
+    val logoPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            logo = uri.toString()
+        }
+    }
     val upiError = upi.isNotBlank() && !UpiLink.isValidVpa(upi)
 
     Column(Modifier.fillMaxSize()) {
@@ -148,6 +159,13 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding().padding(horizontal = 16.dp)) {
             SectionTitle(stringResource(R.string.setup_step_library))
             TextInput(name, { name = it }, stringResource(R.string.field_library_name))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                logo?.let { AsyncImage(model = it, contentDescription = null, modifier = Modifier.size(48.dp)) }
+                OutlinedButton(onClick = { logoPicker.launch(arrayOf("image/*")) }) {
+                    Text(stringResource(if (logo == null) R.string.action_add_logo else R.string.action_change_logo))
+                }
+                if (logo != null) TextButton(onClick = { logo = null }) { Text(stringResource(R.string.action_remove)) }
+            }
             TextInput(ownerName, { ownerName = it }, stringResource(R.string.field_owner_name))
             TextInput(phone, { phone = it }, stringResource(R.string.field_phone), keyboardType = KeyboardType.Phone)
             TextInput(address, { address = it }, stringResource(R.string.field_address), singleLine = false)
@@ -183,7 +201,7 @@ fun LibrarySettingsScreen(state: LibraryState, vm: LibraryViewModel, onBack: () 
                     vm.run(R.string.msg_saved) {
                         saveProfile(
                             p.copy(
-                                name = name.trim(), ownerName = ownerName.trim(), phone = phone.trim(), address = address.trim(),
+                                name = name.trim(), logoUri = logo, ownerName = ownerName.trim(), phone = phone.trim(), address = address.trim(),
                                 upiVpa = upi.trim(), receiptPrefix = prefix.ifBlank { "LU" }, graceDays = grace.toIntOrNull() ?: 3,
                                 feeCycleMode = if (calendarMonth) FeeCycleMode.CALENDAR_MONTH else FeeCycleMode.FIXED_DAYS,
                                 whatsappPackage = if (business) LibraryProfile.WHATSAPP_BUSINESS else LibraryProfile.WHATSAPP,

@@ -562,4 +562,7 @@
     <string name="scan_already">%1$s already marked</string>
     <string name="scan_not_active">%1$s is not an active student</string>
     <string name="scan_unknown">Not a student of this library</string>
+    <string name="action_add_logo">Add library logo</string>
+    <string name="action_change_logo">Change logo</string>
+    <string name="action_remove">Remove</string>
 </resources>

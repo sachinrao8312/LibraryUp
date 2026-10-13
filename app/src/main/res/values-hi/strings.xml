@@ -562,4 +562,7 @@
     <string name="scan_already">%1$s की हाज़िरी पहले से लगी है</string>
     <string name="scan_not_active">%1$s अभी सक्रिय छात्र नहीं हैं</string>
     <string name="scan_unknown">यह इस लाइब्रेरी का छात्र नहीं है</string>
+    <string name="action_add_logo">लाइब्रेरी का लोगो जोड़ें</string>
+    <string name="action_change_logo">लोगो बदलें</string>
+    <string name="action_remove">हटाएँ</string>
 </resources>

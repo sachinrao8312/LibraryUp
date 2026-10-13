@@ -10,7 +10,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.net.Uri
 import android.text.TextPaint
@@ -35,13 +35,15 @@ fun shareIdCard(context: Context, profile: LibraryProfile?, s: StudentOverview) 
         c.drawText(TextUtils.ellipsize(t, p, maxWidth, TextUtils.TruncateAt.END).toString(), x, y, p)
 
     c.drawRect(0f, 0f, W.toFloat(), 130f, Paint().apply { color = BRAND })
-    text(profile?.name ?: context.getString(R.string.app_name), 40f, 82f, paint(46f, Color.WHITE, bold = true))
-    profile?.address?.takeIf { it.isNotBlank() }?.let { text(it, 40f, 118f, paint(24f, 0xCCFFFFFF.toInt())) }
+    val logo = libraryLogo(context, profile)
+    logo?.let { c.drawFit(it, RectF(W - 130f, 15f, W - 30f, 115f)) }
+    val headerWidth = if (logo != null) W - 220f else W - 80f
+    text(profile?.name ?: context.getString(R.string.app_name), 40f, 82f, paint(46f, Color.WHITE, bold = true), headerWidth)
+    profile?.address?.takeIf { it.isNotBlank() }?.let { text(it, 40f, 118f, paint(24f, 0xCCFFFFFF.toInt()), headerWidth) }
 
     val photo = s.student.photoUri?.let { ImageUtils.loadBitmapFromUri(context, Uri.parse(it), 400) }
-    val photoBox = Rect(40, 170, 260, 440)
-    if (photo != null) c.drawBitmap(photo, null, photoBox, Paint(Paint.FILTER_BITMAP_FLAG))
-    else c.drawRect(photoBox, Paint().apply { color = 0xFFE0E0E0.toInt() })
+    val photoBox = RectF(40f, 170f, 260f, 440f)
+    if (photo != null) c.drawFit(photo, photoBox) else c.drawRect(photoBox, Paint().apply { color = 0xFFE0E0E0.toInt() })
 
     val body = paint(30f)
     text(s.student.name, 300f, 215f, paint(42f, bold = true), 380f)

@@ -606,6 +606,9 @@ S = {
  "scan_already": ("%1$s already marked", "%1$s की हाज़िरी पहले से लगी है"),
  "scan_not_active": ("%1$s is not an active student", "%1$s अभी सक्रिय छात्र नहीं हैं"),
  "scan_unknown": ("Not a student of this library", "यह इस लाइब्रेरी का छात्र नहीं है"),
+ "action_add_logo": ("Add library logo", "लाइब्रेरी का लोगो जोड़ें"),
+ "action_change_logo": ("Change logo", "लोगो बदलें"),
+ "action_remove": ("Remove", "हटाएँ"),
 }
 
 def esc(t):

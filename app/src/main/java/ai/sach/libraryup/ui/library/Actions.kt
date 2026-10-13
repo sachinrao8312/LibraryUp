@@ -9,6 +9,10 @@ import ai.sach.libraryup.domain.PhoneNumbers
 import ai.sach.libraryup.domain.UpiLink
 import android.content.ActivityNotFoundException
 import android.content.Context
+import ai.sach.libraryup.utils.ImageUtils
+import android.graphics.RectF
+import android.graphics.Canvas
+import android.graphics.Bitmap
 import android.content.Intent
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -122,6 +126,7 @@ fun shareReceiptPdf(context: Context, profile: LibraryProfile?, s: StudentOvervi
     var y = 36f
     fun line(text: String, paint: Paint = body, gap: Float = 16f) { c.drawText(text, 20f, y, paint); y += gap }
 
+    libraryLogo(context, profile)?.let { c.drawFit(it, RectF(230f, 16f, 278f, 64f)) }
     line(profile?.name ?: context.getString(R.string.app_name), title, 18f)
     profile?.address?.takeIf { it.isNotBlank() }?.let { line(it, small, 12f) }
     profile?.phone?.takeIf { it.isNotBlank() }?.let { line(it, small, 12f) }
@@ -155,6 +160,17 @@ fun shareReceiptPdf(context: Context, profile: LibraryProfile?, s: StudentOvervi
         buildMessage(profile, MessageTemplates.Kind.RECEIPT, s, payment.amount, payment.receiptNo),
         context.getString(R.string.action_share_receipt)
     )
+}
+
+fun libraryLogo(context: Context, profile: LibraryProfile?): Bitmap? =
+    profile?.logoUri?.let { ImageUtils.loadBitmapFromUri(context, Uri.parse(it), 300) }
+
+/** Draws [bmp] centred in [box], keeping its aspect ratio. */
+fun Canvas.drawFit(bmp: Bitmap, box: RectF) {
+    val scale = minOf(box.width() / bmp.width, box.height() / bmp.height)
+    val w = bmp.width * scale
+    val h = bmp.height * scale
+    drawBitmap(bmp, null, RectF(box.centerX() - w / 2, box.centerY() - h / 2, box.centerX() + w / 2, box.centerY() + h / 2), Paint(Paint.FILTER_BITMAP_FLAG))
 }
 
 /** Opens the share sheet for a file in the app's cache (WhatsApp is usually first). */
