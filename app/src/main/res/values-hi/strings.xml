@@ -323,7 +323,7 @@
     <string name="settings_security_desc">ऐप लॉक, फ़िंगरप्रिंट</string>
     <string name="settings_notifications_desc">देय फीस का रोज़ का सारांश</string>
     <string name="settings_app_preferences">ऐप की पसंद</string>
-    <string name="settings_app_preferences_desc">रंग, करेंसी और फ़ीचर</string>
+    <string name="settings_app_preferences_desc">वॉलपेपर के रंग (Material You)</string>
     <string name="settings_help">मदद और सहायता</string>
     <string name="settings_help_desc">आम सवाल, सहायता से संपर्क</string>
     <string name="settings_backup_desc">बैकअप फ़ाइल या Google Drive</string>

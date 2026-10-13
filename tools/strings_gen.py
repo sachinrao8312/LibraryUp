@@ -359,7 +359,7 @@ S = {
  "settings_security_desc": ("App lock, fingerprint", "ऐप लॉक, फ़िंगरप्रिंट"),
  "settings_notifications_desc": ("Daily summary of fees due", "देय फीस का रोज़ का सारांश"),
  "settings_app_preferences": ("App preferences", "ऐप की पसंद"),
- "settings_app_preferences_desc": ("Colors, currency and features", "रंग, करेंसी और फ़ीचर"),
+ "settings_app_preferences_desc": ("Wallpaper colours (Material You)", "वॉलपेपर के रंग (Material You)"),
  "settings_help": ("Help & support", "मदद और सहायता"),
  "settings_help_desc": ("FAQs, contact support", "आम सवाल, सहायता से संपर्क"),
  "settings_backup_desc": ("Backup file or Google Drive", "बैकअप फ़ाइल या Google Drive"),

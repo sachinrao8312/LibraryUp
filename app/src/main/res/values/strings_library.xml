@@ -323,7 +323,7 @@
     <string name="settings_security_desc">App lock, fingerprint</string>
     <string name="settings_notifications_desc">Daily summary of fees due</string>
     <string name="settings_app_preferences">App preferences</string>
-    <string name="settings_app_preferences_desc">Colors, currency and features</string>
+    <string name="settings_app_preferences_desc">Wallpaper colours (Material You)</string>
     <string name="settings_help">Help &amp; support</string>
     <string name="settings_help_desc">FAQs, contact support</string>
     <string name="settings_backup_desc">Backup file or Google Drive</string>
