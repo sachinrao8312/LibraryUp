@@ -19,6 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "RentUp"
+rootProject.name = "LibraryUp"
 include(":app")
+include(":domain")
  
