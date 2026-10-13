@@ -18,13 +18,16 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 @Composable
 fun AdBanner(modifier: Modifier = Modifier) {
     val widthDp = LocalConfiguration.current.screenWidthDp
-    AndroidView(modifier.fillMaxWidth(), factory = { context ->
-        AdView(context).apply {
-            setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerSize(context, widthDp))
-            adUnitId = BuildConfig.ADMOB_BANNER_ID
-            loadAd(AdRequest.Builder().build())
-        }
-    })
+    AndroidView(
+        factory = { context ->
+            AdView(context).apply {
+                setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, widthDp))
+                adUnitId = BuildConfig.ADMOB_BANNER_ID
+                loadAd(AdRequest.Builder().build())
+            }
+        },
+        modifier = modifier.fillMaxWidth()
+    )
 }
 
 /** Loads and shows a rewarded ad; [onReward] runs once the owner has watched it. */
