@@ -15,7 +15,6 @@ object SettingsNavRoutes {
 
     // Security related
     const val SECURITY = "security"
-    const val PASSWORD_CHANGE = "security/password"
 
     // Communication preferences
     const val NOTIFICATIONS = "notifications"
@@ -39,7 +38,6 @@ object SettingsNavRoutes {
         const val ACCOUNT = "account"
         const val PROFILE_EDIT = "profile_edit" // This seems to be missing or mismatched
         const val SECURITY = "security"
-        const val PASSWORD_CHANGE = "password_change"
         const val NOTIFICATIONS = "notifications"
         const val LANGUAGE = "language"
         const val HELP = "help"
@@ -53,7 +51,6 @@ object SettingsNavRoutes {
         ACCOUNT,
         PROFILE_EDIT,
         SECURITY,
-        PASSWORD_CHANGE,
         NOTIFICATIONS,
         LANGUAGE,
         APP_PREFERENCES, // Added to the list

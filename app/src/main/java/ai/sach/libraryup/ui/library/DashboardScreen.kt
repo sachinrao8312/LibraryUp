@@ -1,10 +1,15 @@
 package ai.sach.libraryup.ui.library
 
 import ai.sach.libraryup.R
+import ai.sach.libraryup.data.local.entity.ActivityLog
 import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.domain.DueStatus
 import ai.sach.libraryup.domain.Reports
+import android.text.format.DateUtils
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -17,29 +22,47 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.EventAvailable
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import java.time.LocalTime
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun DashboardScreen(
@@ -48,7 +71,9 @@ fun DashboardScreen(
     onAddStudent: () -> Unit,
     onOpenReminders: () -> Unit,
     onOpenAttendance: () -> Unit,
-    onOpenPayments: () -> Unit
+    onOpenPayments: () -> Unit,
+    recent: List<ActivityLog> = emptyList(),
+    onOpenLog: () -> Unit = {}
 ) {
     val today = state.today
     val live = state.payments.filter { !it.deleted }
@@ -64,8 +89,14 @@ fun DashboardScreen(
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(24.dp))
-        Text(state.profile?.name ?: stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall)
-        Text(today.pretty(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        val libraryName = state.profile?.name ?: stringResource(R.string.app_name)
+        val owner = state.profile?.ownerName?.trim()?.substringBefore(' ').orEmpty()
+        val greeting = when (LocalTime.now().hour) { in 0..11 -> R.string.greet_morning; in 12..16 -> R.string.greet_afternoon; else -> R.string.greet_evening }
+        Text(if (owner.isEmpty()) libraryName else stringResource(greeting, owner), style = MaterialTheme.typography.headlineMedium)
+        Text(
+            if (owner.isEmpty()) today.pretty() else "$libraryName · ${today.pretty()}",
+            style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Spacer(Modifier.height(16.dp))
 
         // Money first: what came in, and what is still owed.
@@ -78,6 +109,9 @@ fun DashboardScreen(
             Column(Modifier.padding(20.dp)) {
                 Text(stringResource(R.string.dash_month_collection), style = MaterialTheme.typography.labelLarge)
                 Text(rupees(monthTotal), style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.SemiBold)
+                trend(live.filter { YearMonth.from(it.paidOn) == month.minusMonths(1) && it.paidOn.dayOfMonth <= today.dayOfMonth }.sumOf { it.amount }, monthTotal)?.let {
+                    Text(stringResource(R.string.dash_trend, it), style = MaterialTheme.typography.labelLarge)
+                }
                 Spacer(Modifier.height(12.dp))
                 Row {
                     Figure(stringResource(R.string.dash_today_collection), rupees(todayTotal), Modifier.weight(1f))
@@ -126,6 +160,13 @@ fun DashboardScreen(
             }
         }
 
+        Spacer(Modifier.height(12.dp))
+        RevenueCard(month, (5 downTo 0).map { month.minusMonths(it.toLong()) }.map { m -> m to live.filter { YearMonth.from(it.paidOn) == m }.sumOf { it.amount } })
+        if (recent.isNotEmpty()) {
+            Spacer(Modifier.height(12.dp))
+            RecentActivityCard(recent, onOpenLog)
+        }
+
         Row(Modifier.padding(vertical = 24.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(8.dp))
@@ -149,5 +190,93 @@ private fun Shortcut(icon: ImageVector, label: String, onClick: () -> Unit) {
         FilledTonalIconButton(onClick = onClick, modifier = Modifier.size(56.dp)) { Icon(icon, contentDescription = null) }
         Spacer(Modifier.height(8.dp))
         Text(label, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center, maxLines = 2)
+    }
+}
+
+/** "↑ 12%" against last month up to the same date; null when there is nothing to compare. */
+private fun trend(before: Long, now: Long): String? {
+    if (before <= 0) return null
+    val pct = ((now - before) * 100 / before).toInt()
+    return (if (pct >= 0) "↑ " else "↓ ") + "${kotlin.math.abs(pct)}%"
+}
+
+/** Fees collected per month. The current month is solid; tap any bar to read its amount. */
+@Composable
+private fun RevenueCard(current: YearMonth, months: List<Pair<YearMonth, Long>>) {
+    var picked by remember(current) { mutableStateOf(current) }
+    val max = months.maxOf { it.second }.coerceAtLeast(1)
+    val label = DateTimeFormatter.ofPattern("MMM", LocalConfiguration.current.locales[0])
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(R.string.dash_revenue_title), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.dash_revenue_sub), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(picked.format(label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(rupees(months.first { it.first == picked }.second), style = MaterialTheme.typography.titleMedium)
+                }
+            }
+            Row(Modifier.fillMaxWidth().height(140.dp).padding(top = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                months.forEach { (m, total) ->
+                    val amount = rupees(total)
+                    Column(
+                        // Screen readers hear "Oct ₹6,500" for each bar.
+                        Modifier.weight(1f).fillMaxHeight().clickable { picked = m }.semantics(mergeDescendants = true) { contentDescription = amount },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        Box(
+                            Modifier.fillMaxWidth(0.7f).fillMaxHeight((total.toFloat() / max).coerceAtLeast(0.02f) * 0.8f)
+                                .background(
+                                    if (m == picked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer,
+                                    RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
+                                )
+                        )
+                        Text(m.format(label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
+                    }
+                }
+            }
+            HorizontalDivider(Modifier.padding(vertical = 12.dp))
+            Row {
+                Text(stringResource(R.string.dash_revenue_avg), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                Text(rupees(months.sumOf { it.second } / months.size), style = MaterialTheme.typography.titleSmall)
+            }
+        }
+    }
+}
+
+/** The last few entries of the activity log: who paid, who joined, what changed. */
+@Composable
+private fun RecentActivityCard(recent: List<ActivityLog>, onOpenLog: () -> Unit) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(Modifier.padding(start = 16.dp, top = 8.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.dash_recent), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            TextButton(onClick = onOpenLog) { Text(stringResource(R.string.action_view_all)) }
+        }
+        recent.forEach { e ->
+            ListItem(
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                leadingContent = {
+                    Icon(
+                        when (e.entity) { ActivityLog.PAYMENT -> Icons.Default.CurrencyRupee; ActivityLog.STUDENT -> Icons.Default.Person; else -> Icons.Default.History },
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer, CircleShape).padding(8.dp)
+                    )
+                },
+                headlineContent = { Text(e.summary, maxLines = 2) },
+                supportingContent = { Text(DateUtils.getRelativeTimeSpanString(e.at).toString()) }
+            )
+        }
     }
 }

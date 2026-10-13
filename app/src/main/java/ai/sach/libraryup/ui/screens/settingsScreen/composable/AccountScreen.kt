@@ -1,9 +1,8 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
 import ai.sach.libraryup.R
-import ai.sach.libraryup.ui.common.composables.AppTopAppBar
-
 import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
+import ai.sach.libraryup.ui.library.LibraryTopBar
 import ai.sach.libraryup.ui.screens.authentication.AuthRepository
 import ai.sach.libraryup.ui.screens.authentication.AuthViewModel
 import ai.sach.libraryup.ui.screens.authentication.AuthViewModelFactory
@@ -286,12 +285,7 @@ fun AccountScreen(
 
     Scaffold(
         topBar = {
-            AppTopAppBar(
-                title = stringResource(if (editMode) R.string.account_edit_profile else R.string.settings_account),
-                showBackButton = true,
-                onBackPressed = { navController.popBackStack() },
-                showDefaultMenu = true,
-            )
+            LibraryTopBar(stringResource(if (editMode) R.string.account_edit_profile else R.string.settings_account), onBack = { navController.popBackStack() })
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->

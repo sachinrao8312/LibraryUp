@@ -4,50 +4,73 @@ import ai.sach.libraryup.R
 import ai.sach.libraryup.data.local.entity.Payment
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.local.entity.Shift
+import ai.sach.libraryup.data.local.entity.Student
 import ai.sach.libraryup.data.local.entity.StudentStatus
 import ai.sach.libraryup.data.repository.LibraryRepository
 import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.data.repository.StudentOverview
 import ai.sach.libraryup.domain.MessageTemplates
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SupervisorAccount
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -55,17 +78,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import java.time.LocalDate
 
 private enum class StudentDialog { NONE, COLLECT, RENEW, CHANGE_SEAT, LATE_FEE, MESSAGE, LEFT, FREEZE, DELETE }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun StudentDetailScreen(
     state: LibraryState,
@@ -85,11 +112,13 @@ fun StudentDetailScreen(
     var dialog by rememberSaveable { mutableStateOf(StudentDialog.NONE) }
     var showDeleted by rememberSaveable { mutableStateOf(false) }
     var editPayment by remember { mutableStateOf<Payment?>(null) }
+    var viewing by remember { mutableStateOf<String?>(null) }
+    var tab by rememberSaveable { mutableIntStateOf(0) }
     val attendance by remember(studentId) { vm.repository.attendanceFor(studentId) }.collectAsState(initial = emptyList())
     val payments = state.payments.filter { it.studentId == studentId && (showDeleted || !it.deleted) }
 
     Column(Modifier.fillMaxSize()) {
-        LibraryTopBar(s.student.name, onBack = onBack) {
+        LibraryTopBar(stringResource(R.string.section_student), onBack = onBack) {
             IconButton(onClick = { vm.withPro { shareIdCard(context, state.profile, s) } }) {
                 Icon(Icons.Default.Badge, contentDescription = stringResource(R.string.action_id_card))
             }
@@ -99,27 +128,28 @@ fun StudentDetailScreen(
             }
         }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (s.student.photoUri != null) {
-                    AsyncImage(
-                        model = s.student.photoUri,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(64.dp).clip(CircleShape)
-                    )
-                    Spacer(Modifier.padding(6.dp))
+            Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                val photo = s.student.photoUri
+                Avatar(s.student.name, Modifier.clip(CircleShape).clickable(enabled = photo != null) { viewing = photo }, photo, 88.dp)
+                Spacer(Modifier.width(16.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(s.student.name, style = MaterialTheme.typography.headlineSmall)
+                    if (s.student.exam.isNotBlank()) Text(s.student.exam, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    StudentStatusPill(s)
                 }
-                Column(Modifier.weight(1f)) {
-                    Text(s.student.phone, style = MaterialTheme.typography.bodyLarge)
-                    if (s.student.fatherName.isNotBlank()) Text(stringResource(R.string.label_father, s.student.fatherName), style = MaterialTheme.typography.bodySmall)
-                    if (s.student.exam.isNotBlank()) Text(s.student.exam, style = MaterialTheme.typography.bodySmall)
-                }
-                IconButton(onClick = { dial(context, s.student.phone) }) { Icon(Icons.Default.Call, contentDescription = stringResource(R.string.action_call)) }
-                IconButton(onClick = { dialog = StudentDialog.MESSAGE }) { Icon(Icons.Default.Chat, contentDescription = stringResource(R.string.action_whatsapp)) }
             }
-            if (s.student.address.isNotBlank()) Text(s.student.address, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-            Spacer(Modifier.height(12.dp))
+            Row(Modifier.padding(vertical = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilledTonalButton(onClick = { dial(context, s.student.phone) }, Modifier.weight(1f)) {
+                    Icon(Icons.Default.Call, contentDescription = null, Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.action_call))
+                }
+                FilledTonalButton(onClick = { dialog = StudentDialog.MESSAGE }, Modifier.weight(1f)) {
+                    Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null, Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.action_whatsapp))
+                }
+            }
             MembershipCard(s)
 
             Spacer(Modifier.height(8.dp))
@@ -147,34 +177,53 @@ fun StudentDetailScreen(
                 }
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                SectionTitle(stringResource(R.string.section_payments), Modifier.weight(1f))
-                FilterChip(selected = showDeleted, onClick = { showDeleted = !showDeleted }, label = { Text(stringResource(R.string.filter_show_deleted)) })
-            }
-            if (payments.isEmpty()) Text(stringResource(R.string.empty_payments), color = MaterialTheme.colorScheme.onSurfaceVariant)
-            payments.forEach { p ->
-                PaymentRow(
-                    p,
-                    canChange = !vm.staff.isOn,
-                    onEdit = { editPayment = p },
-                    onShare = { shareReceiptPdf(context, profile, s, p) },
-                    onToggleDeleted = { vm.run(if (p.deleted) R.string.msg_payment_restored else R.string.msg_payment_deleted) { setPaymentDeleted(p.id, !p.deleted) } }
-                )
-                HorizontalDivider()
+            SectionTitle(stringResource(R.string.section_documents))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                DocumentTile(stringResource(R.string.label_photo), s.student.photoUri, Modifier.weight(1f), onOpen = { viewing = it }, onAdd = onEdit)
+                DocumentTile(stringResource(R.string.label_id_proof), s.student.idProofUri, Modifier.weight(1f), onOpen = { viewing = it }, onAdd = onEdit)
             }
 
-            SectionTitle(stringResource(R.string.section_attendance))
-            if (attendance.isEmpty()) Text(stringResource(R.string.empty_attendance), color = MaterialTheme.colorScheme.onSurfaceVariant)
-            attendance.take(14).forEach { a ->
-                Text(
-                    "${a.date.pretty()}  ${Shift.hhmm(a.inMinute)} → ${a.outMinute?.let { Shift.hhmm(it) } ?: "—"}",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(vertical = 2.dp)
+            SectionTitle(stringResource(R.string.section_details))
+            DetailsCard(s.student, onCall = { dial(context, it) })
+
+            PrimaryTabRow(selectedTabIndex = tab, Modifier.padding(top = 16.dp)) {
+                Tab(tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.section_payments)) })
+                Tab(tab == 1, onClick = { tab = 1 }, text = { Text(stringResource(R.string.section_attendance)) })
+            }
+            if (tab == 0) {
+                FilterChip(
+                    selected = showDeleted,
+                    onClick = { showDeleted = !showDeleted },
+                    label = { Text(stringResource(R.string.filter_show_deleted)) },
+                    modifier = Modifier.align(Alignment.End).padding(top = 8.dp)
                 )
+                if (payments.isEmpty()) Text(stringResource(R.string.empty_payments), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                payments.forEach { p ->
+                    PaymentRow(
+                        p,
+                        canChange = !vm.staff.isOn,
+                        onEdit = { editPayment = p },
+                        onShare = { shareReceiptPdf(context, profile, s, p) },
+                        onToggleDeleted = { vm.run(if (p.deleted) R.string.msg_payment_restored else R.string.msg_payment_deleted) { setPaymentDeleted(p.id, !p.deleted) } }
+                    )
+                    HorizontalDivider()
+                }
+            } else {
+                Spacer(Modifier.height(8.dp))
+                if (attendance.isEmpty()) Text(stringResource(R.string.empty_attendance), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                attendance.take(14).forEach { a ->
+                    Text(
+                        "${a.date.pretty()}  ${Shift.hhmm(a.inMinute)} → ${a.outMinute?.let { Shift.hhmm(it) } ?: "—"}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
             }
             Spacer(Modifier.height(32.dp))
         }
     }
+
+    viewing?.let { uri -> ImageViewer(uri) { viewing = null } }
 
     editPayment?.let { p ->
         EditPaymentDialog(p, onDismiss = { editPayment = null }) { amount, mode, date, note ->
@@ -244,11 +293,8 @@ private fun MembershipCard(s: StudentOverview) {
                 Text(stringResource(if (s.student.status == StudentStatus.LEFT) R.string.label_left else R.string.label_no_seat))
                 return@Column
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.label_seat_shift, s.seat?.label ?: "-", s.shift?.name ?: "-"),
-                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                s.status?.let { StatusPill(it) }
-            }
+            Text(stringResource(R.string.label_seat_shift, s.seat?.label ?: "-", s.shift?.name ?: "-"),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text("${m.planName} · ${m.startDate.pretty()} → ${m.dueDate.minusDays(1).pretty()}", style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(8.dp))
             val p = s.period
@@ -256,6 +302,62 @@ private fun MembershipCard(s: StudentOverview) {
                 Text(stringResource(R.string.label_fee_breakdown, rupees(m.fee), rupees(m.discount), rupees(m.lateFee)), style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(R.string.label_paid_balance, rupees(s.paid), rupees(p.balance)),
                     fontWeight = FontWeight.SemiBold, color = if (p.balance > 0) MaterialTheme.colorScheme.error else successColor)
+            }
+        }
+    }
+}
+
+/** Contact and personal details; phone numbers dial on tap. */
+@Composable
+private fun DetailsCard(st: Student, onCall: (String) -> Unit) {
+    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+        DetailRow(Icons.Default.Phone, stringResource(R.string.field_phone), st.phone) { onCall(st.phone) }
+        if (st.guardianPhone.isNotBlank()) DetailRow(Icons.Default.SupervisorAccount, stringResource(R.string.field_guardian_phone), st.guardianPhone) { onCall(st.guardianPhone) }
+        if (st.fatherName.isNotBlank()) DetailRow(Icons.Default.Person, stringResource(R.string.field_father_name), st.fatherName)
+        if (st.address.isNotBlank()) DetailRow(Icons.Default.Home, stringResource(R.string.field_address), st.address)
+        DetailRow(Icons.Default.Event, stringResource(R.string.label_joined), st.joinDate.pretty())
+        if (st.notes.isNotBlank()) DetailRow(Icons.Default.Info, stringResource(R.string.field_notes), st.notes)
+    }
+}
+
+@Composable
+private fun DetailRow(icon: ImageVector, label: String, value: String, onCall: (() -> Unit)? = null) {
+    ListItem(
+        modifier = if (onCall != null) Modifier.clickable(onClick = onCall) else Modifier,
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        leadingContent = { Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+        overlineContent = { Text(label) },
+        headlineContent = { Text(value) },
+        trailingContent = onCall?.let { { Icon(Icons.Default.Call, contentDescription = stringResource(R.string.action_call), tint = MaterialTheme.colorScheme.primary) } }
+    )
+}
+
+/** Photo or ID proof thumbnail; opens full screen, or the edit form when missing. */
+@Composable
+private fun DocumentTile(label: String, uri: String?, modifier: Modifier, onOpen: (String) -> Unit, onAdd: () -> Unit) {
+    Column(modifier) {
+        Surface(
+            onClick = { if (uri != null) onOpen(uri) else onAdd() },
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            modifier = Modifier.fillMaxWidth().aspectRatio(4f / 3f)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.AddAPhoto, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (uri != null) AsyncImage(uri, label, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+            }
+        }
+        Text(label, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 6.dp))
+    }
+}
+
+@Composable
+private fun ImageViewer(uri: String, onClose: () -> Unit) {
+    Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Box(Modifier.fillMaxSize().background(Color.Black)) {
+            AsyncImage(uri, null, Modifier.fillMaxSize(), contentScale = ContentScale.Fit)
+            IconButton(onClick = onClose, Modifier.align(Alignment.TopEnd).padding(8.dp)) {
+                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_close), tint = Color.White)
             }
         }
     }

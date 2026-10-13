@@ -7,6 +7,9 @@ import ai.sach.libraryup.data.local.entity.Enquiry
 import ai.sach.libraryup.data.local.entity.Expense
 import ai.sach.libraryup.data.local.entity.LibraryProfile
 import ai.sach.libraryup.data.local.entity.Locker
+import ai.sach.libraryup.data.local.entity.Membership
+import ai.sach.libraryup.data.local.entity.MembershipStatus
+import ai.sach.libraryup.data.local.entity.Payment
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.local.entity.Plan
 import ai.sach.libraryup.data.local.entity.Shift
@@ -32,14 +35,20 @@ import ai.sach.libraryup.ui.library.StudentFormScreen
 import ai.sach.libraryup.ui.library.StudentsScreen
 import ai.sach.libraryup.ui.library.idCard
 import ai.sach.libraryup.ui.library.vacancyPoster
+import ai.sach.libraryup.ui.screens.authentication.LockContent
+import ai.sach.libraryup.ui.screens.authentication.SignInContent
+import ai.sach.libraryup.ui.screens.authentication.SplashScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.SettingsScreen
 import ai.sach.libraryup.ui.theme.LibraryUpTheme
 import android.app.Application
-import android.graphics.Bitmap
-import androidx.compose.runtime.Composable
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -48,21 +57,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
+import androidx.navigation.compose.rememberNavController
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
-import org.junit.Rule
-import java.util.Locale
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import org.junit.After
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.time.LocalDate
+import java.util.Locale
 
 /**
  * Renders the main screens with a realistic demo library into app/build/outputs/roborazzi/.
@@ -71,6 +88,7 @@ import java.time.LocalDate
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [34], application = Application::class, qualifiers = "w400dp-h860dp-xxhdpi")
+@OptIn(ExperimentalRoborazziApi::class)
 class ScreenshotTest {
 
     @get:Rule
@@ -80,6 +98,7 @@ class ScreenshotTest {
     private val out = File("build/outputs/roborazzi").apply { mkdirs() }
     private var screen by mutableStateOf<@Composable () -> Unit>({})
     private var hindi by mutableStateOf(false)
+    private var dark by mutableStateOf(false)
 
     @After
     fun tearDown() = lib.close()
@@ -90,9 +109,10 @@ class ScreenshotTest {
         val vm = LibraryViewModel(lib.repo, StaffMode(lib.context), ProManager(lib.context))
         val state = lib.repo.state.first()
         val asha = state.students.first { it.student.name == "Aarav Singh" }
+        val log = lib.repo.activityLog.first()
         compose.setContent {
             val content = @Composable {
-                LibraryUpTheme(darkTheme = false) {
+                LibraryUpTheme(darkTheme = dark) {
                     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { screen() }
                 }
             }
@@ -104,9 +124,9 @@ class ScreenshotTest {
             }
         }
 
-        shot("01_dashboard") { DashboardScreen(state, {}, {}, {}, {}, {}) }
+        shot("01_dashboard") { DashboardScreen(state, {}, {}, {}, {}, {}, log.take(3)) }
         shot("02_seat_map") { SeatMapScreen(state, {}, { _, _ -> }, { it() }) }
-        shot("03_students") { StudentsScreen(state, StudentFilter.ALL, {}, {}) }
+        shot("03_students") { StudentsScreen(state, vm, StudentFilter.ALL, {}, {}) }
         shot("04_student_detail") { StudentDetailScreen(state, vm, asha.student.id, {}, {}, {}) }
         shot("05_admission_form") { StudentFormScreen(state, vm, null, lib.seatIds[5], lib.evening.id, {}, {}) }
         shot("06_payments") { PaymentsScreen(state) {} }
@@ -121,7 +141,35 @@ class ScreenshotTest {
         save("15_id_card", idCard(lib.context, state.profile, asha))
         save("16_vacancy_poster", vacancyPoster(lib.context, state))
         hindi = true
-        shot("17_dashboard_hindi") { DashboardScreen(state, {}, {}, {}, {}, {}) }
+        shot("17_dashboard_hindi") { DashboardScreen(state, {}, {}, {}, {}, {}, log.take(3)) }
+        hindi = false
+        shot("18_sign_in") { SignInContent(loading = false, error = null, onSkip = {}, onGoogle = {}) }
+        shot("19_app_lock") { LockContent(error = null) {} }
+        shot("20_settings") { SettingsScreen(rememberNavController()) }
+        shot("21_splash") { SplashScreen() }
+        dark = true
+        shot("22_dashboard_dark") { DashboardScreen(state, {}, {}, {}, {}, {}, log.take(3)) }
+        shot("23_seat_map_dark") { SeatMapScreen(state, {}, { _, _ -> }, { it() }) }
+        shot("24_students_dark") { StudentsScreen(state, vm, StudentFilter.ALL, {}, {}) }
+        shot("25_sign_in_dark") { SignInContent(loading = false, error = null, onSkip = {}, onGoogle = {}) }
+
+        // Tapping a student opens the details sheet: a popup, so capture the whole screen.
+        dark = false
+        shot("26_student_sheet") { StudentsScreen(state, vm, StudentFilter.ALL, {}, {}) }
+        compose.onNodeWithText("Aarav Singh").performClick()
+        repeat(3) { Thread.sleep(200); compose.waitForIdle() }
+        captureScreenRoboImage(File(out, "26_student_sheet.png").path)
+
+        // Lower half of the student page: documents, details and the payments tab.
+        shot("27_student_detail_lower") { StudentDetailScreen(state, vm, asha.student.id, {}, {}, {}) }
+        compose.onAllNodes(hasScrollAction())[0].performTouchInput { swipeUp() }
+        repeat(3) { Thread.sleep(200); compose.waitForIdle() }
+        compose.onRoot().captureRoboImage(File(out, "27_student_detail_lower.png").path)
+
+        shot("28_dashboard_lower") { DashboardScreen(state, {}, {}, {}, {}, {}, log.take(3)) }
+        compose.onAllNodes(hasScrollAction())[0].performTouchInput { swipeUp() }
+        repeat(3) { Thread.sleep(200); compose.waitForIdle() }
+        compose.onRoot().captureRoboImage(File(out, "28_dashboard_lower.png").path)
     }
 
     /** Shows [content], lets Room flows deliver their first rows, then captures the screen. */
@@ -169,11 +217,17 @@ class ScreenshotTest {
             Row("Sandeep Chauhan", "RRB NTPC", "Vijay Chauhan", 7, lib.morning, 8, 1000),
             Row("Anjali Tiwari", "CTET", "Shyam Tiwari", 8, lib.evening, 18, 1000)
         )
+        val photo = demoImage("photo", 400, 400)
+        val idProof = demoImage("id_proof", 640, 400)
         students.forEachIndexed { i, r ->
             val start = today.minusDays(r.daysAgo.toLong())
             val fee = if (r.shift == lib.fullDay) 1500L else 1000L
             val id = lib.repo.admitStudent(
-                Student(name = r.name, phone = "98${(10000000 + i * 7919).toString().take(8)}", fatherName = r.father, exam = r.exam, joinDate = start),
+                Student(
+                    name = r.name, phone = "98${(10000000 + i * 7919).toString().take(8)}", fatherName = r.father, exam = r.exam, joinDate = start,
+                    guardianPhone = if (i == 0) "9811122233" else "", address = if (i == 0) "H-4, Gandhi Vihar, Delhi" else "",
+                    photoUri = if (i % 4 == 0) photo else null, idProofUri = if (i == 0) idProof else null
+                ),
                 NewMembership(lib.seatIds[r.seat], r.shift.id, lib.monthly, "Monthly", start, start.plusMonths(1), fee, 0),
                 if (r.paid > 0) FirstPayment(r.paid, if (i % 2 == 0) PaymentMode.UPI else PaymentMode.CASH) else null
             )
@@ -183,6 +237,15 @@ class ScreenshotTest {
         lib.repo.saveEnquiry(Enquiry(name = "Ritu Sharma", phone = "9898989898", wantedShiftId = lib.morning.id, followUpOn = today.plusDays(2)))
         lib.repo.saveEnquiry(Enquiry(name = "Deepak Saini", phone = "9123456780", followUpOn = today.minusDays(1), note = "Wants AC cabin"))
         val ids = lib.dao.getStudents().map { it.id }
+        // Earlier months' fees on an ended period, so the dashboard chart has history.
+        val old = lib.dao.insertMembership(Membership(
+            studentId = ids[1], seatId = lib.seatIds[1], shiftId = lib.morning.id, planId = null, planName = "Monthly",
+            startDate = today.minusMonths(6), dueDate = today.minusMonths(1), fee = 1000, status = MembershipStatus.ENDED, endedOn = today.minusMonths(1)
+        ))
+        listOf(5 to 9000L, 4 to 11500L, 3 to 10500L, 2 to 13000L, 1 to 12000L).forEach { (back, amount) ->
+            lib.dao.insertPayment(Payment(studentId = ids[1], membershipId = old, amount = amount, mode = PaymentMode.CASH,
+                paidOn = today.minusMonths(back.toLong()).withDayOfMonth(3), receiptNo = "GD-OLD-$back"))
+        }
         lib.repo.saveLocker(Locker(number = "L1", fee = 200, studentId = ids[0]))
         lib.repo.saveLocker(Locker(number = "L2", fee = 200, studentId = ids[4]))
         lib.repo.saveLocker(Locker(number = "L3", fee = 200))
@@ -190,6 +253,21 @@ class ScreenshotTest {
         listOf("Rent" to 2500L, "Electricity" to 900L, "Internet" to 499L).forEach { (c, a) ->
             lib.repo.saveExpense(Expense(category = c, amount = a, date = today.withDayOfMonth(1)))
         }
+    }
+
+    /** A placeholder picture (silhouette, plus text lines when wide) so screenshots show photos and ID proofs. */
+    private fun demoImage(name: String, w: Int, h: Int): String {
+        val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val c = Canvas(bitmap)
+        c.drawColor(if (w > h) 0xFFE3E7F1.toInt() else 0xFF7986CB.toInt())
+        val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = if (w > h) 0xFF9FA8C7.toInt() else 0xFFE8EAF6.toInt() }
+        val cx = if (w > h) w * 0.25f else w / 2f
+        c.drawCircle(cx, h * 0.4f, h * 0.17f, p)
+        c.drawOval(cx - h * 0.3f, h * 0.64f, cx + h * 0.3f, h * 1.2f, p)
+        if (w > h) repeat(4) { c.drawRoundRect(w * 0.5f, h * (0.3f + it * 0.13f), w * (0.92f - it * 0.08f), h * (0.36f + it * 0.13f), 8f, 8f, p) }
+        val file = File(File("build/demo").apply { mkdirs() }, "$name.png")
+        file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        return file.toURI().toString()
     }
 
     private data class Row(

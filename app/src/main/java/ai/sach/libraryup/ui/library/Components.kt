@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,12 +52,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -188,19 +193,21 @@ fun StatCard(label: String, value: String, modifier: Modifier = Modifier, tone: 
     }
 }
 
-/** First letter of a name in a tinted circle: makes long lists scannable. */
+/** The student's photo, or the first letter of the name in a tinted circle. */
 @Composable
-fun Avatar(name: String, modifier: Modifier = Modifier) {
+fun Avatar(name: String, modifier: Modifier = Modifier, photoUri: String? = null, size: Dp = 40.dp) {
     Box(
-        modifier.size(40.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+        modifier.size(size).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.Center
     ) {
         Text(
             name.trim().take(1).uppercase(),
             color = MaterialTheme.colorScheme.onPrimaryContainer,
-            style = MaterialTheme.typography.titleMedium,
+            style = if (size > 56.dp) MaterialTheme.typography.headlineMedium else MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
+        // Drawn over the initial, so a missing or unreadable photo falls back to it.
+        if (photoUri != null) AsyncImage(photoUri, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
     }
 }
 
