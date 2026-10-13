@@ -32,14 +32,18 @@ import ai.sach.libraryup.ui.library.StudentFormScreen
 import ai.sach.libraryup.ui.library.StudentsScreen
 import ai.sach.libraryup.ui.library.idCard
 import ai.sach.libraryup.ui.library.vacancyPoster
+import ai.sach.libraryup.ui.screens.authentication.LockContent
+import ai.sach.libraryup.ui.screens.authentication.SignInContent
+import ai.sach.libraryup.ui.screens.authentication.SplashScreen
+import ai.sach.libraryup.ui.screens.settingsScreen.SettingsScreen
 import ai.sach.libraryup.ui.theme.LibraryUpTheme
 import android.app.Application
-import android.graphics.Bitmap
-import androidx.compose.runtime.Composable
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -50,19 +54,20 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.navigation.compose.rememberNavController
 import com.github.takahirom.roborazzi.captureRoboImage
-import org.junit.Rule
-import java.util.Locale
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import org.junit.After
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.time.LocalDate
+import java.util.Locale
 
 /**
  * Renders the main screens with a realistic demo library into app/build/outputs/roborazzi/.
@@ -80,6 +85,7 @@ class ScreenshotTest {
     private val out = File("build/outputs/roborazzi").apply { mkdirs() }
     private var screen by mutableStateOf<@Composable () -> Unit>({})
     private var hindi by mutableStateOf(false)
+    private var dark by mutableStateOf(false)
 
     @After
     fun tearDown() = lib.close()
@@ -92,7 +98,7 @@ class ScreenshotTest {
         val asha = state.students.first { it.student.name == "Aarav Singh" }
         compose.setContent {
             val content = @Composable {
-                LibraryUpTheme(darkTheme = false) {
+                LibraryUpTheme(darkTheme = dark) {
                     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { screen() }
                 }
             }
@@ -122,6 +128,16 @@ class ScreenshotTest {
         save("16_vacancy_poster", vacancyPoster(lib.context, state))
         hindi = true
         shot("17_dashboard_hindi") { DashboardScreen(state, {}, {}, {}, {}, {}) }
+        hindi = false
+        shot("18_sign_in") { SignInContent(loading = false, error = null, onSkip = {}, onGoogle = {}) }
+        shot("19_app_lock") { LockContent(error = null) {} }
+        shot("20_settings") { SettingsScreen(rememberNavController()) }
+        shot("21_splash") { SplashScreen() }
+        dark = true
+        shot("22_dashboard_dark") { DashboardScreen(state, {}, {}, {}, {}, {}) }
+        shot("23_seat_map_dark") { SeatMapScreen(state, {}, { _, _ -> }, { it() }) }
+        shot("24_students_dark") { StudentsScreen(state, StudentFilter.ALL, {}, {}) }
+        shot("25_sign_in_dark") { SignInContent(loading = false, error = null, onSkip = {}, onGoogle = {}) }
     }
 
     /** Shows [content], lets Room flows deliver their first rows, then captures the screen. */

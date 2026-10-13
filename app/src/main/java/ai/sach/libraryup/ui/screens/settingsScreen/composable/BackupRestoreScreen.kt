@@ -1,6 +1,5 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.libraryup.BuildConfig
 import ai.sach.libraryup.LibraryUpApplication
 import ai.sach.libraryup.R
 import ai.sach.libraryup.data.backup.BackupManager
@@ -11,7 +10,7 @@ import ai.sach.libraryup.data.backup.drive.DriveAccess
 import ai.sach.libraryup.data.backup.drive.DriveBackupStatus
 import ai.sach.libraryup.data.backup.drive.DriveFile
 import ai.sach.libraryup.data.backup.drive.NothingToBackUpException
-import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.library.LibraryTopBar
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
@@ -35,7 +34,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.AlertDialog
@@ -48,9 +46,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -386,12 +384,7 @@ fun BackupRestoreScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            AppTopAppBar(
-                title = stringResource(R.string.title_backup),
-                showBackButton = true,
-                onBackPressed = { navController.popBackStack() },
-                showDefaultMenu = true,
-            )
+            LibraryTopBar(stringResource(R.string.title_backup), onBack = { navController.popBackStack() })
         },
         snackbarHost = { SnackbarHost(snackbar) }
     ) { paddingValues ->

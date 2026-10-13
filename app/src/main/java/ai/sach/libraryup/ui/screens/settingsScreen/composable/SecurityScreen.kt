@@ -1,7 +1,7 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
 import ai.sach.libraryup.R
-import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.library.LibraryTopBar
 import ai.sach.libraryup.ui.screens.authentication.BiometricAuthManager
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -99,12 +99,7 @@ fun SecurityScreen(
 
     Scaffold(
         topBar = {
-            AppTopAppBar(
-                title = stringResource(R.string.settings_security),
-                showBackButton = true,
-                onBackPressed = { navController.popBackStack() },
-                showDefaultMenu = true,
-            )
+            LibraryTopBar(stringResource(R.string.settings_security), onBack = { navController.popBackStack() })
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->

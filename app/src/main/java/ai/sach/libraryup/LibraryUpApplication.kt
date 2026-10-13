@@ -1,23 +1,22 @@
 package ai.sach.libraryup
 
+import ai.sach.libraryup.billing.ProManager
 import ai.sach.libraryup.data.backup.BackupManager
 import ai.sach.libraryup.data.backup.drive.DriveBackupManager
 import ai.sach.libraryup.data.local.LibraryUpDatabase
 import ai.sach.libraryup.data.repository.LibraryRepository
-import ai.sach.libraryup.billing.ProManager
-import ai.sach.libraryup.ui.library.StaffMode
-import com.google.android.gms.ads.MobileAds
 import ai.sach.libraryup.notifications.NotificationHelper
 import ai.sach.libraryup.notifications.NotificationPrefs
 import ai.sach.libraryup.notifications.ReminderScheduler
+import ai.sach.libraryup.ui.library.StaffMode
 import ai.sach.libraryup.ui.screens.authentication.AuthRepository
-import ai.sach.libraryup.ui.screens.settingsScreen.ThemePreferencesRepository
 import ai.sach.libraryup.ui.screens.settingsScreen.appprefernecs.AppPreferencesRepository
 import ai.sach.libraryup.utils.GooglePlayServicesHelper
 import android.app.Application
 import android.util.Log
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,8 +41,6 @@ class LibraryUpApplication : Application(), Configuration.Provider {
     val proManager by lazy { ProManager(this) }
 
     val authRepository by lazy { AuthRepository(applicationContext) }
-
-    val themeRepository by lazy { ThemePreferencesRepository(applicationContext) }
 
     val appPreferencesRepository by lazy { AppPreferencesRepository(applicationContext) }
 

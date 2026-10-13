@@ -1,7 +1,7 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
 import ai.sach.libraryup.R
-import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.library.LibraryTopBar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -78,12 +78,7 @@ fun PasswordChangeScreen(navController: NavController) {
     
     Scaffold(
         topBar = {
-            AppTopAppBar(
-                title = stringResource(R.string.password_change_title),
-                showBackButton = true,
-                onBackPressed = { navController.popBackStack() },
-                showDefaultMenu = true,
-            )
+            LibraryTopBar(stringResource(R.string.password_change_title), onBack = { navController.popBackStack() })
 
         }
     ) { paddingValues ->

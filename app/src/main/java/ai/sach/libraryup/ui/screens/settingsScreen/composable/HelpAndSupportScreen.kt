@@ -1,6 +1,5 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.libraryup.ui.common.composables.AppTopAppBar
 import ai.sach.libraryup.ui.theme.LibraryUpTheme
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
@@ -21,10 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.Message
-import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -101,12 +98,7 @@ fun HelpAndSupportScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            AppTopAppBar(
-                title = "Help & Support",
-                showBackButton = true,
-                onBackPressed = { navController.popBackStack() },
-                showDefaultMenu = true,
-            )
+            LibraryTopBar("Help & Support", onBack = { navController.popBackStack() })
         }
     ) { paddingValues ->
         Column(

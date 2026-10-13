@@ -4,20 +4,20 @@ import ai.sach.libraryup.data.repository.LibraryState
 import ai.sach.libraryup.ui.common.composables.BottomNavigationBar
 import ai.sach.libraryup.ui.common.responsiveness.AccessibilityScalingProvider
 import ai.sach.libraryup.ui.common.responsiveness.DimensionsProvider
-import ai.sach.libraryup.ui.library.AdBanner
-import ai.sach.libraryup.ui.library.ProScreen
 import ai.sach.libraryup.ui.library.ActivityLogScreen
+import ai.sach.libraryup.ui.library.AdBanner
 import ai.sach.libraryup.ui.library.AttendanceScreen
 import ai.sach.libraryup.ui.library.DashboardScreen
 import ai.sach.libraryup.ui.library.DataScreen
 import ai.sach.libraryup.ui.library.EnquiriesScreen
 import ai.sach.libraryup.ui.library.ExpensesScreen
-import ai.sach.libraryup.ui.library.LockersScreen
 import ai.sach.libraryup.ui.library.LibrarySettingsScreen
 import ai.sach.libraryup.ui.library.LibraryTopBar
 import ai.sach.libraryup.ui.library.LibraryViewModel
+import ai.sach.libraryup.ui.library.LockersScreen
 import ai.sach.libraryup.ui.library.MoreScreen
 import ai.sach.libraryup.ui.library.PaymentsScreen
+import ai.sach.libraryup.ui.library.ProScreen
 import ai.sach.libraryup.ui.library.RemindersScreen
 import ai.sach.libraryup.ui.library.SeatMapScreen
 import ai.sach.libraryup.ui.library.SetupScreen
@@ -82,7 +82,6 @@ import androidx.compose.ui.unit.Density
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -173,7 +172,7 @@ class MainActivity : FragmentActivity() {
                             }
 
                             when (appState) {
-                                AppState.Loading -> SplashScreen(onSplashFinished = {})
+                                AppState.Loading -> SplashScreen()
                                 AppState.Unauthenticated -> GoogleAuthScreen(
                                     authViewModel = viewModel(factory = AuthViewModelFactory(application = app, authRepository = authRepository)),
                                     onNavigateToMain = {
