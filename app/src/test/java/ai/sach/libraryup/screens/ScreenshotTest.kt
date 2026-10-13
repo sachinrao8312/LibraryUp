@@ -7,6 +7,9 @@ import ai.sach.libraryup.data.local.entity.Enquiry
 import ai.sach.libraryup.data.local.entity.Expense
 import ai.sach.libraryup.data.local.entity.LibraryProfile
 import ai.sach.libraryup.data.local.entity.Locker
+import ai.sach.libraryup.data.local.entity.Membership
+import ai.sach.libraryup.data.local.entity.MembershipStatus
+import ai.sach.libraryup.data.local.entity.Payment
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.local.entity.Plan
 import ai.sach.libraryup.data.local.entity.Shift
@@ -106,6 +109,7 @@ class ScreenshotTest {
         val vm = LibraryViewModel(lib.repo, StaffMode(lib.context), ProManager(lib.context))
         val state = lib.repo.state.first()
         val asha = state.students.first { it.student.name == "Aarav Singh" }
+        val log = lib.repo.activityLog.first()
         compose.setContent {
             val content = @Composable {
                 LibraryUpTheme(darkTheme = dark) {
@@ -120,7 +124,7 @@ class ScreenshotTest {
             }
         }
 
-        shot("01_dashboard") { DashboardScreen(state, {}, {}, {}, {}, {}) }
+        shot("01_dashboard") { DashboardScreen(state, {}, {}, {}, {}, {}, log.take(3)) }
         shot("02_seat_map") { SeatMapScreen(state, {}, { _, _ -> }, { it() }) }
         shot("03_students") { StudentsScreen(state, vm, StudentFilter.ALL, {}, {}) }
         shot("04_student_detail") { StudentDetailScreen(state, vm, asha.student.id, {}, {}, {}) }
@@ -137,14 +141,14 @@ class ScreenshotTest {
         save("15_id_card", idCard(lib.context, state.profile, asha))
         save("16_vacancy_poster", vacancyPoster(lib.context, state))
         hindi = true
-        shot("17_dashboard_hindi") { DashboardScreen(state, {}, {}, {}, {}, {}) }
+        shot("17_dashboard_hindi") { DashboardScreen(state, {}, {}, {}, {}, {}, log.take(3)) }
         hindi = false
         shot("18_sign_in") { SignInContent(loading = false, error = null, onSkip = {}, onGoogle = {}) }
         shot("19_app_lock") { LockContent(error = null) {} }
         shot("20_settings") { SettingsScreen(rememberNavController()) }
         shot("21_splash") { SplashScreen() }
         dark = true
-        shot("22_dashboard_dark") { DashboardScreen(state, {}, {}, {}, {}, {}) }
+        shot("22_dashboard_dark") { DashboardScreen(state, {}, {}, {}, {}, {}, log.take(3)) }
         shot("23_seat_map_dark") { SeatMapScreen(state, {}, { _, _ -> }, { it() }) }
         shot("24_students_dark") { StudentsScreen(state, vm, StudentFilter.ALL, {}, {}) }
         shot("25_sign_in_dark") { SignInContent(loading = false, error = null, onSkip = {}, onGoogle = {}) }
@@ -161,6 +165,11 @@ class ScreenshotTest {
         compose.onAllNodes(hasScrollAction())[0].performTouchInput { swipeUp() }
         repeat(3) { Thread.sleep(200); compose.waitForIdle() }
         compose.onRoot().captureRoboImage(File(out, "27_student_detail_lower.png").path)
+
+        shot("28_dashboard_lower") { DashboardScreen(state, {}, {}, {}, {}, {}, log.take(3)) }
+        compose.onAllNodes(hasScrollAction())[0].performTouchInput { swipeUp() }
+        repeat(3) { Thread.sleep(200); compose.waitForIdle() }
+        compose.onRoot().captureRoboImage(File(out, "28_dashboard_lower.png").path)
     }
 
     /** Shows [content], lets Room flows deliver their first rows, then captures the screen. */
@@ -228,6 +237,15 @@ class ScreenshotTest {
         lib.repo.saveEnquiry(Enquiry(name = "Ritu Sharma", phone = "9898989898", wantedShiftId = lib.morning.id, followUpOn = today.plusDays(2)))
         lib.repo.saveEnquiry(Enquiry(name = "Deepak Saini", phone = "9123456780", followUpOn = today.minusDays(1), note = "Wants AC cabin"))
         val ids = lib.dao.getStudents().map { it.id }
+        // Earlier months' fees on an ended period, so the dashboard chart has history.
+        val old = lib.dao.insertMembership(Membership(
+            studentId = ids[1], seatId = lib.seatIds[1], shiftId = lib.morning.id, planId = null, planName = "Monthly",
+            startDate = today.minusMonths(6), dueDate = today.minusMonths(1), fee = 1000, status = MembershipStatus.ENDED, endedOn = today.minusMonths(1)
+        ))
+        listOf(5 to 9000L, 4 to 11500L, 3 to 10500L, 2 to 13000L, 1 to 12000L).forEach { (back, amount) ->
+            lib.dao.insertPayment(Payment(studentId = ids[1], membershipId = old, amount = amount, mode = PaymentMode.CASH,
+                paidOn = today.minusMonths(back.toLong()).withDayOfMonth(3), receiptNo = "GD-OLD-$back"))
+        }
         lib.repo.saveLocker(Locker(number = "L1", fee = 200, studentId = ids[0]))
         lib.repo.saveLocker(Locker(number = "L2", fee = 200, studentId = ids[4]))
         lib.repo.saveLocker(Locker(number = "L3", fee = 200))

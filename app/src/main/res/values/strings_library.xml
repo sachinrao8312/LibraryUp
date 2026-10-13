@@ -59,6 +59,15 @@
     <string name="action_unfreeze">Unfreeze</string>
     <string name="action_whatsapp">WhatsApp</string>
     <string name="dash_today_collection">Collected today</string>
+    <string name="greet_morning">Good morning, %1$s</string>
+    <string name="greet_afternoon">Good afternoon, %1$s</string>
+    <string name="greet_evening">Good evening, %1$s</string>
+    <string name="dash_trend">%1$s vs this day last month</string>
+    <string name="dash_revenue_title">Fees collected</string>
+    <string name="dash_revenue_sub">Last 6 months · tap a bar</string>
+    <string name="dash_revenue_avg">Average per month</string>
+    <string name="dash_recent">Recent activity</string>
+    <string name="action_view_all">View all</string>
     <string name="dash_month_collection">Collected this month</string>
     <string name="dash_overdue">Overdue</string>
     <string name="dash_due_today">Due / unpaid</string>

@@ -59,6 +59,15 @@
     <string name="action_unfreeze">फ़्रीज़ हटाएँ</string>
     <string name="action_whatsapp">व्हाट्सऐप</string>
     <string name="dash_today_collection">आज की वसूली</string>
+    <string name="greet_morning">सुप्रभात, %1$s</string>
+    <string name="greet_afternoon">नमस्कार, %1$s</string>
+    <string name="greet_evening">शुभ संध्या, %1$s</string>
+    <string name="dash_trend">पिछले महीने इसी दिन से %1$s</string>
+    <string name="dash_revenue_title">जमा फीस</string>
+    <string name="dash_revenue_sub">पिछले 6 महीने · बार पर टैप करें</string>
+    <string name="dash_revenue_avg">हर महीने औसत</string>
+    <string name="dash_recent">हाल की गतिविधि</string>
+    <string name="action_view_all">सब देखें</string>
     <string name="dash_month_collection">इस महीने की वसूली</string>
     <string name="dash_overdue">बकाया</string>
     <string name="dash_due_today">देय / बाकी</string>

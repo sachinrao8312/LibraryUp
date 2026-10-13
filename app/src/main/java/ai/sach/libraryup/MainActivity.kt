@@ -294,6 +294,7 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
     ) { padding ->
         NavHost(navController = navController, startDestination = AppRoutes.HOME, modifier = Modifier.padding(padding)) {
             composable(AppRoutes.HOME) {
+                val log by remember { vm.repository.activityLog }.collectAsState(initial = emptyList())
                 Column(Modifier.fillMaxSize()) {
                     Box(Modifier.weight(1f)) {
                         DashboardScreen(
@@ -302,7 +303,10 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
                             onAddStudent = { navController.navigate(AppRoutes.studentForm()) },
                             onOpenReminders = { navController.navigate(AppRoutes.REMINDERS) },
                             onOpenAttendance = { navController.navigate(AppRoutes.ATTENDANCE) },
-                            onOpenPayments = { navController.navigate(AppRoutes.PAYMENTS) { launchSingleTop = true } }
+                            onOpenPayments = { navController.navigate(AppRoutes.PAYMENTS) { launchSingleTop = true } },
+                            // Staff can't open the activity log, so they don't see it here either.
+                            recent = if (vm.staff.isOn) emptyList() else log.take(3),
+                            onOpenLog = { navController.navigate(AppRoutes.ACTIVITY_LOG) }
                         )
                     }
                     if (!vm.isPro) AdBanner()
