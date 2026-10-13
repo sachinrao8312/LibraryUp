@@ -116,7 +116,7 @@ fun PropertiesScreen(
     navController: NavHostController
 ) {
     val darkTheme = isSystemInDarkTheme()
-    val backgroundColor = if (darkTheme) Color(0xFF121212) else Color(0xFFF8F9FA)
+    val backgroundColor = MaterialTheme.colorScheme.background
     val context = LocalContext.current
     val application = context.applicationContext as RentUpApplication
     val propertyViewModel: PropertyViewModel = viewModel(

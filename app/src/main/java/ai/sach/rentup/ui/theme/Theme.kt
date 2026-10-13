@@ -144,8 +144,7 @@ fun RentUpTheme(
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> createDarkColorScheme(primaryColor)
-        else -> createLightColorScheme(primaryColor)
+        else -> rentUpColorScheme(primaryColor, darkTheme)
     }
 
     // Apply theme to system UI (status bar, navigation bar)
