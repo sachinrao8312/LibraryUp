@@ -178,8 +178,24 @@ dependencies {
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.okhttp.mockwebserver)
+    // Screenshot review only (branch claude/v0-audit-screenshots).
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("androidx.test:core-ktx:1.6.1")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.43.1")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.43.1")
+    testImplementation("androidx.legacy:legacy-support-core-utils:1.0.0")
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+android.testOptions.unitTests.isIncludeAndroidResources = true
+
+tasks.withType<Test>().configureEach {
+    systemProperty("roborazzi.test.record", "true")
+    systemProperty("shots.dir", (project.findProperty("shotsDir") as String?) ?: "build/outputs/shots")
+    testLogging { events("failed"); exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL }
 }
