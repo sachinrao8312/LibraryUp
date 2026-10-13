@@ -36,14 +36,29 @@ import ai.sach.libraryup.ui.theme.LibraryUpTheme
 import android.app.Application
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Rule
+import java.util.Locale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.io.File
@@ -58,8 +73,13 @@ import java.time.LocalDate
 @Config(sdk = [34], application = Application::class, qualifiers = "w400dp-h860dp-xxhdpi")
 class ScreenshotTest {
 
+    @get:Rule
+    val compose = createComposeRule()
+
     private val lib = TestLibrary()
     private val out = File("build/outputs/roborazzi").apply { mkdirs() }
+    private var screen by mutableStateOf<@Composable () -> Unit>({})
+    private var hindi by mutableStateOf(false)
 
     @After
     fun tearDown() = lib.close()
@@ -70,6 +90,15 @@ class ScreenshotTest {
         val vm = LibraryViewModel(lib.repo, StaffMode(lib.context), ProManager(lib.context))
         val state = lib.repo.state.first()
         val asha = state.students.first { it.student.name == "Aarav Singh" }
+        compose.setContent {
+            val base = LocalContext.current
+            val config = Configuration(base.resources.configuration).apply { if (hindi) setLocale(Locale("hi")) }
+            CompositionLocalProvider(LocalContext provides base.createConfigurationContext(config), LocalConfiguration provides config) {
+                LibraryUpTheme(darkTheme = false) {
+                    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { screen() }
+                }
+            }
+        }
 
         shot("01_dashboard") { DashboardScreen(state, {}, {}, {}, {}, {}) }
         shot("02_seat_map") { SeatMapScreen(state, {}, { _, _ -> }, { it() }) }
@@ -87,12 +116,16 @@ class ScreenshotTest {
         shot("14_library_settings") { LibrarySettingsScreen(state, vm) {} }
         save("15_id_card", idCard(lib.context, state.profile, asha))
         save("16_vacancy_poster", vacancyPoster(lib.context, state))
-        RuntimeEnvironment.setQualifiers("+hi")
+        hindi = true
         shot("17_dashboard_hindi") { DashboardScreen(state, {}, {}, {}, {}, {}) }
     }
 
-    private fun shot(name: String, content: @Composable () -> Unit) =
-        captureRoboImage(File(out, "$name.png").path) { LibraryUpTheme(darkTheme = false) { content() } }
+    /** Shows [content], lets Room flows deliver their first rows, then captures the screen. */
+    private fun shot(name: String, content: @Composable () -> Unit) {
+        screen = { key(name) { content() } }
+        repeat(3) { Thread.sleep(200); compose.waitForIdle() }
+        compose.onRoot().captureRoboImage(File(out, "$name.png").path)
+    }
 
     private fun save(name: String, bitmap: Bitmap) =
         File(out, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
