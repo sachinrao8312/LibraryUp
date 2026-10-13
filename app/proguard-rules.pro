@@ -350,3 +350,10 @@
 -verbose
 
 # ========== FIREBASE RULES ==========
+# Tink (via androidx.security:security-crypto) ships KeysDownloader, which references the
+# Google HTTP client. LibraryUp never calls it, so these classes are safely absent.
+-dontwarn com.google.api.client.http.**
+-dontwarn com.google.api.client.http.javanet.**
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn javax.annotation.**
+-dontwarn org.joda.time.Instant

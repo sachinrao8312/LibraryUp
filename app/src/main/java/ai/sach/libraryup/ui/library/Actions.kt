@@ -7,10 +7,14 @@ import ai.sach.libraryup.data.repository.StudentOverview
 import ai.sach.libraryup.domain.MessageTemplates
 import ai.sach.libraryup.domain.PhoneNumbers
 import ai.sach.libraryup.domain.UpiLink
+import ai.sach.libraryup.utils.ImageUtils
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
@@ -55,9 +59,17 @@ fun templateValues(profile: LibraryProfile?, s: StudentOverview, amount: Long? =
     )
 }
 
-fun buildMessage(profile: LibraryProfile?, kind: MessageTemplates.Kind, s: StudentOverview, amount: Long? = null, receiptNo: String = ""): String {
-    val hindi = profile?.messageLanguage == "hi"
-    return MessageTemplates.render(MessageTemplates.default(kind, hindi), templateValues(profile, s, amount, receiptNo))
+fun buildMessage(
+    profile: LibraryProfile?,
+    kind: MessageTemplates.Kind,
+    s: StudentOverview,
+    amount: Long? = null,
+    receiptNo: String = "",
+    extra: Map<String, String> = emptyMap()
+): String {
+    val hindi = s.student.messageHindi ?: (profile?.messageLanguage == "hi")
+    val template = profile?.template(kind, hindi) ?: MessageTemplates.default(kind, hindi)
+    return MessageTemplates.render(template, templateValues(profile, s, amount, receiptNo) + extra)
 }
 
 /* ---------------------------------------------------------------- intents */
@@ -115,6 +127,7 @@ fun shareReceiptPdf(context: Context, profile: LibraryProfile?, s: StudentOvervi
     var y = 36f
     fun line(text: String, paint: Paint = body, gap: Float = 16f) { c.drawText(text, 20f, y, paint); y += gap }
 
+    libraryLogo(context, profile)?.let { c.drawFit(it, RectF(230f, 16f, 278f, 64f)) }
     line(profile?.name ?: context.getString(R.string.app_name), title, 18f)
     profile?.address?.takeIf { it.isNotBlank() }?.let { line(it, small, 12f) }
     profile?.phone?.takeIf { it.isNotBlank() }?.let { line(it, small, 12f) }
@@ -143,11 +156,31 @@ fun shareReceiptPdf(context: Context, profile: LibraryProfile?, s: StudentOvervi
     file.outputStream().use { doc.writeTo(it) }
     doc.close()
 
+    shareFile(
+        context, file, "application/pdf",
+        buildMessage(profile, MessageTemplates.Kind.RECEIPT, s, payment.amount, payment.receiptNo),
+        context.getString(R.string.action_share_receipt)
+    )
+}
+
+fun libraryLogo(context: Context, profile: LibraryProfile?): Bitmap? =
+    profile?.logoUri?.let { ImageUtils.loadBitmapFromUri(context, Uri.parse(it), 300) }
+
+/** Draws [bmp] centred in [box], keeping its aspect ratio. */
+fun Canvas.drawFit(bmp: Bitmap, box: RectF) {
+    val scale = minOf(box.width() / bmp.width, box.height() / bmp.height)
+    val w = bmp.width * scale
+    val h = bmp.height * scale
+    drawBitmap(bmp, null, RectF(box.centerX() - w / 2, box.centerY() - h / 2, box.centerX() + w / 2, box.centerY() + h / 2), Paint(Paint.FILTER_BITMAP_FLAG))
+}
+
+/** Opens the share sheet for a file in the app's cache (WhatsApp is usually first). */
+fun shareFile(context: Context, file: File, mime: String, text: String, chooserTitle: String) {
     val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     val send = Intent(Intent.ACTION_SEND)
-        .setType("application/pdf")
+        .setType(mime)
         .putExtra(Intent.EXTRA_STREAM, uri)
-        .putExtra(Intent.EXTRA_TEXT, buildMessage(profile, MessageTemplates.Kind.RECEIPT, s, payment.amount, payment.receiptNo))
+        .putExtra(Intent.EXTRA_TEXT, text)
         .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    context.startActivity(Intent.createChooser(send, context.getString(R.string.action_share_receipt)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    context.startActivity(Intent.createChooser(send, chooserTitle).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 }

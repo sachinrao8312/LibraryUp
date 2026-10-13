@@ -1,7 +1,7 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.libraryup.BuildConfig
 import ai.sach.libraryup.LibraryUpApplication
+import ai.sach.libraryup.R
 import ai.sach.libraryup.data.backup.BackupManager
 import ai.sach.libraryup.data.backup.BackupPasswordRequiredException
 import ai.sach.libraryup.data.backup.BackupSecrets
@@ -10,8 +10,9 @@ import ai.sach.libraryup.data.backup.drive.DriveAccess
 import ai.sach.libraryup.data.backup.drive.DriveBackupStatus
 import ai.sach.libraryup.data.backup.drive.DriveFile
 import ai.sach.libraryup.data.backup.drive.NothingToBackUpException
-import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.library.LibraryTopBar
 import android.app.Activity
+import android.content.Context
 import android.net.Uri
 import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -28,12 +29,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.AlertDialog
@@ -46,9 +45,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -62,6 +61,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -126,9 +126,9 @@ fun BackupRestoreScreen(navController: NavController) {
             val result = application.backupManager.exportTo(uri, secrets.current())
             isWorking = false
             result.fold(
-                onSuccess = { summary -> snackbar.showSnackbar(backedUpMessage(summary)) },
+                onSuccess = { summary -> snackbar.showSnackbar(backedUpMessage(context, summary)) },
                 onFailure = { error ->
-                    snackbar.showSnackbar("Backup failed: ${error.message ?: "unknown error"}")
+                    snackbar.showSnackbar(context.getString(R.string.backup_failed, error.message ?: context.getString(R.string.error_unknown)))
                 }
             )
         }
@@ -151,16 +151,16 @@ fun BackupRestoreScreen(navController: NavController) {
                 DriveAction.TURN_ON -> {
                     drive.enable()
                     val summary = drive.backUp(token)
-                    "Google Drive backup is on. ${backedUpMessage(summary)}"
+                    context.getString(R.string.backup_drive_on_with, backedUpMessage(context, summary))
                 }
                 DriveAction.BACK_UP_NOW -> {
                     val summary = drive.backUp(token)
-                    "${backedUpMessage(summary)} to Google Drive"
+                    backedUpMessage(context, summary, toDrive = true)
                 }
                 DriveAction.RESTORE -> {
                     val backups = drive.listBackups(token)
                     if (backups.isEmpty()) {
-                        "No LibraryUp backups found in this Google Drive."
+                        context.getString(R.string.backup_drive_none_found)
                     } else {
                         driveRestoreChoice = DriveRestoreChoice(token, backups)
                         null
@@ -171,12 +171,12 @@ fun BackupRestoreScreen(navController: NavController) {
             throw e
         } catch (e: NothingToBackUpException) {
             if (action == DriveAction.TURN_ON) {
-                "Google Drive backup is on. The first backup runs once you've added a student."
+                context.getString(R.string.backup_drive_on_first)
             } else {
                 e.message
             }
         } catch (e: Exception) {
-            "Google Drive: ${e.message ?: "something went wrong"}"
+            context.getString(R.string.backup_drive_error, e.message ?: context.getString(R.string.error_unknown))
         } finally {
             isWorking = false
         }
@@ -198,7 +198,7 @@ fun BackupRestoreScreen(navController: NavController) {
             if (access is DriveAccess.Granted) {
                 performDriveAction(action, access.token)
             } else {
-                snackbar.showSnackbar("Google Drive access wasn't granted.")
+                snackbar.showSnackbar(context.getString(R.string.backup_drive_not_granted))
             }
         }
     }
@@ -212,7 +212,7 @@ fun BackupRestoreScreen(navController: NavController) {
                 throw e
             } catch (e: Exception) {
                 isWorking = false
-                snackbar.showSnackbar("Couldn't connect to Google Drive: ${e.message ?: "unknown error"}")
+                snackbar.showSnackbar(context.getString(R.string.backup_drive_connect_failed, e.message ?: context.getString(R.string.error_unknown)))
                 return@launch
             }
             when (access) {
@@ -230,7 +230,7 @@ fun BackupRestoreScreen(navController: NavController) {
 
     if (pendingImportUri != null) {
         ReplaceAllDataDialog(
-            source = "this backup",
+            source = stringResource(R.string.backup_source_file),
             onDismiss = { pendingImportUri = null },
             onConfirm = {
                 val uri = pendingImportUri!!
@@ -240,14 +240,14 @@ fun BackupRestoreScreen(navController: NavController) {
                     val result = application.backupManager.importFrom(uri, secrets.password())
                     isWorking = false
                     result.fold(
-                        onSuccess = { summary -> snackbar.showSnackbar(restoredMessage(summary)) },
+                        onSuccess = { summary -> snackbar.showSnackbar(restoredMessage(context, summary)) },
                         onFailure = { error ->
                             if (error is BackupPasswordRequiredException) {
                                 passwordPrompt = PasswordPrompt(wrong = false) { pw ->
                                     application.backupManager.importFrom(uri, pw).getOrThrow()
                                 }
                             } else {
-                                snackbar.showSnackbar("Restore failed: ${error.message ?: "unknown error"}")
+                                snackbar.showSnackbar(context.getString(R.string.backup_restore_failed, error.message ?: context.getString(R.string.error_unknown)))
                             }
                         }
                     )
@@ -259,11 +259,11 @@ fun BackupRestoreScreen(navController: NavController) {
     driveRestoreChoice?.let { choice ->
         AlertDialog(
             onDismissRequest = { driveRestoreChoice = null },
-            title = { Text("Restore from Google Drive") },
+            title = { Text(stringResource(R.string.backup_restore_from_drive)) },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     Text(
-                        "Choose a backup:",
+                        stringResource(R.string.backup_choose),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -291,28 +291,28 @@ fun BackupRestoreScreen(navController: NavController) {
             },
             confirmButton = {},
             dismissButton = {
-                TextButton(onClick = { driveRestoreChoice = null }) { Text("Cancel") }
+                TextButton(onClick = { driveRestoreChoice = null }) { Text(stringResource(R.string.action_cancel)) }
             }
         )
     }
 
     pendingDriveRestore?.let { pending ->
         ReplaceAllDataDialog(
-            source = "the backup from ${backupLabel(pending.backup)}",
+            source = stringResource(R.string.backup_source_drive, backupLabel(pending.backup)),
             onDismiss = { pendingDriveRestore = null },
             onConfirm = {
                 pendingDriveRestore = null
                 isWorking = true
                 scope.launch {
                     val message = try {
-                        restoredMessage(drive.restore(pending.token, pending.backup))
+                        restoredMessage(context, drive.restore(pending.token, pending.backup))
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: BackupPasswordRequiredException) {
                         passwordPrompt = PasswordPrompt(wrong = false) { pw -> drive.restore(pending.token, pending.backup, pw) }
                         null
                     } catch (e: Exception) {
-                        "Restore failed: ${e.message ?: "unknown error"}"
+                        context.getString(R.string.backup_restore_failed, e.message ?: context.getString(R.string.error_unknown))
                     } finally {
                         isWorking = false
                     }
@@ -324,9 +324,9 @@ fun BackupRestoreScreen(navController: NavController) {
 
     passwordPrompt?.let { prompt ->
         PasswordDialog(
-            title = "Backup password",
-            message = if (prompt.wrong) "That password or recovery code didn't work. Try again."
-                else "This backup is password-protected. Enter the backup password or the recovery code.",
+            title = stringResource(R.string.backup_password_title),
+            message = if (prompt.wrong) stringResource(R.string.backup_password_wrong)
+                else stringResource(R.string.backup_password_needed),
             confirmTwice = false,
             onDismiss = { passwordPrompt = null },
             onConfirm = { pw ->
@@ -334,13 +334,13 @@ fun BackupRestoreScreen(navController: NavController) {
                 isWorking = true
                 scope.launch {
                     try {
-                        snackbar.showSnackbar(restoredMessage(prompt.retry(pw)))
+                        snackbar.showSnackbar(restoredMessage(context, prompt.retry(pw)))
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: BackupPasswordRequiredException) {
                         passwordPrompt = prompt.copy(wrong = true)
                     } catch (e: Exception) {
-                        snackbar.showSnackbar("Restore failed: ${e.message ?: "unknown error"}")
+                        snackbar.showSnackbar(context.getString(R.string.backup_restore_failed, e.message ?: context.getString(R.string.error_unknown)))
                     } finally {
                         isWorking = false
                     }
@@ -351,16 +351,15 @@ fun BackupRestoreScreen(navController: NavController) {
 
     if (askNewPassword) {
         PasswordDialog(
-            title = "Protect backups with a password",
-            message = "Backup files and Google Drive backups will be encrypted. You'll need this password, " +
-                "or the recovery code shown next, to restore them. LibraryUp cannot recover a lost password.",
+            title = stringResource(R.string.backup_protect_title),
+            message = stringResource(R.string.backup_protect_text),
             confirmTwice = true,
             onDismiss = { askNewPassword = false },
             onConfirm = { pw ->
                 askNewPassword = false
                 runCatching { secrets.enable(pw) }
                     .onSuccess { code -> protectionOn = true; recoveryCodeToShow = code }
-                    .onFailure { scope.launch { snackbar.showSnackbar("Couldn't turn on protection on this phone.") } }
+                    .onFailure { scope.launch { snackbar.showSnackbar(context.getString(R.string.backup_protect_failed)) } }
             }
         )
     }
@@ -368,15 +367,15 @@ fun BackupRestoreScreen(navController: NavController) {
     recoveryCodeToShow?.let { code ->
         AlertDialog(
             onDismissRequest = {},
-            title = { Text("Write down your recovery code") },
+            title = { Text(stringResource(R.string.backup_recovery_title)) },
             text = {
                 Column {
-                    Text("If you forget the password, this code opens your backups. Keep it somewhere safe, not only on this phone.")
+                    Text(stringResource(R.string.backup_recovery_text))
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(code, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 }
             },
-            confirmButton = { Button(onClick = { recoveryCodeToShow = null }) { Text("I've saved it") } }
+            confirmButton = { Button(onClick = { recoveryCodeToShow = null }) { Text(stringResource(R.string.backup_recovery_saved)) } }
         )
     }
 
@@ -384,12 +383,7 @@ fun BackupRestoreScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            AppTopAppBar(
-                title = "Backup & Restore",
-                showBackButton = true,
-                onBackPressed = { navController.popBackStack() },
-                showDefaultMenu = true,
-            )
+            LibraryTopBar(stringResource(R.string.title_backup), onBack = { navController.popBackStack() })
         },
         snackbarHost = { SnackbarHost(snackbar) }
     ) { paddingValues ->
@@ -399,48 +393,40 @@ fun BackupRestoreScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp)
+                .padding(16.dp)
         ) {
             // Main Backup Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+                shape = MaterialTheme.shapes.extraLarge,
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(28.dp),
+                        .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
                         imageVector = Icons.Default.Backup,
-                        contentDescription = "Backup",
-                        modifier = Modifier.size(64.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        contentDescription = stringResource(R.string.backup_action),
+                        modifier = Modifier.size(48.dp)
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = "Your data stays on this device",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.primary
+                        text = stringResource(R.string.backup_stays_title),
+                        style = MaterialTheme.typography.headlineSmall,
+                        textAlign = TextAlign.Center
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "LibraryUp doesn't upload your students' records. Save a backup file " +
-                            "yourself before changing phones or reinstalling, or turn on " +
-                            "Google Drive backup below.",
-                        fontSize = 16.sp,
+                        text = stringResource(R.string.backup_stays_text),
+                        style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
 
@@ -464,7 +450,7 @@ fun BackupRestoreScreen(navController: NavController) {
                             ) {
                                 Icon(Icons.Default.FolderOpen, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Restore")
+                                Text(stringResource(R.string.backup_restore))
                             }
                             Button(
                                 onClick = { exportLauncher.launch(BackupManager.suggestedFileName()) },
@@ -472,7 +458,7 @@ fun BackupRestoreScreen(navController: NavController) {
                             ) {
                                 Icon(Icons.Default.Save, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Backup")
+                                Text(stringResource(R.string.backup_action))
                             }
                         }
 
@@ -496,17 +482,17 @@ fun BackupRestoreScreen(navController: NavController) {
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
             ) {
                 Row(modifier = Modifier.fillMaxWidth().padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Password-protect backups", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(R.string.backup_password_protect), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            if (!secrets.isAvailable) "Not available on this phone."
-                            else if (protectionOn) "On. Backup files and Drive backups are encrypted (AES-256)."
-                            else "Encrypt backups so only you can open them. Recommended: they contain students' ID proofs.",
-                            fontSize = 14.sp,
+                            if (!secrets.isAvailable) stringResource(R.string.backup_protect_unavailable)
+                            else if (protectionOn) stringResource(R.string.backup_protect_on)
+                            else stringResource(R.string.backup_protect_off),
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -525,10 +511,8 @@ fun BackupRestoreScreen(navController: NavController) {
             // Info Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                )
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
             ) {
                 Column(
                     modifier = Modifier
@@ -536,20 +520,16 @@ fun BackupRestoreScreen(navController: NavController) {
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "What gets backed up?",
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.primary
+                        text = stringResource(R.string.backup_what_title),
+                        style = MaterialTheme.typography.titleSmall
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "• Library settings, shifts, seats and plans\n" +
-                            "• Students, memberships, payments and receipts\n" +
-                            "• Attendance, expenses and the activity log\n" +
-                            "• Student photos and ID proofs",
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                        text = stringResource(R.string.backup_what_list),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -571,8 +551,8 @@ private fun DriveBackupCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -583,10 +563,8 @@ private fun DriveBackupCard(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = "Google Drive backup",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
+                    text = stringResource(R.string.backup_drive_title),
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
 
@@ -594,21 +572,21 @@ private fun DriveBackupCard(
 
             val (statusText, isProblem) = when {
                 !status.enabled ->
-                    "Back up automatically every day on Wi-Fi to a \"LibraryUp Backups\" folder in " +
-                        "your own Google Drive - photos and ID proofs included. LibraryUp can only " +
-                        "see the files it creates there." to false
+                    stringResource(R.string.backup_drive_off_text) to false
                 status.needsReconnect ->
-                    "Google Drive access was removed. Tap \"Back up now\" to reconnect." to true
+                    stringResource(R.string.backup_drive_reconnect) to true
                 status.lastError != null ->
-                    "Last backup failed: ${status.lastError}" to true
+                    stringResource(R.string.backup_drive_last_failed, status.lastError.orEmpty()) to true
                 status.lastBackupAt != null ->
-                    "On - last backup ${formatInstant(Instant.ofEpochMilli(status.lastBackupAt))}. " +
-                        "Backs up daily on Wi-Fi." to false
-                else -> "On - backs up daily on Wi-Fi." to false
+                    stringResource(
+                        R.string.backup_drive_on_last,
+                        formatInstant(Instant.ofEpochMilli(status.lastBackupAt))
+                    ) to false
+                else -> stringResource(R.string.backup_drive_on) to false
             }
             Text(
                 text = statusText,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = if (isProblem) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
             )
 
@@ -622,12 +600,12 @@ private fun DriveBackupCard(
                     onClick = onRestore,
                     enabled = !isWorking,
                     modifier = Modifier.weight(1f)
-                ) { Text("Restore") }
+                ) { Text(stringResource(R.string.backup_restore)) }
                 Button(
                     onClick = if (status.enabled) onBackUpNow else onTurnOn,
                     enabled = !isWorking,
                     modifier = Modifier.weight(1f)
-                ) { Text(if (status.enabled) "Back up now" else "Turn on") }
+                ) { Text(stringResource(if (status.enabled) R.string.backup_now else R.string.action_turn_on)) }
             }
 
             if (status.enabled) {
@@ -635,7 +613,7 @@ private fun DriveBackupCard(
                     onClick = onTurnOff,
                     enabled = !isWorking,
                     modifier = Modifier.align(Alignment.End)
-                ) { Text("Turn off") }
+                ) { Text(stringResource(R.string.action_turn_off)) }
             }
         }
     }
@@ -645,33 +623,43 @@ private fun DriveBackupCard(
 private fun ReplaceAllDataDialog(source: String, onDismiss: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Replace all data on this device?") },
+        title = { Text(stringResource(R.string.backup_replace_title)) },
         text = {
-            Text(
-                "Restoring $source replaces every student, seat, payment and attendance record " +
-                    "currently on this device with what's in it. This can't be undone."
-            )
+            Text(stringResource(R.string.backup_replace_text, source))
         },
-        confirmButton = { Button(onClick = onConfirm) { Text("Replace") } },
-        dismissButton = { OutlinedButton(onClick = onDismiss) { Text("Cancel") } }
+        confirmButton = { Button(onClick = onConfirm) { Text(stringResource(R.string.action_replace)) } },
+        dismissButton = { OutlinedButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
     )
 }
 
-private fun backedUpMessage(summary: BackupSummary): String {
-    val photos = if (summary.attachmentCount > 0) ", ${summary.attachmentCount} photos/documents" else ""
-    val missing = if (summary.attachmentsSkipped > 0) {
-        " (${summary.attachmentsSkipped} file(s) couldn't be read and were left out)"
-    } else {
-        ""
+/** "5 students, 12 payments, 3 photos/documents" in the app's language. */
+private fun summaryCounts(context: Context, summary: BackupSummary): String {
+    val parts = mutableListOf(
+        context.getString(R.string.backup_count_students, summary.studentCount),
+        context.getString(R.string.backup_count_payments, summary.paymentCount)
+    )
+    if (summary.attachmentCount > 0) {
+        parts += context.getString(R.string.backup_count_files, summary.attachmentCount)
     }
-    val lock = if (summary.encrypted) " (encrypted)" else ""
-    return "Backed up ${summary.studentCount} students, ${summary.paymentCount} payments$photos$missing$lock"
+    return parts.joinToString(", ")
 }
 
-private fun restoredMessage(summary: BackupSummary): String {
-    val photos = if (summary.attachmentCount > 0) ", ${summary.attachmentCount} photos/documents" else ""
-    return "Restored ${summary.studentCount} students, ${summary.paymentCount} payments$photos"
+private fun backedUpMessage(context: Context, summary: BackupSummary, toDrive: Boolean = false): String {
+    val notes = buildList {
+        if (summary.attachmentsSkipped > 0) {
+            add(context.getString(R.string.backup_files_skipped, summary.attachmentsSkipped))
+        }
+        if (summary.encrypted) add(context.getString(R.string.backup_encrypted))
+    }
+    val counts = (listOf(summaryCounts(context, summary)) + notes).joinToString(" ")
+    return context.getString(
+        if (toDrive) R.string.backup_msg_backed_up_drive else R.string.backup_msg_backed_up,
+        counts
+    )
 }
+
+private fun restoredMessage(context: Context, summary: BackupSummary): String =
+    context.getString(R.string.backup_msg_restored, summaryCounts(context, summary))
 
 private val backupTimeFormat: DateTimeFormatter =
     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
@@ -709,7 +697,7 @@ private fun PasswordDialog(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text(if (confirmTwice) "Password (at least 6 characters)" else "Password or recovery code") },
+                    label = { Text(stringResource(if (confirmTwice) R.string.backup_password_min else R.string.backup_password_or_code)) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation()
                 )
@@ -717,7 +705,7 @@ private fun PasswordDialog(
                     OutlinedTextField(
                         value = again,
                         onValueChange = { again = it },
-                        label = { Text("Repeat password") },
+                        label = { Text(stringResource(R.string.backup_password_repeat)) },
                         singleLine = true,
                         isError = again.isNotEmpty() && mismatch,
                         visualTransformation = PasswordVisualTransformation()
@@ -726,8 +714,8 @@ private fun PasswordDialog(
             }
         },
         confirmButton = {
-            Button(enabled = password.isNotEmpty() && !tooShort && !mismatch, onClick = { onConfirm(password) }) { Text("OK") }
+            Button(enabled = password.isNotEmpty() && !tooShort && !mismatch, onClick = { onConfirm(password) }) { Text(stringResource(R.string.action_ok)) }
         },
-        dismissButton = { OutlinedButton(onClick = onDismiss) { Text("Cancel") } }
+        dismissButton = { OutlinedButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
     )
 }

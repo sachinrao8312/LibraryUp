@@ -1,6 +1,6 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
-import ai.sach.libraryup.ui.common.composables.AppTopAppBar
+import ai.sach.libraryup.ui.library.LibraryTopBar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,12 +40,7 @@ fun PrivacyPolicyScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            AppTopAppBar(
-                title = "Privacy Policy",
-                showBackButton = true,
-                onBackPressed = { navController.popBackStack() },
-                showDefaultMenu = true,
-            )
+            LibraryTopBar("Privacy Policy", onBack = { navController.popBackStack() })
         }
     ) { paddingValues ->
         Column(

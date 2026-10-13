@@ -21,9 +21,11 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 /**
- * LibraryUp's local database. Fresh schema at version 1 (no RentUp migrations: there are
- * no LibraryUp users yet). From here on every schema change needs a real Migration;
- * never fall back to destructive migration on upgrade, it would wipe a library's records.
+ * LibraryUp's local database. Still at version 1: nothing has shipped, so v1 is edited in
+ * place until the first Play release (uninstall old test builds after a schema change).
+ * After the first release every schema change needs a real Migration and a test against
+ * the exported schema in app/schemas; never fall back to destructive migration, it would
+ * wipe a library's records.
  */
 @Database(
     entities = [
@@ -41,7 +43,7 @@ import androidx.room.TypeConverters
         ActivityLog::class
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class LibraryUpDatabase : RoomDatabase() {

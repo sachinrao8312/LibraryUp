@@ -141,4 +141,25 @@ object SeatMap {
         val today = bookings.filter { it.activeOn(day) }
         return shifts.filterValues { w -> today.none { it.window.overlaps(w) } }.keys
     }
+
+    /** How many seats are free in each shift on [day]; [seatBookings] has one entry per active seat. */
+    fun freeSeatsPerShift(
+        shifts: Map<Long, ShiftWindow>,
+        seatBookings: Collection<Collection<SeatBooking>>,
+        day: LocalDate
+    ): Map<Long, Int> {
+        val free = seatBookings.map { freeShiftIds(shifts, it, day) }
+        return shifts.keys.associateWith { id -> free.count { id in it } }
+    }
+}
+
+object SeatLabels {
+    /** Normalised (block, label) pairs that appear more than once; labels compare case-insensitively. */
+    fun duplicates(seats: Collection<Pair<String, String>>): Set<Pair<String, String>> =
+        seats.map { (block, label) -> block.trim().lowercase() to label.trim().lowercase() }
+            .groupingBy { it }.eachCount().filterValues { it > 1 }.keys
+
+    /** True when [label] is already used by another seat in [block]. */
+    fun isTaken(block: String, label: String, others: Collection<Pair<String, String>>): Boolean =
+        others.any { (b, l) -> b.trim().equals(block.trim(), true) && l.trim().equals(label.trim(), true) }
 }

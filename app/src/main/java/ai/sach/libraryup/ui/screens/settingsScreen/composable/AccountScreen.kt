@@ -1,9 +1,8 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
 import ai.sach.libraryup.R
-import ai.sach.libraryup.ui.common.composables.AppTopAppBar
-
 import ai.sach.libraryup.ui.common.responsiveness.LocalDimensions
+import ai.sach.libraryup.ui.library.LibraryTopBar
 import ai.sach.libraryup.ui.screens.authentication.AuthRepository
 import ai.sach.libraryup.ui.screens.authentication.AuthViewModel
 import ai.sach.libraryup.ui.screens.authentication.AuthViewModelFactory
@@ -84,6 +83,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -161,10 +161,10 @@ fun AccountScreen(
                 Log.e("AccountScreen", "Received dummy Google Sign-In result: $errorType - $errorMessage")
                 
                 val userMessage = when (errorType) {
-                    "PLAY_SERVICES_UNAVAILABLE" -> "Google Play Services is not available on this device."
-                    "INTENT_CREATION_ERROR" -> "Unable to connect to Google services."
-                    "CRITICAL_ERROR" -> "A critical error occurred while connecting to Google."
-                    else -> "Google Sign-In is not available at this time."
+                    "PLAY_SERVICES_UNAVAILABLE" -> context.getString(R.string.account_error_play_services)
+                    "INTENT_CREATION_ERROR" -> context.getString(R.string.account_error_connect)
+                    "CRITICAL_ERROR" -> context.getString(R.string.account_error_critical)
+                    else -> context.getString(R.string.account_error_google_unavailable)
                 }
                 
                 Toast.makeText(context, "$userMessage ${errorMessage ?: ""}", Toast.LENGTH_LONG).show()
@@ -178,11 +178,11 @@ fun AccountScreen(
             } else {
                 // User canceled or failed sign-in
                 Log.e("AccountScreen", "Google Sign-In was canceled or failed")
-                Toast.makeText(context, "Sign-in was canceled", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.account_sign_in_canceled), Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             Log.e("AccountScreen", "Google conversion failed", e)
-            Toast.makeText(context, "Conversion failed: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.account_conversion_failed, e.message ?: ""), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -197,7 +197,8 @@ fun AccountScreen(
                 val currentUserId = authRepository.getCurrentUserId()
                 if (currentUserId != null) {
                     authRepository.getUserData(currentUserId)?.let { userData ->
-                        name = userData.name.takeIf { it.isNotBlank() } ?: if (isGuestUser) "Guest User" else "User"
+                        name = userData.name.takeIf { it.isNotBlank() }
+                            ?: context.getString(if (isGuestUser) R.string.label_guest_user else R.string.label_user)
                         email = userData.email ?: ""
                         phone = userData.phoneNumber.takeIf { it.isNotBlank() } ?: ""
                         storedPhotoUrl = userData.photoUrl
@@ -276,7 +277,7 @@ fun AccountScreen(
         if (isGuestUser && !isLoading) {
             delay(500) // Small delay to let the screen load
             snackbarHostState.showSnackbar(
-                message = "🔒 Sign in with Google to sync your data across devices and access advanced features!",
+                message = context.getString(R.string.account_guest_snackbar),
                 duration = SnackbarDuration.Long
             )
         }
@@ -284,12 +285,7 @@ fun AccountScreen(
 
     Scaffold(
         topBar = {
-            AppTopAppBar(
-                title = if (editMode) "Edit Profile" else "Account",
-                showBackButton = true,
-                onBackPressed = { navController.popBackStack() },
-                showDefaultMenu = true,
-            )
+            LibraryTopBar(stringResource(if (editMode) R.string.account_edit_profile else R.string.settings_account), onBack = { navController.popBackStack() })
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -334,11 +330,11 @@ fun AccountScreen(
                                 if (signInIntent != null) {
                                     googleSignInLauncher.launch(signInIntent)
                                 } else {
-                                    Toast.makeText(context, "Google Sign-In is not available", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.account_error_google_unavailable), Toast.LENGTH_SHORT).show()
                                 }
                             } catch (e: Exception) {
                                 Log.e("AccountScreen", "Error launching Google Sign-In", e)
-                                Toast.makeText(context, "Unable to connect to Google services: ${e.message}", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, context.getString(R.string.account_error_connect_detail, e.message ?: ""), Toast.LENGTH_LONG).show()
                             }
                         },
                         isSmallScreen = isSmallScreen
@@ -425,13 +421,13 @@ fun AccountScreen(
                             if (result.isSuccess) {
                                 editMode = false
                                 showSaveDialog = false
-                                snackbarHostState.showSnackbar("Profile updated successfully")
+                                snackbarHostState.showSnackbar(context.getString(R.string.account_profile_updated))
                             } else {
-                                snackbarHostState.showSnackbar("Failed to update profile: ${result.exceptionOrNull()?.message}")
+                                snackbarHostState.showSnackbar(context.getString(R.string.account_profile_update_failed, result.exceptionOrNull()?.message ?: ""))
                             }
                         } catch (e: Exception) {
                             Log.e("AccountScreen", "Error saving profile", e)
-                            snackbarHostState.showSnackbar("Error saving profile: ${e.message}")
+                            snackbarHostState.showSnackbar(context.getString(R.string.account_profile_update_failed, e.message ?: ""))
                         }
                     }
                 },
@@ -502,13 +498,13 @@ private fun ModernGuestBanner(
             // Security icon
             Icon(
                 imageVector = Icons.Default.Security,
-                contentDescription = "Security",
+                contentDescription = stringResource(R.string.settings_security),
                 modifier = Modifier.size(if (isSmallScreen) 32.dp else 40.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
             
             Text(
-                text = "Guest Account",
+                text = stringResource(R.string.account_guest_title),
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontSize = if (isSmallScreen) 15.sp else 17.sp
                 ),
@@ -517,7 +513,7 @@ private fun ModernGuestBanner(
             )
             
             Text(
-                text = "Guest accounts are valid for 3 months. Your data is saved locally until then — sign in with Google anytime to keep it safe and sync across devices.",
+                text = stringResource(R.string.account_guest_text),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = if (isSmallScreen) 12.sp else 13.sp
                 ),
@@ -536,12 +532,12 @@ private fun ModernGuestBanner(
                 // Google logo
                 Image(
                     painter = painterResource(id = R.drawable.ic_google),
-                    contentDescription = "Google Logo",
+                    contentDescription = stringResource(R.string.auth_google_logo),
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    "Sign in with Google",
+                    stringResource(R.string.account_sign_in_google),
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -608,7 +604,7 @@ private fun ModernProfilePicture(
                             .data(profileImageUri)
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Profile Picture",
+                        contentDescription = stringResource(R.string.account_profile_picture),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize(),
                     )
@@ -620,7 +616,7 @@ private fun ModernProfilePicture(
                             .data(photoUrl)
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Profile Picture",
+                        contentDescription = stringResource(R.string.account_profile_picture),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize(),
                         loading = {
@@ -671,7 +667,7 @@ private fun ModernProfilePicture(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Camera,
-                        contentDescription = "Change Profile Picture",
+                        contentDescription = stringResource(R.string.account_change_profile_picture),
                         tint = Color.White,
                         modifier = Modifier.size(if (isSmallScreen) 20.dp else 24.dp)
                     )
@@ -716,7 +712,7 @@ private fun ModernProfileFields(
                 ModernTextField(
                     value = name,
                     onValueChange = onNameChange,
-                    label = "Full Name",
+                    label = stringResource(R.string.full_name),
                     icon = Icons.Default.Person,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     isSmallScreen = isSmallScreen
@@ -725,7 +721,7 @@ private fun ModernProfileFields(
                 ModernTextField(
                     value = email,
                     onValueChange = onEmailChange,
-                    label = "Email",
+                    label = stringResource(R.string.email),
                     icon = Icons.Default.Email,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
@@ -737,7 +733,7 @@ private fun ModernProfileFields(
                 // Read-only display with modern design
                 ModernProfileInfoItem(
                     icon = Icons.Default.Person,
-                    label = "Full Name",
+                    label = stringResource(R.string.full_name),
                     value = name,
                     isSmallScreen = isSmallScreen
                 )
@@ -749,8 +745,8 @@ private fun ModernProfileFields(
                 
                 ModernProfileInfoItem(
                     icon = Icons.Default.Email,
-                    label = "Email",
-                    value = email.ifBlank { "Not provided" },
+                    label = stringResource(R.string.email),
+                    value = if (email.isBlank()) stringResource(R.string.account_not_provided) else email,
                     isSmallScreen = isSmallScreen
                 )
             }
@@ -891,7 +887,7 @@ private fun ModernActionButtons(
                 )
             ) {
                 Text(
-                    "Save Changes",
+                    stringResource(R.string.account_save_changes),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = if (isSmallScreen) 14.sp else 16.sp
                     ),
@@ -910,7 +906,7 @@ private fun ModernActionButtons(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    "Cancel",
+                    stringResource(R.string.action_cancel),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = if (isSmallScreen) 14.sp else 16.sp
                     ),
@@ -932,7 +928,7 @@ private fun ModernActionButtons(
                 )
             ) {
                 Text(
-                    "Edit Profile",
+                    stringResource(R.string.account_edit_profile),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = if (isSmallScreen) 14.sp else 16.sp
                     ),
@@ -961,7 +957,7 @@ private fun ModernSaveDialog(
         shape = RoundedCornerShape(20.dp),
         title = {
             Text(
-                text = "Save Changes",
+                text = stringResource(R.string.account_save_changes),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontSize = if (isSmallScreen) 18.sp else 20.sp
                 ),
@@ -972,7 +968,7 @@ private fun ModernSaveDialog(
         },
         text = {
             Text(
-                text = "Do you want to save your profile changes?",
+                text = stringResource(R.string.account_save_confirm),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = if (isSmallScreen) 13.sp else 15.sp
                 ),
@@ -989,7 +985,7 @@ private fun ModernSaveDialog(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    "Save",
+                    stringResource(R.string.action_save),
                     fontWeight = FontWeight.Medium,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = if (isSmallScreen) 14.sp else 16.sp
@@ -1002,7 +998,7 @@ private fun ModernSaveDialog(
                 onClick = onDismiss
             ) {
                 Text(
-                    "Cancel",
+                    stringResource(R.string.action_cancel),
                     fontWeight = FontWeight.Medium,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = if (isSmallScreen) 14.sp else 16.sp

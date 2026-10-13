@@ -23,9 +23,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,7 +39,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -50,8 +53,10 @@ import androidx.compose.ui.unit.dp
 fun SeatMapScreen(
     state: LibraryState,
     onOpenStudent: (Long) -> Unit,
-    onAssignSeat: (seatId: Long, shiftId: Long?) -> Unit
+    onAssignSeat: (seatId: Long, shiftId: Long?) -> Unit,
+    withPro: (() -> Unit) -> Unit
 ) {
+    val context = LocalContext.current
     var shiftFilter by rememberSaveable { mutableStateOf<Long?>(null) }
     var openSeat by rememberSaveable { mutableStateOf<Long?>(null) }
 
@@ -72,13 +77,18 @@ fun SeatMapScreen(
         }
         val counts = state.seats.groupingBy { stateOf(it) }.eachCount()
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            Modifier.fillMaxWidth().padding(start = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            LegendDot(StatusColors.free, "${stringResource(R.string.seat_free)} ${counts[SeatState.FREE] ?: 0}")
-            if (shiftFilter == null) LegendDot(StatusColors.partial, "${stringResource(R.string.seat_partial)} ${counts[SeatState.PARTIAL] ?: 0}")
-            LegendDot(StatusColors.full, "${stringResource(R.string.seat_full)} ${counts[SeatState.FULL] ?: 0}")
-            LegendDot(StatusColors.overdue, "${stringResource(R.string.seat_overdue)} ${counts[SeatState.OVERDUE] ?: 0}")
+            LegendDot(SeatState.FREE.tone(), "${stringResource(R.string.seat_free)} ${counts[SeatState.FREE] ?: 0}")
+            if (shiftFilter == null) LegendDot(SeatState.PARTIAL.tone(), "${stringResource(R.string.seat_partial)} ${counts[SeatState.PARTIAL] ?: 0}")
+            LegendDot(SeatState.FULL.tone(), "${stringResource(R.string.seat_full)} ${counts[SeatState.FULL] ?: 0}")
+            LegendDot(SeatState.OVERDUE.tone(), "${stringResource(R.string.seat_overdue)} ${counts[SeatState.OVERDUE] ?: 0}")
+            Spacer(Modifier.weight(1f))
+            IconButton(onClick = { withPro { shareVacancyPoster(context, state) } }, enabled = state.seats.isNotEmpty()) {
+                Icon(Icons.Default.Campaign, contentDescription = stringResource(R.string.action_vacancy_poster))
+            }
         }
         if (state.seats.isEmpty()) {
             EmptyState(stringResource(R.string.empty_seats))
@@ -100,7 +110,7 @@ fun SeatMapScreen(
                         }
                     }
                     items(seats, key = { it.id }) { seat ->
-                        SeatTile(seat.label, stateOf(seat).color()) { openSeat = seat.id }
+                        SeatTile(seat.label, stateOf(seat).tone()) { openSeat = seat.id }
                     }
                 }
             }
@@ -120,15 +130,15 @@ fun SeatMapScreen(
 }
 
 @Composable
-private fun SeatTile(label: String, color: Color, onClick: () -> Unit) {
+private fun SeatTile(label: String, tone: Tone, onClick: () -> Unit) {
     Box(
         Modifier
             .aspectRatio(1f)
-            .background(color.copy(alpha = 0.85f), RoundedCornerShape(10.dp))
+            .background(tone.container, MaterialTheme.shapes.medium)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Text(label, color = Color.White, fontWeight = FontWeight.Bold)
+        Text(label, color = tone.content, style = MaterialTheme.typography.titleMedium)
     }
 }
 

@@ -11,63 +11,21 @@
 
     <!-- Authentication screens -->
     <string name="sign_in">Sign In</string>
-    <string name="sign_up">Sign Up</string>
-    <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="confirm_password">Confirm Password</string>
-    <string name="forgot_password">Forgot Password?</string>
-    <string name="phone_number">Phone Number</string>
-    <string name="verification_code">Verification Code</string>
-    <string name="full_name">Full Name</string>
 
     <!-- Authentication actions -->
-    <string name="sign_in_with_google">Continue with Google</string>
-    <string name="sign_in_with_phone">Continue with Phone</string>
-    <string name="continue_as_guest">Continue as Guest</string>
-    <string name="create_account">Create Account</string>
-    <string name="reset_password">Reset Password</string>
-    <string name="send_verification_code">Send Verification Code</string>
-    <string name="verify">Verify</string>
-    <string name="change_phone_number">Change Phone Number</string>
-    <string name="back_to_login">Back to Login</string>
 
     <!-- Auth form prompts and messages -->
-    <string name="dont_have_account">Don\'t have an account?</string>
-    <string name="already_have_account">Already have an account?</string>
-    <string name="enter_phone_number">Enter your phone number</string>
-    <string name="enter_verification_code">Enter verification code</string>
-    <string name="we_sent_code">We\'ve sent a 6-digit code to your phone</string>
-    <string name="check_your_email">Check Your Email</string>
-    <string name="reset_password_instructions">Enter your email address and we\'ll send you a link to reset your password</string>
-    <string name="we_sent_reset_email">We\'ve sent a password reset link to:</string>
-    <string name="check_spam_folder">Didn\'t receive the email? Check your spam folder or try again.</string>
 
     <!-- Error messages -->
-    <string name="error_required_field">This field is required</string>
-    <string name="error_invalid_email">Please enter a valid email address</string>
-    <string name="error_password_too_short">Password must be at least 6 characters</string>
-    <string name="error_passwords_dont_match">Passwords do not match</string>
-    <string name="error_invalid_phone">Please enter a valid phone number with country code</string>
-    <string name="error_invalid_code">Verification code must be 6 digits</string>
 
 
     <!-- User roles -->
-    <string name="role_admin">Admin</string>
-    <string name="role_property_manager">Property Manager</string>
-    <string name="role_tenant">Tenant</string>
-    <string name="role_user">User</string>
-    <string name="role_guest">Guest</string>
 
 
     <!-- Authentication Screen -->
-    <string name="welcome_title">Welcome to LibraryUp</string>
-    <string name="welcome_subtitle">Seats, students, fees and attendance for your study library</string>
-    <string name="get_started_button">Get Started</string>
 
     <!-- Accessibility -->
-    <string name="app_logo_content_description">LibraryUp logo</string>
-    <string name="get_started_button_description">Get Started as Guest User</string>
 
     <!-- Error Messages -->
-    <string name="auth_error_generic">Authentication failed. Please try again.</string>
 </resources>

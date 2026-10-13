@@ -124,18 +124,15 @@ class BackupManager(
         val zipBytes = ByteArrayOutputStream()
 
         ZipOutputStream(zipBytes).use { zip ->
-            val students = envelope.students.map { s ->
-                val photo = s.photoUri?.let { src ->
-                    val entry = ATTACHMENT_DIR + "photo_${s.id}${extensionOf(src, ".jpg")}"
-                    if (copyIntoZip(zip, src, entry, digest)) { included++; ATTACHMENT_MARKER + entry } else { skipped++; null }
-                }
-                val idProof = s.idProofUri?.let { src ->
-                    val entry = ATTACHMENT_DIR + "idproof_${s.id}${extensionOf(src, ".jpg")}"
-                    if (copyIntoZip(zip, src, entry, digest)) { included++; ATTACHMENT_MARKER + entry } else { skipped++; null }
-                }
-                s.copy(photoUri = photo, idProofUri = idProof)
+            fun attach(src: String?, name: String): String? = src?.let {
+                val entry = ATTACHMENT_DIR + name + extensionOf(it, ".jpg")
+                if (copyIntoZip(zip, it, entry, digest)) { included++; ATTACHMENT_MARKER + entry } else { skipped++; null }
             }
-            val final = envelope.copy(students = students)
+            val students = envelope.students.map { s ->
+                s.copy(photoUri = attach(s.photoUri, "photo_${s.id}"), idProofUri = attach(s.idProofUri, "idproof_${s.id}"))
+            }
+            val profile = envelope.profile.map { it.copy(logoUri = attach(it.logoUri, "logo")) }
+            val final = envelope.copy(students = students, profile = profile)
             val json = gson.toJson(final)
             digest.update(gson.toJson(final.copy(exportedAt = "")).toByteArray(Charsets.UTF_8))
             zip.putNextEntry(ZipEntry(MANIFEST_ENTRY))
@@ -235,7 +232,7 @@ class BackupManager(
             }
             database.withTransaction {
                 database.clearAllTables()
-                dao.restoreProfile(e.profile)
+                dao.restoreProfile(e.profile.map { it.copy(logoUri = resolve(it.logoUri, attachments)) })
                 dao.restoreShifts(e.shifts)
                 dao.restoreSeats(e.seats)
                 dao.restorePlans(e.plans)

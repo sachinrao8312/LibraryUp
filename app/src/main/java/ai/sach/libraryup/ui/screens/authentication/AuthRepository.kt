@@ -587,8 +587,6 @@ class AuthRepository(private val context: Context) {
                 
                 Log.i(TAG, "[MIGRATION_SUCCESS] User data migrated to permanent account for user ${permanentUser.uid}.")
                 
-                // 5. Update references in other collections
-                migrateFirestoreReferences(guestUserId, permanentUser.uid)
 
                 success = true
                 
@@ -720,7 +718,6 @@ class AuthRepository(private val context: Context) {
                 Log.i(TAG, "[MIGRATION_CLEANUP_SUCCESS] Guest user document deleted for guest user $guestUserId.")
                 
                 // 5. Update any references to the guest user ID in other collections in Firestore
-                migrateFirestoreReferences(guestUserId, permanentUser.uid)
 
                 success = true
                 
@@ -1086,51 +1083,4 @@ class AuthRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Migrates references to a guest user ID to the new permanent user ID
-     * across various collections in Firestore
-     */
-    private suspend fun migrateFirestoreReferences(oldGuestId: String, newPermanentId: String) = withContext(Dispatchers.IO) {
-        try {
-            Log.d(TAG, "Starting migration of user references from $oldGuestId to $newPermanentId")
-            
-            // List of collections that might contain references to the user ID
-            val collectionsToUpdate = listOf(
-                "properties",
-                "tenants",
-                "payments",
-                "documents",
-                "settings"
-            )
-            
-            collectionsToUpdate.forEach { collectionName ->
-                try {
-                    // Find documents that reference the old guest ID
-                    val query = firestore.collection(collectionName)
-                        .whereEqualTo("userId", oldGuestId)
-                        .limit(100) // Process in batches if there are many
-                        .get()
-                        .await()
-                    
-                    // Update each document with the new ID
-                    query.documents.forEach { doc ->
-                        firestore.collection(collectionName)
-                            .document(doc.id)
-                            .update("userId", newPermanentId)
-                            .await()
-                    }
-                    
-                    Log.d(TAG, "Updated ${query.size()} documents in $collectionName collection")
-                } catch (e: Exception) {
-                    Log.w(TAG, "Error updating references in $collectionName: ${e.message}")
-                    // Continue with other collections despite errors
-                }
-            }
-            
-            Log.d(TAG, "User reference migration completed")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in migrateFirestoreReferences", e)
-            // Don't throw, as this is a non-critical operation
-        }
-    }
 }

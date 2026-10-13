@@ -1,6 +1,7 @@
 package ai.sach.libraryup.ui.library
 
 import ai.sach.libraryup.R
+import ai.sach.libraryup.data.local.entity.Membership
 import ai.sach.libraryup.data.local.entity.PaymentMode
 import ai.sach.libraryup.data.local.entity.Plan
 import ai.sach.libraryup.data.local.entity.Seat
@@ -13,7 +14,6 @@ import ai.sach.libraryup.domain.FeeCycleMode
 import ai.sach.libraryup.domain.PhoneNumbers
 import ai.sach.libraryup.domain.SeatBooking
 import ai.sach.libraryup.domain.SeatRules
-import ai.sach.libraryup.data.local.entity.Membership
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -83,6 +83,7 @@ fun StudentFormScreen(
     var address by rememberSaveable { mutableStateOf(existing?.student?.address ?: "") }
     var exam by rememberSaveable { mutableStateOf(existing?.student?.exam ?: "") }
     var notes by rememberSaveable { mutableStateOf(existing?.student?.notes ?: "") }
+    var messageHindi by rememberSaveable { mutableStateOf(existing?.student?.messageHindi) }
     var photoUri by rememberSaveable { mutableStateOf(existing?.student?.photoUri) }
     var idProofUri by rememberSaveable { mutableStateOf(existing?.student?.idProofUri) }
 
@@ -150,6 +151,12 @@ fun StudentFormScreen(
             TextInput(guardianPhone, { guardianPhone = it }, stringResource(R.string.field_guardian_phone), keyboardType = KeyboardType.Phone)
             TextInput(address, { address = it }, stringResource(R.string.field_address), singleLine = false)
             TextInput(exam, { exam = it }, stringResource(R.string.field_exam))
+            Text(stringResource(R.string.field_message_language), style = MaterialTheme.typography.labelMedium)
+            ChipRow {
+                listOf(null to R.string.language_library_default, false to R.string.language_english, true to R.string.language_hindi).forEach { (value, label) ->
+                    FilterChip(selected = messageHindi == value, onClick = { messageHindi = value }, label = { Text(stringResource(label)) })
+                }
+            }
             TextInput(notes, { notes = it }, stringResource(R.string.field_notes), singleLine = false)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = { photoPicker.launch(arrayOf("image/*")) }, modifier = Modifier.weight(1f)) {
@@ -203,7 +210,7 @@ fun StudentFormScreen(
                     val student = (existing?.student ?: Student(name = "", phone = "")).copy(
                         name = name.trim(), phone = phone.trim(), fatherName = fatherName.trim(),
                         guardianPhone = guardianPhone.trim(), address = address.trim(), exam = exam.trim(),
-                        notes = notes.trim(), photoUri = photoUri, idProofUri = idProofUri
+                        notes = notes.trim(), photoUri = photoUri, idProofUri = idProofUri, messageHindi = messageHindi
                     )
                     val membership = if (admitting && plan != null && shift != null && seatId != null && due != null) {
                         LibraryRepository.NewMembership(seatId!!, shift.id, plan, plan.name, start, due, fee.toAmount(), discount.toAmount())

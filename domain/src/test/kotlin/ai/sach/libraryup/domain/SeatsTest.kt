@@ -106,6 +106,13 @@ class SeatsTest {
     }
 
     @Test
+    fun `free seats per shift for the vacancy poster`() {
+        // Seat 1: morning taken. Seat 2: full day taken. Seat 3: empty.
+        val seats = listOf(listOf(booking(1)), listOf(booking(2, seat = 2, window = fullDay)), emptyList())
+        assertEquals(mapOf(1L to 1, 2L to 2, 3L to 2), SeatMap.freeSeatsPerShift(shifts, seats, day))
+    }
+
+    @Test
     fun `occupancy percentages`() {
         val bookings = listOf(booking(1, seat = 1), booking(2, seat = 2, window = fullDay))
         // 2 seats x 3 shifts = 6 slots; seat 1 uses 1, seat 2 uses 3.
@@ -113,5 +120,15 @@ class SeatsTest {
         assertEquals(100, Reports.shiftOccupancyPercent(2, morning, bookings, day))
         assertEquals(50, Reports.shiftOccupancyPercent(2, evening, bookings, day))
         assertEquals(0, Reports.occupancyPercent(0, shifts, bookings, day))
+    }
+}
+
+class SeatLabelsTest {
+    @org.junit.Test
+    fun `duplicate labels are per block and case-insensitive`() {
+        val seats = listOf("A" to "1", "a" to " 1", "B" to "1", "A" to "2")
+        org.junit.Assert.assertEquals(setOf("a" to "1"), SeatLabels.duplicates(seats))
+        org.junit.Assert.assertTrue(SeatLabels.isTaken("A", "2", seats))
+        org.junit.Assert.assertFalse(SeatLabels.isTaken("B", "2", seats))
     }
 }

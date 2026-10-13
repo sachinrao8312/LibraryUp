@@ -1,5 +1,6 @@
 package ai.sach.libraryup.ui.screens.settingsScreen.composable
 
+import ai.sach.libraryup.R
 import ai.sach.libraryup.ui.theme.AppColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,12 +53,12 @@ fun LanguageScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Language") },
+                title = { Text(stringResource(R.string.language_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 }
@@ -95,13 +97,13 @@ fun LanguageScreen(navController: NavController) {
                         .padding(horizontal = 16.dp)
                 ) {
                     Text(
-                        text = "App Language",
+                        text = stringResource(R.string.language_app),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
                     
                     Text(
-                        text = "Select your preferred language",
+                        text = stringResource(R.string.language_select),
                         color = Color.Gray,
                         fontSize = 14.sp
                     )
@@ -143,7 +145,7 @@ fun LanguageScreen(navController: NavController) {
                             if (isSelected) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
-                                    contentDescription = "Selected",
+                                    contentDescription = stringResource(R.string.cd_selected),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -171,14 +173,14 @@ fun LanguageScreen(navController: NavController) {
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "Language Information",
+                        text = stringResource(R.string.language_info_title),
                         fontWeight = FontWeight.Medium
                     )
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
-                        text = "The app language affects all menus, buttons, and text throughout the app. It does not change the content of your data.",
+                        text = stringResource(R.string.language_info_menus),
                         color = Color.Gray,
                         fontSize = 14.sp
                     )
@@ -186,7 +188,7 @@ fun LanguageScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
-                        text = "Some system-level notifications might still appear in your device's default language.",
+                        text = stringResource(R.string.language_info_system),
                         color = Color.Gray,
                         fontSize = 14.sp
                     )
@@ -196,13 +198,13 @@ fun LanguageScreen(navController: NavController) {
         
         // Language change confirmation dialog
         if (showLanguageChangeDialog) {
-            val languageName = languages.first { it.code == pendingLanguage }.name
+            val languageName = languages.first { it.code == pendingLanguage }.localName
             
             AlertDialog(
                 onDismissRequest = { showLanguageChangeDialog = false },
-                title = { Text("Change Language") },
+                title = { Text(stringResource(R.string.language_change_title)) },
                 text = { 
-                    Text("Are you sure you want to change the app language to $languageName? The app will restart to apply the changes.")
+                    Text(stringResource(R.string.language_change_text, languageName))
                 },
                 confirmButton = {
                     Button(
@@ -215,12 +217,12 @@ fun LanguageScreen(navController: NavController) {
                             containerColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
-                        Text("Change")
+                        Text(stringResource(R.string.action_change))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showLanguageChangeDialog = false }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
             )

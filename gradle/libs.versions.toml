@@ -38,6 +38,7 @@ room = "2.7.1"
 
 # Networking
 retrofit = "2.9.0"
+gson = "2.10.1"
 okhttp = "4.9.3"
 okhttpLogging = "4.9.3"
 libphonenumber = "8.13.39"
@@ -56,6 +57,13 @@ fragmentKtx = "1.8.6"
 
 # Testing
 junit = "4.13.2"
+robolectric = "4.14.1"
+zxingEmbedded = "4.3.0"
+billing = "7.1.1"
+playServicesAds = "23.6.0"
+roborazzi = "1.43.1"
+legacySupportCoreUtils = "1.0.0"
+androidxTestCore = "1.6.1"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 
@@ -131,6 +139,7 @@ desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", ver
 #=====================================================================
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpLogging" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
@@ -140,6 +149,15 @@ libphonenumber = { group = "com.googlecode.libphonenumber", name = "libphonenumb
 # Testing
 #=====================================================================
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-legacy-support-core-utils = { group = "androidx.legacy", name = "legacy-support-core-utils", version.ref = "legacySupportCoreUtils" }
+billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+firebase-config-ktx = { group = "com.google.firebase", name = "firebase-config-ktx" }
+roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
+zxing-android-embedded = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingEmbedded" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+androidx-test-core = { group = "androidx.test", name = "core-ktx", version.ref = "androidxTestCore" }
 okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okhttp" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

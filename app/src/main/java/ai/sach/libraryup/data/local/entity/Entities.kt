@@ -1,6 +1,8 @@
 package ai.sach.libraryup.data.local.entity
 
 import ai.sach.libraryup.domain.FeeCycleMode
+import ai.sach.libraryup.domain.LateFeeRule
+import ai.sach.libraryup.domain.MessageTemplates
 import ai.sach.libraryup.domain.PlanDuration
 import ai.sach.libraryup.domain.SeatBooking
 import ai.sach.libraryup.domain.ShiftWindow
@@ -9,7 +11,9 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * Room schema for LibraryUp. Amounts are whole rupees (Long), dates are [LocalDate]
@@ -39,8 +43,33 @@ data class LibraryProfile(
     val whatsappPackage: String = WHATSAPP,
     /** Language of messages sent to students: "en" or "hi". */
     val messageLanguage: String = "en",
+    /** Owner's own wording for each message; null = the built-in template. */
+    val templateFeeDue: String? = null,
+    val templateExpiring: String? = null,
+    val templateWelcome: String? = null,
+    val templateHoliday: String? = null,
+    /** Automatic late fee: rupees per day after the grace period (0 = off), and its cap (0 = none). */
+    val lateFeePerDay: Long = 0,
+    val lateFeeMax: Long = 0,
     val createdAt: Long = System.currentTimeMillis()
 ) {
+    val lateFeeRule: LateFeeRule get() = LateFeeRule(lateFeePerDay, lateFeeMax)
+
+    /** The Pro trial runs from the day the library was set up (kept across backup and restore). */
+    val trialStartedOn: LocalDate get() = Instant.ofEpochMilli(createdAt).atZone(ZoneId.systemDefault()).toLocalDate()
+
+    /** The owner's template for [kind] if set, else the built-in one in [messageLanguage]. */
+    fun template(kind: MessageTemplates.Kind, hindi: Boolean = messageLanguage == "hi"): String {
+        val custom = when (kind) {
+            MessageTemplates.Kind.FEE_DUE -> templateFeeDue
+            MessageTemplates.Kind.EXPIRING -> templateExpiring
+            MessageTemplates.Kind.WELCOME -> templateWelcome
+            MessageTemplates.Kind.HOLIDAY -> templateHoliday
+            MessageTemplates.Kind.RECEIPT -> null
+        }
+        return custom?.takeIf { it.isNotBlank() } ?: MessageTemplates.default(kind, hindi)
+    }
+
     companion object {
         const val SINGLETON_ID = 1L
         const val WHATSAPP = "com.whatsapp"
@@ -120,6 +149,8 @@ data class Student(
     val idProofUri: String? = null,
     val joinDate: LocalDate = LocalDate.now(),
     val notes: String = "",
+    /** Hindi messages for this student; null = the library's default language. */
+    val messageHindi: Boolean? = null,
     val status: StudentStatus = StudentStatus.ACTIVE,
     /** Set while [status] is FROZEN. */
     val frozenSince: LocalDate? = null,
@@ -270,6 +301,7 @@ data class ActivityLog(
         const val MEMBERSHIP = "membership"
         const val PAYMENT = "payment"
         const val EXPENSE = "expense"
+        const val LOCKER = "locker"
         const val SETUP = "setup"
 
         const val ADD = "add"
