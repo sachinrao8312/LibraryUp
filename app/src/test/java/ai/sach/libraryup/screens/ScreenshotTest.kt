@@ -91,12 +91,16 @@ class ScreenshotTest {
         val state = lib.repo.state.first()
         val asha = state.students.first { it.student.name == "Aarav Singh" }
         compose.setContent {
-            val base = LocalContext.current
-            val config = Configuration(base.resources.configuration).apply { if (hindi) setLocale(Locale("hi")) }
-            CompositionLocalProvider(LocalContext provides base.createConfigurationContext(config), LocalConfiguration provides config) {
+            val content = @Composable {
                 LibraryUpTheme(darkTheme = false) {
                     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { screen() }
                 }
+            }
+            if (!hindi) content() else {
+                // A Hindi resources context; only for screens that don't launch activities.
+                val base = LocalContext.current
+                val config = Configuration(base.resources.configuration).apply { setLocale(Locale("hi")) }
+                CompositionLocalProvider(LocalContext provides base.createConfigurationContext(config), LocalConfiguration provides config, content = content)
             }
         }
 
