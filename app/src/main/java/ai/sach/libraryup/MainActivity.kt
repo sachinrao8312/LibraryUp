@@ -40,7 +40,6 @@ import ai.sach.libraryup.ui.screens.settingsScreen.composable.BackupRestoreScree
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.HelpAndSupportScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.LanguageScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.NotificationsScreen
-import ai.sach.libraryup.ui.screens.settingsScreen.composable.PasswordChangeScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.PrivacyPolicyScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.SecurityScreen
 import ai.sach.libraryup.ui.screens.settingsScreen.composable.SettingsNavRoutes
@@ -400,7 +399,6 @@ private fun LibraryShell(state: LibraryState, vm: LibraryViewModel, snackbar: Sn
             composable(SettingsNavRoutes.ACCOUNT) { AccountScreen(navController = navController) }
             composable(SettingsNavRoutes.PROFILE_EDIT) { AccountScreen(navController = navController, isEditing = true) }
             composable(SettingsNavRoutes.SECURITY) { SecurityScreen(navController = navController) }
-            composable(SettingsNavRoutes.PASSWORD_CHANGE) { PasswordChangeScreen(navController = navController) }
             composable(SettingsNavRoutes.APP_PREFERENCES) { AppPreferencesScreen(navController = navController) }
             composable(SettingsNavRoutes.NOTIFICATIONS) { NotificationsScreen(navController = navController) }
             composable(SettingsNavRoutes.LANGUAGE) { LanguageScreen(navController = navController) }

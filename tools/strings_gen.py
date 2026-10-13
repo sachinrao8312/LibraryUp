@@ -326,7 +326,6 @@ S = {
  "sign_in_with_google": ("Continue with Google", "Google से आगे बढ़ें"),
  "full_name": ("Full name", "पूरा नाम"),
  "email": ("Email", "ईमेल"),
- "error_passwords_dont_match": ("Passwords do not match", "दोनों पासवर्ड एक जैसे नहीं हैं"),
  # common
  "action_skip": ("Skip", "छोड़ें"),
  "action_change": ("Change", "बदलें"),
@@ -392,21 +391,6 @@ S = {
  "security_delete_confirm": ("Delete all data", "सारा डेटा हटाएँ"),
  # PIN
  # password
- "password_change_title": ("Change password", "पासवर्ड बदलें"),
- "password_requirements": ("Password requirements", "पासवर्ड की शर्तें"),
- "password_requirements_list": ("• At least 8 characters\\n• At least one uppercase letter\\n• At least one number\\n• At least one special character", "• कम से कम 8 अक्षर\\n• कम से कम एक बड़ा (कैपिटल) अक्षर\\n• कम से कम एक अंक\\n• कम से कम एक ख़ास चिह्न (जैसे @ या #)"),
- "password_changed": ("Password changed successfully!", "पासवर्ड बदल गया!"),
- "password_current": ("Current password", "अभी का पासवर्ड"),
- "password_new": ("New password", "नया पासवर्ड"),
- "password_confirm_new": ("Confirm new password", "नया पासवर्ड दोबारा डालें"),
- "password_hide": ("Hide password", "पासवर्ड छिपाएँ"),
- "password_show": ("Show password", "पासवर्ड दिखाएँ"),
- "password_error_current_required": ("Enter your current password", "अभी का पासवर्ड डालें"),
- "password_error_incorrect": ("Incorrect password", "गलत पासवर्ड"),
- "password_error_min_length": ("Password must be at least 8 characters", "पासवर्ड कम से कम 8 अक्षर का होना चाहिए"),
- "password_error_uppercase": ("Password must contain at least one uppercase letter", "पासवर्ड में कम से कम एक बड़ा (कैपिटल) अक्षर होना चाहिए"),
- "password_error_number": ("Password must contain at least one number", "पासवर्ड में कम से कम एक अंक होना चाहिए"),
- "password_error_special": ("Password must contain at least one special character", "पासवर्ड में कम से कम एक ख़ास चिह्न होना चाहिए"),
  # account
  "account_edit_profile": ("Edit profile", "प्रोफ़ाइल बदलें"),
  "account_error_play_services": ("Google Play Services is not available on this device.", "इस फ़ोन पर Google Play Services उपलब्ध नहीं है।"),
